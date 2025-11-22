@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.soundscape"
+    namespace = "com.mobile.soundscape"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.soundscape"
-        minSdk = 34
+        applicationId = "com.mobile.soundscape"
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -45,7 +45,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-
-
 }

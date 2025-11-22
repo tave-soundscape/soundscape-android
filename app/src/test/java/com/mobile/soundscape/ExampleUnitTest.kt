@@ -1,4 +1,4 @@
-package com.example.soundscape
+package com.mobile.soundscape
 
 import org.junit.Test
 
