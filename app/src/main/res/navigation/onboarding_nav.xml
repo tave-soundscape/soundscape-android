@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/onboarding_nav"
+    app:startDestination="@id/setnameFragment">
+
+    <fragment
+        android:id="@+id/setnameFragment"
+        android:name="com.mobile.soundscape.onboarding.SetnameFragment"
+        android:label="SetnameFragment" >
+        <action
+            android:id="@+id/action_setnameFragment_to_artistFragment"
+            app:destination="@id/artistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/artistFragment"
+        android:name="com.mobile.soundscape.onboarding.ArtistFragment"
+        android:label="ArtistFragment" >
+        <action
+            android:id="@+id/action_artistFragment_to_genreFragment"
+            app:destination="@id/genreFragment" />
+        <action
+            android:id="@+id/action_artistFragment_to_setnameFragment"
+            app:destination="@id/setnameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/genreFragment"
+        android:name="com.mobile.soundscape.onboarding.GenreFragment"
+        android:label="GenreFragment" >
+        <action
+            android:id="@+id/action_genreFragment_to_artistFragment"
+            app:destination="@id/artistFragment" />
+    </fragment>
+</navigation>
