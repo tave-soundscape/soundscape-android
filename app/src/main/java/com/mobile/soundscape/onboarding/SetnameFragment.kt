@@ -24,8 +24,8 @@ class SetnameFragment : Fragment() {
 
 
     // 색상 정의 (파랑: 성공 / 빨강: 실패 / 회색: 기본)
-    private val colorSuccess = Color.parseColor("#4511FF") // Royal Blue
-    private val colorError = Color.parseColor("#F6443A")   // Red
+    private val colorSuccess = Color.parseColor("#34C759") // Green
+    private val colorError = Color.parseColor("#ED433A")   // Red
     private val colorDefault = Color.parseColor("#4A494C")
 
 

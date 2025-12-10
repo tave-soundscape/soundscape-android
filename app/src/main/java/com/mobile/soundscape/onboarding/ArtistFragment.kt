@@ -3,31 +3,28 @@ package com.mobile.soundscape.onboarding
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.mobile.soundscape.R
+import com.mobile.soundscape.api.dto.ArtistSelectionRequest
+import com.mobile.soundscape.api.dto.SelectedArtistDto
 import com.mobile.soundscape.databinding.FragmentArtistBinding
-
 
 class ArtistFragment : Fragment() {
 
-    private lateinit var binding: FragmentArtistBinding
+    // View Binding 설정
+    private var _binding: FragmentArtistBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var nextButton: AppCompatButton
-    private lateinit var nextEllipse: AppCompatImageView
-    private lateinit var initButton: AppCompatButton
-    private lateinit var searchEditText: EditText // 검색창 변수 추가
-
+    // 리사이클러뷰 어댑터
     private lateinit var adapter: ArtistAdapter
 
+    // 아티스트 더미 데이터
     private val dummyArtistList = mutableListOf<ArtistData>(
         ArtistData("NewJeans", ""), ArtistData("IVE", ""), ArtistData("aespa", ""),
         ArtistData("LE SSERAFIM", ""), ArtistData("IU", ""), ArtistData("BTS", ""),
@@ -39,54 +36,59 @@ class ArtistFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_artist, container, false)
-
-        recyclerView = view.findViewById(R.id.rv_artist_list)
-        nextButton = view.findViewById(R.id.nextButton)
-        nextEllipse = view.findViewById(R.id.nextEllipse)
-        initButton = view.findViewById(R.id.initButton)
-        searchEditText = view.findViewById(R.id.search_artist)
-
-        updateButtonVisibility(0)
-        setupRecyclerView()
-        setupButtons()
-
-        // 검색 기능 실행
-        setupSearchListener()
-
-        return view
+        // 바인딩 초기화 - XML을 인플레이트하여 바인딩 객체 생성
+        _binding = FragmentArtistBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)  // 뷰가 생성된 후 로직 시작
+
+        // 1. 초기 화면 상태 설정 (처음에는 선택한게 0개 이므로 버튼 숨김)
+        updateButtonVisibility(0)
+
+        // 2. 리사이클러뷰 설정
+        setupRecyclerView()
+
+        // 3. 버튼 클릭 리스너 설정
+        setupButtons()
+
+        // 4. 검색창 입력 리스너 설정
+        setupSearchListener()
+    }
+
+    /* --- 리사이클러뷰 설정 --- */
     private fun setupRecyclerView() {
         adapter = ArtistAdapter(dummyArtistList) {
-            // 람다: 아이템이 클릭될 때마다 실행됨
-
+            // [아이템 클릭 콜백]
             // 화면에 보이는 리스트가 아니라 dummyArtistList 전체에서 몇 개가 선택됐는지 갯수 세기
             val totalSelectedCount = dummyArtistList.count { it.isSelected }
 
-            // 숫자 버튼 상태를 업데이트
+            // UI 업데이트 (버튼 표시/숨김)
             updateButtonVisibility(totalSelectedCount)
         }
 
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
+        binding.rvArtistList.apply{
+            this.adapter = this@ArtistFragment.adapter
+            layoutManager = GridLayoutManager(requireContext(), 3)
+        }
     }
 
-    // --- 검색 로직 ---
+    /* --- 검색 로직 --- */
     private fun setupSearchListener() {
-        searchEditText.addTextChangedListener(object : TextWatcher {
+        binding.searchArtist.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-            // 텍스트가 바뀔 때마다 실행됨
+            // 텍스트가 바뀔때마다 업데이트
             override fun afterTextChanged(s: Editable?) {
-                val searchText = s.toString().trim() // 입력된 텍스트 (공백 제거)
+                val searchText = s.toString().trim()
                 filterList(searchText)
             }
         })
     }
 
-    // 실제 필터링 함수
+    /* --- 리스트 필터링 로직 --- */
     private fun filterList(query: String) {
         if (query.isEmpty()) {
             // 1. 검색어가 없으면 -> 원본 리스트를 보여줌
@@ -101,44 +103,126 @@ class ArtistFragment : Fragment() {
         }
     }
 
+    /* --- 버튼 클릭 리스터 설정 --- */
     private fun setupButtons() {
-        nextButton.setOnClickListener {
-            // 다음 프래그먼트 이동 코드
-            nextButton.setOnClickListener {
-                val nextFragment = GenreFragment() // 이동할 프래그먼트
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.onboarding_fragment_container, nextFragment) // R.id.fragment_container는 메인 액티비티의 컨테이너 ID여야 함
-                    .addToBackStack(null)
-                    .commit()
+        // 다음 버튼
+        binding.nextButton.setOnClickListener {
+            val selectedArtists = dummyArtistList.filter { it.isSelected }
+
+            if (selectedArtists.size == 3) {
+                // 백엔드 전송
+                sendArtistsToBackend(selectedArtists)
+            } else {
+                // 굳ㅇㅣ???
+                Toast.makeText(context, "3명을 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
 
-        initButton.setOnClickListener {
+        // [초기화 버튼]
+        binding.initButton.setOnClickListener {
             adapter.clearSelection()
-            // 초기화 시 선택된 개수 0개로 버튼 숨김 처리
             updateButtonVisibility(0)
         }
     }
 
 
 
-    private fun updateButtonVisibility(count: Int) {
-        // 기존 코드 유지...
-        if (count == 3) {
-            if (nextButton.visibility != View.VISIBLE) {
-                nextButton.visibility = View.VISIBLE
-                nextEllipse.visibility = View.VISIBLE
-                initButton.visibility = View.VISIBLE
+    /**
+     * [백엔드 통신 함수]
+     * 현재 상태: 백엔드 연결 코드는 주석 처리됨. 데이터 변환 후 바로 다음 화면으로 이동.
+     */
+    private fun sendArtistsToBackend(selectedArtists: List<ArtistData>) {
 
-                nextButton.alpha = 0f; nextButton.animate().alpha(1f).duration = 300
-                nextEllipse.alpha = 0f; nextEllipse.animate().alpha(1f).duration = 300
-                initButton.alpha = 0f; initButton.animate().alpha(1f).duration = 300
+        // 1. [데이터 변환] UI용 데이터를 서버용 DTO로 변환하는 로직은 그대로 둡니다. (잘 동작하는지 확인용)
+        val dtoList = selectedArtists.map { artist ->
+            SelectedArtistDto(
+                name = artist.name,
+                imageUrl = artist.imageResId
+            )
+        }
+        val requestBody = ArtistSelectionRequest(artists = dtoList)
+
+        // 로그 찍어서 데이터가 잘 만들어졌는지 확인
+        Log.d("TEST_MODE", "생성된 요청 데이터: $requestBody")
+
+
+        // 2. [임시 코드] 백엔드 없이 바로 성공 처리하여 다음 화면으로 이동
+        // ---------------------------------------------------------------
+        Toast.makeText(context, "[테스트] 백엔드 연결 없이 진행합니다.", Toast.LENGTH_SHORT).show()
+        moveToGenreFragment() // 바로 이동
+        // ---------------------------------------------------------------
+
+
+        /* // ▼▼▼ [백엔드 연결 시 주석 해제할 부분] ▼▼▼
+        // 위쪽의 [임시 코드] 2줄을 지우고, 아래 코드의 주석(/* */)을 푸세요.
+
+        RetrofitClient.api.sendSelectedArtists(requestBody).enqueue(object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if (response.isSuccessful) {
+                    val baseResponse = response.body()
+                    Log.d("API_SUCCESS", "메시지: ${baseResponse?.message}")
+
+                    // 성공 시 화면 이동
+                    moveToGenreFragment()
+                } else {
+                    Log.e("API_ERROR", "코드: ${response.code()}")
+                    Toast.makeText(context, "서버 오류 발생", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                Log.e("API_FAILURE", "에러: ${t.message}")
+                Toast.makeText(context, "네트워크 연결 확인 필요", Toast.LENGTH_SHORT).show()
+            }
+        })
+        // ▲▲▲ [백엔드 연결 시 주석 해제할 부분 끝] ▲▲▲
+        */
+    }
+
+    /* --- 장르 프래그먼트로 이동하느 함수 --- */
+    private fun moveToGenreFragment() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.onboarding_fragment_container, GenreFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+
+    /* --- 버튼 가시성 업데이트 --- */
+    private fun updateButtonVisibility(count: Int) {
+        if (count == 3) {
+            // 버튼이 안 보이는 상태라면 보이게 처리 + 애니메이션
+            if (binding.nextButton.visibility != View.VISIBLE) {
+                // apply 스코프 함수로 여러 뷰를 묶어서 처리
+                binding.run {
+                    nextButton.visibility = View.VISIBLE
+                    nextEllipse.visibility = View.VISIBLE
+                    initButton.visibility = View.VISIBLE
+
+                    nextButton.alpha = 0f; nextButton.animate().alpha(1f).duration = 300
+                    nextEllipse.alpha = 0f; nextEllipse.animate().alpha(1f).duration = 300
+                    initButton.alpha = 0f; initButton.animate().alpha(1f).duration = 300
+                }
             }
         } else {
-            nextButton.visibility = View.GONE
-            nextEllipse.visibility = View.GONE
-            initButton.visibility = View.GONE
+            // 버튼 숨김
+            binding.run {
+                nextButton.visibility = View.GONE
+                nextEllipse.visibility = View.GONE
+                initButton.visibility = View.GONE
+            }
         }
+    }
+
+
+    /* --- 뷰 바인딩 메모리 누수 방지 --- */
+    // 프래그먼트는 뷰보다 수명이 길어서, 뷰가 파괴될 때 바인딩 참조도 끊어줘야 함
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 

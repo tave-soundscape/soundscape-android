@@ -126,6 +126,7 @@
         android:textSize="10sp"
 
         app:drawableStartCompat="@drawable/login_check"
+        android:backgroundTint="#4A494C"
         android:drawablePadding="7dp"
 
         app:layout_constraintStart_toStartOf="parent"
@@ -144,6 +145,7 @@
         android:textSize="10sp"
 
         app:drawableStartCompat="@drawable/login_check"
+        android:backgroundTint="#4A494C"
         android:drawablePadding="7dp"
 
         app:layout_constraintStart_toStartOf="parent"
