@@ -5,33 +5,35 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.RetrofitClient
 import com.mobile.soundscape.api.dto.GenreSelectionRequest
 import com.mobile.soundscape.api.dto.SelectedGenreDto
 import com.mobile.soundscape.databinding.FragmentGenreBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class GenreFragment : Fragment() {
 
-    // [View Binding 설정]
+    // View Binding
     private var _binding: FragmentGenreBinding? = null
     private val binding get() = _binding!!
 
     // 어댑터
     private lateinit var adapter: ArtistAdapter
 
-    // 더미 데이터 (ArtistData 클래스를 재사용 중)
-    private val dummyGenreData = mutableListOf<ArtistData>(
-        ArtistData("POP", ""), ArtistData("K-POP", ""), ArtistData("FUNK", ""),
-        ArtistData("R&B", ""), ArtistData("JAZZ", ""), ArtistData("ROCK", ""),
-        ArtistData("HIP-HOP", ""), ArtistData("SOUL", ""), ArtistData("COUNTRY", ""),
-        ArtistData("HOUSE", ""), ArtistData("INDIE", ""), ArtistData("J-POP", ""),
-        ArtistData("EDM", ""), ArtistData("Lo-fi", "")
-    )
+    // [핵심] 선택된 장르를 기억하는 전역 저장소 (이름을 키로 사용)
+    private val selectedGenresMap = mutableMapOf<String, ArtistData>()
+
+    // 전체 장르 원본 데이터 (GenreDataFix에서 불러옴)
+    private lateinit var originalGenreList: List<ArtistData>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,8 +46,11 @@ class GenreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 0. 데이터 로드
+        originalGenreList = GenreDataFix.getGenreList()
+
         // 1. 초기 상태 설정
-        updateButtonVisibility(0)
+        updateButtonVisibility()
 
         // 2. 리사이클러뷰 설정
         setupRecyclerView()
@@ -58,15 +63,48 @@ class GenreFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = ArtistAdapter(dummyGenreData) {
-            // 아이템 클릭 시 선택된 개수 업데이트
-            val totalSelectedCount = dummyGenreData.count { it.isSelected }
-            updateButtonVisibility(totalSelectedCount)
+        // 어댑터 생성 (클릭 로직 연결)
+        adapter = ArtistAdapter(originalGenreList) { genre, position ->
+            handleGenreClick(genre, position)
         }
 
         binding.rvGenreList.apply {
             this.adapter = this@GenreFragment.adapter
             layoutManager = GridLayoutManager(requireContext(), 3)
+        }
+    }
+
+    // [핵심] 클릭 처리 로직 (Map 사용)
+    private fun handleGenreClick(genre: ArtistData, position: Int) {
+        if (genre.isSelected) {
+            // 이미 선택됨 -> 해제
+            genre.isSelected = false
+            selectedGenresMap.remove(genre.name)
+        } else {
+            // 선택 안 됨 -> 3개 미만일 때만 선택 허용
+            if (selectedGenresMap.size < 3) {
+                genre.isSelected = true
+                selectedGenresMap[genre.name] = genre
+            } else {
+                Toast.makeText(context, "최대 3개까지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        // 어댑터 갱신 & 버튼 업데이트
+        adapter.notifyItemChanged(position)
+        updateButtonVisibility()
+    }
+
+    // [핵심] 리스트 동기화 함수 (검색 시 선택 상태 유지용)
+    private fun syncSelectionState(list: List<ArtistData>): List<ArtistData> {
+        return list.map { genre ->
+            if (selectedGenresMap.containsKey(genre.name)) {
+                genre.isSelected = true
+            } else {
+                genre.isSelected = false
+            }
+            genre
         }
     }
 
@@ -76,70 +114,70 @@ class GenreFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
-                val searchText = s.toString().trim()
-                filterList(searchText)
+                val query = s.toString().trim()
+                filterList(query)
             }
         })
     }
 
     private fun filterList(query: String) {
-        if (query.isEmpty()) {
-            adapter.updateList(dummyGenreData)
+        val filteredList = if (query.isEmpty()) {
+            originalGenreList
         } else {
-            val filteredList = dummyGenreData.filter { genre ->
+            originalGenreList.filter { genre ->
                 genre.name.contains(query, ignoreCase = true)
             }
-            adapter.updateList(filteredList)
         }
+
+        // 화면에 보여주기 전에 선택 상태 동기화(Sync)
+        val syncedList = syncSelectionState(filteredList)
+        adapter.updateList(syncedList)
     }
 
     private fun setupButtons() {
-        // 다음 버튼 클릭
+        // [다음 버튼]
         binding.nextButton.setOnClickListener {
-            val selectedGenres = dummyGenreData.filter { it.isSelected }
+            // Map에 저장된 3개의 장르 가져오기
+            val selectedGenres = selectedGenresMap.values.toList()
 
             if (selectedGenres.size == 3) {
-                // 백엔드 전송 함수 호출
+                // 백엔드 전송
                 sendGenresToBackend(selectedGenres)
             } else {
                 Toast.makeText(context, "3가지를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // 초기화 버튼 클릭
+        // [초기화 버튼]
         binding.initButton.setOnClickListener {
-            adapter.clearSelection()
-            updateButtonVisibility(0)
+            selectedGenresMap.clear() // 저장소 초기화
+            adapter.clearSelection()  // UI 초기화
+            updateButtonVisibility()  // 버튼 숨김
         }
     }
 
     /**
      * [백엔드 통신 함수]
-     * 현재 상태: 백엔드 연결 코드는 주석 처리됨. 데이터 변환 후 바로 다음 액티비티로 이동.
+     * 현재 상태: 백엔드 연결 코드는 주석 처리됨.
      */
     private fun sendGenresToBackend(selectedGenres: List<ArtistData>) {
 
-        // 1. [데이터 변환] UI용 데이터를 서버용 DTO로 변환
+        // 1. [데이터 변환]
         val dtoList = selectedGenres.map { genre ->
-            SelectedGenreDto(
-                name = genre.name
-                // imageUrl이 필요하다면 여기에 추가
-            )
+            SelectedGenreDto(name = genre.name)
         }
         val requestBody = GenreSelectionRequest(genres = dtoList)
 
-        // 로그 확인
         Log.d("TEST_MODE", "장르 요청 데이터: $requestBody")
 
-        // 2. [임시 코드] 백엔드 없이 바로 PlaytestActivity로 이동 (테스트 모드)
+        // 2. [임시 코드] 테스트 모드 (바로 이동)
         // ---------------------------------------------------------------
-        Toast.makeText(context, "[테스트] 장르 선택 완료 (서버 전송 생략)", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "[테스트] 장르 선택 완료 -> 이동", Toast.LENGTH_SHORT).show()
         moveToPlaytestActivity()
         // ---------------------------------------------------------------
 
 
-        /* // ▼▼▼ [백엔드 연결 시 주석 해제할 부분] ▼▼▼
-        // 위쪽의 [임시 코드] 부분을 지우고 이 주석을 해제하세요.
+        /* // ▼▼▼ [백엔드 연결 시 주석 해제] ▼▼▼
 
         RetrofitClient.api.sendSelectedGenres(requestBody).enqueue(object : Callback<BaseResponse<String>> {
             override fun onResponse(
@@ -147,10 +185,6 @@ class GenreFragment : Fragment() {
                 response: Response<BaseResponse<String>>
             ) {
                 if (response.isSuccessful) {
-                    val baseResponse = response.body()
-                    Log.d("API_SUCCESS", "메시지: ${baseResponse?.message}")
-
-                    // 성공 시 다음 액티비티로 이동
                     moveToPlaytestActivity()
                 } else {
                     Log.e("API_ERROR", "코드: ${response.code()}")
@@ -163,17 +197,18 @@ class GenreFragment : Fragment() {
                 Toast.makeText(context, "네트워크 연결 확인 필요", Toast.LENGTH_SHORT).show()
             }
         })
-        // ▲▲▲ [백엔드 연결 시 주석 해제할 부분 끝] ▲▲▲
+        // ▲▲▲ [백엔드 연결 시 주석 해제 끝] ▲▲▲
         */
     }
 
     private fun moveToPlaytestActivity() {
         val intent = Intent(requireContext(), PlaytestActivity::class.java)
         startActivity(intent)
-        // 필요하다면 requireActivity().finish() 추가하여 뒤로가기 방지
     }
 
-    private fun updateButtonVisibility(count: Int) {
+    private fun updateButtonVisibility() {
+        val count = selectedGenresMap.size // Map 사이즈 기준
+
         if (count == 3) {
             if (binding.nextButton.visibility != View.VISIBLE) {
                 binding.run {

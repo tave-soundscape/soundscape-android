@@ -1,5 +1,6 @@
 package com.mobile.soundscape.api
 
+import com.mobile.soundscape.api.dto.ArtistSearchResponse
 import com.mobile.soundscape.data.model.music.DeviceResponse
 import com.mobile.soundscape.data.model.music.PlayRequest
 import retrofit2.Call
@@ -24,4 +25,13 @@ interface SpotifyWebApi {
         @Body body: PlayRequest,
         @Query("device_id") deviceId: String? = null // 특정 기기를 콕 집어서 재생
     ): Call<Void>
+
+    // 아티스트 검색 API
+    @GET("v1/search")
+    fun searchArtists(
+        @Query("q") query: String,
+        @Query("type") type: String = "artist",
+        @Query("limit") limit: Int = 10,
+        @Header("Authorization") token: String // "Bearer {Token}" 형태여야 함
+    ): Call<ArtistSearchResponse>
 }

@@ -3,49 +3,56 @@ package com.mobile.soundscape.onboarding
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.card.MaterialCardView
-import com.mobile.soundscape.onboarding.ArtistData
 import com.mobile.soundscape.R
 
 class ArtistAdapter(
-    private var artistList: List<ArtistData>,
-    private val onItemClick: () -> Unit // Int를 넘기지 않고, 클릭됐다는 신호만 줌
+    var artistList: List<ArtistData>, // 외부에서 접근 가능하도록 var로 변경
+    private val onArtistClick: (ArtistData, Int) -> Unit // 클릭 시 데이터와 위치를 보냄
 ) : RecyclerView.Adapter<ArtistAdapter.ArtistViewHolder>() {
 
     inner class ArtistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cardView: MaterialCardView = itemView.findViewById(R.id.card_artist_image)
+        val imageView: ImageView = itemView.findViewById(R.id.iv_artist)
         val nameTextView: TextView = itemView.findViewById(R.id.tv_artist_name)
 
         fun bind(artist: ArtistData) {
             nameTextView.text = artist.name
 
-            // 테두리 그리기 (동일)
-            if (artist.isSelected) {
-                cardView.strokeWidth = 12
-                cardView.strokeColor = ContextCompat.getColor(itemView.context, R.color.white)
+            // [추가됨] Glide로 이미지 로드
+            if (artist.imageResId.isNotEmpty()) {
+                Glide.with(itemView.context)
+                    .load(artist.imageResId) // URL 로드
+                    .apply(RequestOptions().transform(CenterCrop(), RoundedCorners(16))) // 둥근 모서리 옵션 (선택)
+                    .placeholder(R.color.gray) // 로딩 중 배경색
+                    .error(R.color.gray)       // 에러 시 배경색
+                    .into(imageView)
             } else {
-                cardView.strokeWidth = 0
+                // 이미지가 없을 때 기본 처리
+                imageView.setImageResource(R.color.gray)
             }
 
+            // 선택 상태에 따른 테두리 처리
+            if (artist.isSelected) {
+                cardView.strokeWidth = 12
+                cardView.strokeColor = ContextCompat.getColor(itemView.context, R.color.white) // 선택 색상
+                cardView.alpha = 0.5f // 선택된 느낌을 주기 위해 살짝 투명하게 (선택사항)
+            } else {
+                cardView.strokeWidth = 0
+                cardView.alpha = 1.0f
+            }
+
+            // 클릭 이벤트 -> 프래그먼트로 토스!
             itemView.setOnClickListener {
-                // 1. 현재 전체 리스트에서 선택된 개수 세기
-                // (artistList가 전체 목록을 가지고 있으므로 여기서 세면 됩니다)
-                val currentSelectedCount = artistList.count { it.isSelected }
-
-                // 2. [핵심] 제한 로직 추가
-                // "이미 3개 이상 선택됨" AND "지금 누른 건 선택 안 된 놈임" -> 그러면 막아라!
-                if (currentSelectedCount >= 3 && !artist.isSelected) {
-                    return@setOnClickListener // 여기서 함수 종료! (밑에 코드 실행 안 됨)
-                }
-
-                // 3. 상태 변경 (제한에 안 걸렸을 때만 실행됨)
-                artist.isSelected = !artist.isSelected
-                notifyItemChanged(bindingAdapterPosition)
-
-                onItemClick()
+                onArtistClick(artist, bindingAdapterPosition)
             }
         }
     }
@@ -55,13 +62,14 @@ class ArtistAdapter(
         notifyDataSetChanged()
     }
 
+    // 선택 초기화 (UI 갱신용)
     fun clearSelection() {
         artistList.forEach { it.isSelected = false }
         notifyDataSetChanged()
-        onItemClick() // 초기화됐으니 다시 계산하라고 알림
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
+        // item_artist_selection.xml 레이아웃 사용
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_artist_selection, parent, false)
         return ArtistViewHolder(view)
     }
