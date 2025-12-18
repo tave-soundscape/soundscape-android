@@ -29,7 +29,7 @@ class GenreFragment : Fragment() {
     // 어댑터
     private lateinit var adapter: ArtistAdapter
 
-    // [핵심] 선택된 장르를 기억하는 전역 저장소 (이름을 키로 사용)
+    // 선택된 장르를 기억하는 전역 저장소 (이름을 키로 사용)
     private val selectedGenresMap = mutableMapOf<String, ArtistData>()
 
     // 전체 장르 원본 데이터 (GenreDataFix에서 불러옴)

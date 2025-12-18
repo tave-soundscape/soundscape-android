@@ -66,7 +66,7 @@ class SetnameFragment : Fragment() {
                 } else {
                     len in 2..20
                 }
-                
+
 
                 // --- UI 업데이트 (색상 변경) ---
 
@@ -75,6 +75,33 @@ class SetnameFragment : Fragment() {
 
                 // 2) 길이 텍스트뷰 업데이트
                 updateConditionUI(binding.nameRuleLength, isLengthValid, input.isEmpty())
+
+
+                // --- 아이콘 (X / Check) 표시 로직 추가 ---
+                if (input.isEmpty()) {
+                    // 입력이 없으면 아이콘 모두 숨김
+                    binding.validX.visibility = View.GONE
+                    binding.validCheck.visibility = View.GONE
+                } else if (isCharValid && isLengthValid) {
+                    // 둘 다 성공하면 Check 표시
+                    binding.validX.visibility = View.GONE
+                    binding.validCheck.visibility = View.VISIBLE
+                } else {
+                    // 하나라도 실패하면 X 표시
+                    binding.validX.visibility = View.VISIBLE
+                    binding.validCheck.visibility = View.GONE
+                }
+
+                // --- 테두리(Stroke) 처리 ---
+                // 글자가 하나라도 있으면 테두리 생성이므로 input.isNotEmpty()만 체크
+                val background = binding.getNameInput.background as? android.graphics.drawable.GradientDrawable
+                val strokeWidthPx = (2 * resources.displayMetrics.density).toInt()
+
+                if (input.isNotEmpty()) {
+                    background?.setStroke(strokeWidthPx, Color.parseColor("#4A494C"))
+                } else {
+                    background?.setStroke(0, 0)
+                }
 
 
                 // --- 버튼 및 타원 이미지 표시 여부 ---
@@ -98,6 +125,8 @@ class SetnameFragment : Fragment() {
 
         // '다음으로' 버튼 누르면 아티스트 고르는 프래그먼트로 이동
         binding.nextButton.setOnClickListener {
+            val background = binding.getNameInput.background as? android.graphics.drawable.GradientDrawable
+            background?.setStroke(0, 0)
             val nextFragment = ArtistFragment()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.onboarding_fragment_container, nextFragment)

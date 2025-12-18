@@ -12,13 +12,13 @@ import retrofit2.http.Query
 
 interface SpotifyWebApi {
 
-    // 1. [추가] 연결된 기기 목록 가져오기
+    // 연결된 기기 목록 가져오기
     @GET("v1/me/player/devices")
     fun getAvailableDevices(
         @Header("Authorization") token: String
     ): Call<DeviceResponse>
 
-    // 2. [수정] 재생 명령에 'device_id' 파라미터 추가 (Nullable로 설정)
+    // 재생 명령에 'device_id' 파라미터 추가 (Nullable로 설정)
     @PUT("v1/me/player/play")
     fun playTrack(
         @Header("Authorization") token: String,

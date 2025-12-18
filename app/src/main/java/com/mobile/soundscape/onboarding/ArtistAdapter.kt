@@ -23,11 +23,12 @@ class ArtistAdapter(
         val cardView: MaterialCardView = itemView.findViewById(R.id.card_artist_image)
         val imageView: ImageView = itemView.findViewById(R.id.iv_artist)
         val nameTextView: TextView = itemView.findViewById(R.id.tv_artist_name)
+        val checkIcon: ImageView = itemView.findViewById(R.id.isSelected_check)
 
         fun bind(artist: ArtistData) {
             nameTextView.text = artist.name
 
-            // [추가됨] Glide로 이미지 로드
+            // Glide로 이미지 로드
             if (artist.imageResId.isNotEmpty()) {
                 Glide.with(itemView.context)
                     .load(artist.imageResId) // URL 로드
@@ -42,12 +43,14 @@ class ArtistAdapter(
 
             // 선택 상태에 따른 테두리 처리
             if (artist.isSelected) {
+                // cardView.alpha = 0.6f // 선택된 느낌을 주기 위해 살짝 투명하게
                 cardView.strokeWidth = 12
                 cardView.strokeColor = ContextCompat.getColor(itemView.context, R.color.white) // 선택 색상
-                cardView.alpha = 0.5f // 선택된 느낌을 주기 위해 살짝 투명하게 (선택사항)
+                checkIcon.visibility = View.VISIBLE
             } else {
                 cardView.strokeWidth = 0
                 cardView.alpha = 1.0f
+                checkIcon.visibility = View.GONE
             }
 
             // 클릭 이벤트 -> 프래그먼트로 토스!
