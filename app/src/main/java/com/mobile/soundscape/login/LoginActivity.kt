@@ -14,6 +14,7 @@ import com.mobile.soundscape.data.local.TokenManager
 import com.mobile.soundscape.databinding.ActivityLoginBinding
 import com.mobile.soundscape.onboarding.PlaytestActivity
 import com.mobile.soundscape.onboarding.SetnameFragment
+import com.mobile.soundscape.result.PlaylistResultActivity
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
@@ -42,6 +43,11 @@ class LoginActivity : AppCompatActivity() {
 
         binding.spotifyLoginBtn.setOnClickListener {
             startSpotifyLogin()
+        }
+
+        binding.movePlaylistResultButton.setOnClickListener {
+            val intent = Intent(this@LoginActivity, PlaylistResultActivity::class.java)
+            startActivity(intent)
         }
 
         binding.moveOnboardingButton.setOnClickListener {

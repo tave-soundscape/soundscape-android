@@ -24,7 +24,7 @@ class PlaytestActivity : AppCompatActivity() {
     private val track1Img = "https://image.bugsm.co.kr/album/images/500/207092/20709260.jpg"
 
     // 2. 곡 하나 (Card 2용)
-    private val singleTrackUri = "https://open.spotify.com/track/3cLXrotzCjYCkN73PewALM?si=b6b99af007634195"
+    private val singleTrackUri = "spotify:track:6oNLSQX8bcAdbCElZYju3v"
     private val track2Img = "https://image.bugsm.co.kr/album/images/500/41305/4130508.jpg"
 
     // 3. (Card 3용)

@@ -33,12 +33,12 @@ class ArtistAdapter(
                 Glide.with(itemView.context)
                     .load(artist.imageResId) // URL 로드
                     .apply(RequestOptions().transform(CenterCrop(), RoundedCorners(16))) // 둥근 모서리 옵션 (선택)
-                    .placeholder(R.color.gray) // 로딩 중 배경색
-                    .error(R.color.gray)       // 에러 시 배경색
+                    .placeholder(R.color.gray700) // 로딩 중 배경색
+                    .error(R.color.gray700)       // 에러 시 배경색
                     .into(imageView)
             } else {
                 // 이미지가 없을 때 기본 처리
-                imageView.setImageResource(R.color.gray)
+                imageView.setImageResource(R.color.gray700)
             }
 
             // 선택 상태에 따른 테두리 처리

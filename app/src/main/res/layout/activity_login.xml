@@ -6,8 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context=".login.MainActivity">
+    android:background="@color/black">
 
 
     <ImageView
@@ -47,6 +46,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
+    <Button
+        android:id="@+id/movePlaylistResultButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="(임시)추천 결과 페이지로 가기"
+        android:backgroundTint="#75C8D5"
+        app:layout_constraintBottom_toBottomOf="@id/spotifyLoginBtn"
+        android:layout_marginBottom="170dp"/>
 
     <Button
         android:id="@+id/moveOnboardingButton"
@@ -66,7 +75,7 @@
         android:backgroundTint="#1ED760"
         android:text="Spotify 연동하기"
         android:textColor="@color/black"
-        android:textSize="15sp"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:icon="@drawable/spotify_logo"
         app:iconGravity="textStart"

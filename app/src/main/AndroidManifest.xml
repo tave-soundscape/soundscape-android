@@ -17,6 +17,9 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
         <activity
+            android:name=".result.PlaylistResultActivity"
+            android:exported="false" />
+        <activity
             android:name=".onboarding.PlaytestActivity"
             android:exported="false" />
         <activity
@@ -38,9 +41,6 @@
                     android:scheme="com.mobile.soundscape" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".login.MainActivity"
-            android:exported="true"></activity>
     </application>
 
 </manifest>
