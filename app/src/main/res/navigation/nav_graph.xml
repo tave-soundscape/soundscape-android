@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.mobile.soundscape.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_recPlaceFragment"
+            app:destination="@id/recPlaceFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_playlistDetailFragment"
+            app:destination="@id/playlistDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_exploreFragment"
+            app:destination="@id/exploreFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recPlaceFragment"
+        android:name="com.mobile.soundscape.recommendation.RecPlaceFragment"
+        android:label="fragment_rec_place"
+        tools:layout="@layout/fragment_rec_place" >
+        <action
+            android:id="@+id/action_recPlaceFragment_to_recDecibelFragment"
+            app:destination="@id/recDecibelFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recDecibelFragment"
+        android:name="com.mobile.soundscape.recommendation.RecDecibelFragment"
+        android:label="fragment_rec_decibel"
+        tools:layout="@layout/fragment_rec_decibel" >
+        <action
+            android:id="@+id/action_recDecibelFragment_to_recGoalFragment"
+            app:destination="@id/recGoalFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recGoalFragment"
+        android:name="com.mobile.soundscape.recommendation.RecGoalFragment"
+        android:label="fragment_rec_goal"
+        tools:layout="@layout/fragment_rec_goal" >
+        <action
+            android:id="@+id/action_recGoalFragment_to_recResultFragment"
+            app:destination="@id/recResultFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recResultFragment"
+        android:name="com.mobile.soundscape.recommendation.RecResultFragment"
+        android:label="fragment_rec_result"
+        tools:layout="@layout/fragment_rec_result" />
+    <fragment
+        android:id="@+id/playlistDetailFragment"
+        android:name="com.mobile.soundscape.playlist.PlaylistDetailFragment"
+        android:label="fragment_playlist_detail"
+        tools:layout="@layout/fragment_playlist_detail">
+
+        <argument
+            android:name="playlistId"
+            app:argType="long"         android:defaultValue="0L"  />
+
+    </fragment>
+    <fragment
+        android:id="@+id/exploreFragment"
+        android:name="com.mobile.soundscape.explore.ExploreFragment"
+        android:label="ExploreFragment" >
+        <action
+            android:id="@+id/action_exploreFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+</navigation>
