@@ -16,5 +16,19 @@
     <color name="primary300">#9577ff</color>
     <color name="primary200">#bdaaff</color>
     <color name="primary100">#e4ddff</color>
-
+    <color name="black_full_background">#000000</color>
+    <color name="deep_blue">#4511FF</color>
+    <color name="light_blue">#2ED5FF</color>
+    <color name="transparent_black">#00000000</color>
+    <color name="gray_default_background">#202022</color>
+    <color name="nav_bar_gray">#232323</color>
+    <color name="description">#C9C9CB</color>
+    <color name="btn_orange">#FF8544</color>
+    <color name="btn_blue">#35A2E1</color>
+    <color name="btn_purple">#AB3AF6</color>
+    <color name="btn_yellow">#F5CB56</color>
+    <color name="btn_red">#F6443A</color>
+    <color name="btn_green">#3ED76C</color>
+    <color name="btn_pink">#FF75C8</color>
+    <color name="btn_empty">#7C7B80</color>
 </resources>

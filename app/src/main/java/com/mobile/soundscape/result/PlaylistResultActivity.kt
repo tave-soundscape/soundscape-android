@@ -29,7 +29,7 @@ class PlaylistResultActivity : AppCompatActivity() {
         binding = ActivityPlaylistResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1. 데이터 생성 (여기에 사진 URL을 직접 넣으세요)
+        // 1. 더미 데이터 생성
         val dummyList = MusicDataProvider.createDummyData()
 
         // 2. 리사이클러뷰 설정
@@ -43,8 +43,8 @@ class PlaylistResultActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
-        // 현재 설정된 이름을 가져와서 넘겨줍니다.
-        val currentName = binding.tvPlaylistName.text.toString()
+        // 일단 빈문자열로
+        val currentName = ""
 
         // 플리 다시 만들기
         binding.regenerateBtn.setOnClickListener {

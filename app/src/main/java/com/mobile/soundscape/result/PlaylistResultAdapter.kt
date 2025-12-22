@@ -51,7 +51,6 @@ class PlaylistResultAdapter(
     }
 
     inner class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        // [중요] item_listmode.xml에 해당 ID들이 있어야 합니다.
         private val tvTitle: TextView = view.findViewById(R.id.tvTitle) // 노래 제목 ID
         private val tvArtist: TextView = view.findViewById(R.id.tvArtist) // [추가됨] 가수 이름 ID
         private val ivCover: ImageView = view.findViewById(R.id.ivAlbumCover) // 앨범 커버 ID

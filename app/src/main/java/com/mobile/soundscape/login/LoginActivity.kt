@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LoginRequest
@@ -47,6 +48,11 @@ class LoginActivity : AppCompatActivity() {
 
         binding.movePlaylistResultButton.setOnClickListener {
             val intent = Intent(this@LoginActivity, PlaylistResultActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.moveMainButton.setOnClickListener {
+            val intent = Intent(this@LoginActivity, MainActivity::class.java)
             startActivity(intent)
         }
 
