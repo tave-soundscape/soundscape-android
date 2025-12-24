@@ -12,7 +12,10 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_recPlaceFragment"
-            app:destination="@id/recPlaceFragment" />
+            app:destination="@id/recPlaceFragment"
+
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"/>
         <action
             android:id="@+id/action_homeFragment_to_playlistDetailFragment"
             app:destination="@id/playlistDetailFragment" />

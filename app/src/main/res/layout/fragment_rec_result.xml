@@ -48,10 +48,10 @@
         android:layout_marginTop="6dp" />
     
     <ImageView
+        android:id="@+id/centerButton"
         android:layout_width="142dp"
         android:layout_height="142dp"
-        android:src="@drawable/icon_rec_result"
-        app:layout_constraintTop_toBottomOf="@id/tv_subtitle"
+        android:src="@drawable/orb_animation"        app:layout_constraintTop_toBottomOf="@id/tv_subtitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="90dp" />

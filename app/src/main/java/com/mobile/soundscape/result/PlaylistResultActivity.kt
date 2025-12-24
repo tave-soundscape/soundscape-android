@@ -1,7 +1,9 @@
 package com.mobile.soundscape.result
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log.v
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -17,6 +19,11 @@ import com.mobile.soundscape.R
 import kotlin.collections.isNotEmpty
 import com.mobile.soundscape.databinding.ActivityPlaylistResultBinding
 import android.widget.EditText
+import android.widget.TextView
+import com.mobile.soundscape.MainActivity
+import androidx.core.widget.doAfterTextChanged 
+import android.graphics.Color
+import android.view.Gravity
 
 
 class PlaylistResultActivity : AppCompatActivity() {
@@ -43,8 +50,8 @@ class PlaylistResultActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
-        // 일단 빈문자열로
-        val currentName = ""
+        // 기존 플리 이름
+        val currentName = binding.tvPlaylistName.text.toString()
 
         // 플리 다시 만들기
         binding.regenerateBtn.setOnClickListener {
@@ -129,8 +136,10 @@ class PlaylistResultActivity : AppCompatActivity() {
         // (참고) 다시하기 버튼에도 기능 연결 가능
         val confirmBtn = view.findViewById<View>(R.id.btnRegenerateConfirm)
         confirmBtn?.setOnClickListener {
-            // 여기에 다시 생성하는 로직 작성
-            Toast.makeText(this, "다시 생성합니다!", Toast.LENGTH_SHORT).show()
+            // 플리 다시 생성하는 코드
+            // 일단 베타 버전에서는 불가능 -> 토스트로 알리기
+            //showCustomToast("죄송합니다.베타버전에서는\n플레이리스트 새로 생성이 어렵습니다.")
+            Toast.makeText(this, "죄송합니다.베타버전에서는\n지원하지 않는 기능입니다.",Toast.LENGTH_SHORT).show()
             bottomSheetDialog.dismiss() // 작업 후 닫기
         }
 
@@ -146,37 +155,78 @@ class PlaylistResultActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.bottom_sheet_edit_name, null)
         bottomSheetDialog.setContentView(view)
 
-        // 1. 뷰 찾기
+        // 뷰 찾기
         val etName = view.findViewById<EditText>(R.id.etPlaylistName)
         val btnConfirm = view.findViewById<View>(R.id.btnConfirmEdit)
         val btnClose = view.findViewById<View>(R.id.btnClose)
 
-        // 2. 현재 이름 입력창에 넣어두기
+        // 현재 이름 입력창에 넣어두기
         etName.setText(currentName)
         // 커서를 글자 맨 뒤로 이동
         etName.setSelection(currentName.length)
 
-        // 3. 닫기(X) 버튼
+        // 닫기(X) 버튼
         btnClose.setOnClickListener {
             bottomSheetDialog.dismiss()
         }
 
-        // 4. 수정하기 버튼
-        btnConfirm.setOnClickListener {
-            val newName = etName.text.toString().trim()
+        // 아무 입력도 없으면 "추가하기" 버튼 색깔 블러처리
+        btnConfirm.isEnabled = false
+        btnConfirm.alpha = 0.4f // 투명도를 낮쳐서 흐릿하게(블러 느낌) 만듦
 
-            if (newName.isNotEmpty()) {
-                // (1) 액티비티 화면의 제목을 변경
-                binding.tvPlaylistName.text = newName
+        // 텍스트 변경 감지 리스너 추가 -> 어떤 입력이라도 들어오면
+        etName.doAfterTextChanged { text ->
+            val input = text.toString().trim()
 
-                // (2) 안내 메시지 및 닫기
-                Toast.makeText(this, "이름이 수정되었습니다.", Toast.LENGTH_SHORT).show()
-                bottomSheetDialog.dismiss()
-            } else {
-                Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            if (input.isNotEmpty()) {
+                // 입력이 있을 때 -> 선명하게 & 클릭 가능
+                btnConfirm.isEnabled = true
+                btnConfirm.alpha = 1.0f // 투명도 원상복구
+                // 배경색을 바꿨었다면 다시 원래 색으로: 
+                // btnConfirm.setBackgroundColor(Color.BLACK) 
+            } else {  // 입력이 없을 때 -> 흐리게 & 클릭 불가
+                btnConfirm.isEnabled = false
+                btnConfirm.alpha = 0.4f
             }
         }
+
+        // 수정하기 버튼 눌렀을 때 이벤트 처리
+        btnConfirm.setOnClickListener {
+            // 위에서 이미 isEnabled로 막아뒀기 때문에, 여기서는 굳이 빈 값 체크를 안 해도 되지만 안전을 위해 유지
+            val newName = etName.text.toString().trim()
+            // 액티비티 화면의 제목을 변경
+            binding.tvPlaylistName.text = newName
+            // 안내 메시지 및 닫기
+            //Toast.makeText(this, "이름이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+            showCustomToast("이름이 수정되었습니다.")
+            bottomSheetDialog.dismiss()
+
+        }
+
         bottomSheetDialog.show()
+    }
+
+
+
+    // --- 커스텀 토스트 사용하기 위한 함수 ---
+    fun showCustomToast(message: String, iconResId: Int? = null) {
+        // 1. 커스텀 레이아웃 불러오기
+        val inflater = LayoutInflater.from(this)
+        val layout = inflater.inflate(R.layout.toast_custom, null)
+
+        // 2. 텍스트 설정
+        val textView = layout.findViewById<TextView>(R.id.tv_toast_message)
+        textView.text = message
+
+        // 4. 토스트 생성 및 설정
+        val toast = Toast(applicationContext)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = layout // 내가 만든 레이아웃을 끼워넣음
+
+        // 위치 조정 (선택사항: 화면 중앙 하단 등)
+        toast.setGravity(Gravity.BOTTOM, 0, 100)
+
+        toast.show()
     }
 
 }

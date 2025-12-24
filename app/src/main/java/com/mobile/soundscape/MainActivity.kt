@@ -1,10 +1,15 @@
 package com.mobile.soundscape
 
+import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.transition.TransitionManager
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -12,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.mobile.soundscape.databinding.ActivityMainBinding
 import com.mobile.soundscape.home.HomeFragment
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

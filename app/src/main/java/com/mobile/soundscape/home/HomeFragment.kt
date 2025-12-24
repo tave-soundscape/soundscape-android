@@ -43,6 +43,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 홈화면 구슬 움직이는 animation
+        com.bumptech.glide.Glide.with(this)
+            .load(R.drawable.orb_animation)
+            .into(binding.centerButton)
+
         // 1. 더미 데이터 준비 (Has Value 상태 테스트용)
         val dummySongs = listOf(
             Song("Peaceful Piano Track", "spotify:track:12345"),
