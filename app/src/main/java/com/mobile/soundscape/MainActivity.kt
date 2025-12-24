@@ -138,5 +138,4 @@ class MainActivity : AppCompatActivity() {
             .setPopUpTo(navController.graph.startDestinationId, false) // 백스택 관리 (홈으로 돌아가면 중간 기록 삭제)
             .build()
     }
-
 }
