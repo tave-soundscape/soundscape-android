@@ -29,6 +29,11 @@ class RecResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 구슬 움직이는 animation
+        com.bumptech.glide.Glide.with(this)
+            .load(R.drawable.orb_animation)
+            .into(binding.centerButton)
+
         // 5초 딜레이 시작 (Coroutines 사용)
         // (viewLifecycleOwner를 사용해야 화면이 꺼지면 타이머도 안전하게 종료됨)
         viewLifecycleOwner.lifecycleScope.launch {

@@ -79,8 +79,7 @@ dependencies {
     implementation(files("../spotify-app-remote-release-0.8.0.aar"))
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(files("../spotify-auth-release-2.1.0.aar"))
-
-
+    implementation("jp.wasabeef:glide-transformations:4.3.0")
 
 
 }

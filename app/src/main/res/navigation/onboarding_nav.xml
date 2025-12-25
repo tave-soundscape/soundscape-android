@@ -31,4 +31,20 @@
             android:id="@+id/action_genreFragment_to_artistFragment"
             app:destination="@id/artistFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.mobile.soundscape.playlist.GalleryFragment"
+        android:label="GalleryFragment" >
+        <action
+            android:id="@+id/action_galleryFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.mobile.soundscape.result.ListFragment"
+        android:label="ListFragment" >
+        <action
+            android:id="@+id/action_listFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+    </fragment>
 </navigation>

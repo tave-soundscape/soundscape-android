@@ -14,7 +14,7 @@
         android:layout_marginTop="20dp"
         android:text="플레이리스트를 다시 생성할까요?"
         android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,7 +26,7 @@
         android:layout_marginTop="20dp"
         android:text="현재 생성된 플레이리스트는 다시 복구할 수 없어요."
         android:textColor="#AAAAAA"
-        android:textSize="14sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSheetTitle" />
 

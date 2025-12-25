@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_full_background"
     tools:context=".home.HomeFragment">
-
+    
 
     <ImageView
         android:id="@+id/central_ellipse"
-        android:layout_width="1400dp"
-        android:layout_height="1500dp"
-        android:layout_marginBottom="116dp"
+        android:layout_width="900dp"
+        android:layout_height="900dp"
+        android:layout_marginBottom="524dp"
         android:alpha="0.8"
+        android:scaleType="centerCrop"
+        android:scaleX="1.4"
+        android:scaleY="1.4"
+
         android:src="@drawable/ellipse"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,15 +26,29 @@
     <TextView
         android:id="@+id/some_id"
         android:layout_width="380dp"
-        android:layout_height="72dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="128dp"
         android:gravity="center"
-        android:text="오늘은\n 어떤 몰입을 시작해볼까요?"
+        android:text="오늘도 몰입을 시작해볼까요?"
         android:textColor="@color/white"
         android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_subtitle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:text="시작하기 버튼으로 플레이리스트\n추천을 받을 수 있어요"
+        android:textColor="#B0AFB2"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/some_id" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,11 +56,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="33dp"
+        android:layout_marginTop="140dp"
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/some_id">
+        app:layout_constraintTop_toBottomOf="@+id/tv_subtitle2">
+
 
         <ImageButton
             android:id="@+id/center_button"
@@ -51,16 +69,19 @@
             android:layout_height="142dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/desc_make_dip_button"
-            android:src="@drawable/icon_rec_result"
-
             android:padding="0dp"
+
             android:scaleType="fitCenter"
+            android:src="@drawable/orb_animation"
 
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.494"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.4" />
 
+        <!--- 사전배포 때 뺀 홈화면 이전기록 버튼
         <ImageButton
             android:id="@+id/btn1"
             android:layout_width="wrap_content"
@@ -136,8 +157,26 @@
             app:layout_constraintCircle="@id/center_button"
             app:layout_constraintCircleAngle="300"
             app:layout_constraintCircleRadius="150dp" />
-
-
+        -->
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/startButton"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="56dp"
+        android:layout_marginHorizontal="20dp"
+        android:backgroundTint="@color/primary500"
+        android:text="시작하기"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/bg_input_rounded"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_group_wrapper"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
