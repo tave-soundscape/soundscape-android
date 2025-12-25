@@ -20,12 +20,11 @@
     <TextView
         android:id="@+id/tv_toast_message"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="30dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:text="토스트 메시지입니다"
         android:textColor="@color/white"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textSize="15sp"/>
 
 </LinearLayout>
