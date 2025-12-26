@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentSetnameBinding
+import androidx.fragment.app.activityViewModels
 
 
 class SetnameFragment : Fragment() {
@@ -21,6 +22,8 @@ class SetnameFragment : Fragment() {
     // 접근용 껍데기 (Null 체크 없이 편하게 쓰려고 만듦)
     // get()을 쓸 때마다 _binding을 가져옴. !!로 null이 아님을 보장.
     private val binding get() = _binding!!
+    // 뷰모델 장바구니 가져오기
+    private val viewModel: OnboardingViewModel by activityViewModels()
 
 
     // 색상 정의 (파랑: 성공 / 빨강: 실패 / 회색: 기본)
@@ -123,10 +126,17 @@ class SetnameFragment : Fragment() {
             }
         })
 
-        // '다음으로' 버튼 누르면 아티스트 고르는 프래그먼트로 이동
+        // '다음으로' 버튼 누르면 -> 뷰모델에 닉네임 담고
+        // ->아티스트 고르는 프래그먼트로 이동
         binding.nextButton.setOnClickListener {
+            val finalNickname = binding.getNameInput.text.toString().trim()
+            viewModel.nickname = finalNickname // 뷰모델에 닉네임 저장
+
+            // UI 정리
             val background = binding.getNameInput.background as? android.graphics.drawable.GradientDrawable
             background?.setStroke(0, 0)
+
+            // 다음 아티스트 프래그먼트로 이동
             val nextFragment = ArtistFragment()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.onboarding_fragment_container, nextFragment)

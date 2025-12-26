@@ -1,4 +1,4 @@
-package com.mobile.soundscape.api
+package com.mobile.soundscape.api.apis
 
 import com.mobile.soundscape.api.dto.ArtistSearchResponse
 import com.mobile.soundscape.data.model.music.DeviceResponse

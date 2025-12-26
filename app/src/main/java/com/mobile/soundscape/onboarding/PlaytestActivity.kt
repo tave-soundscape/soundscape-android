@@ -5,7 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.mobile.soundscape.api.SpotifyClient
+import com.mobile.soundscape.api.client.SpotifyClient
 import com.mobile.soundscape.data.local.TokenManager
 import com.mobile.soundscape.data.model.music.DeviceResponse
 import com.mobile.soundscape.data.model.music.PlayRequest

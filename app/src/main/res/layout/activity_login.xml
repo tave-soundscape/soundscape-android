@@ -47,37 +47,16 @@
         app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
     <Button
-        android:id="@+id/moveMainButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="(임시)정현언니가 만든 메인"
-        android:backgroundTint="#D575D3"
-        app:layout_constraintBottom_toBottomOf="@id/spotifyLoginBtn"
-        android:layout_marginBottom="240dp"/>
-
-
-    <Button
-        android:id="@+id/movePlaylistResultButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="(임시)추천 결과 페이지로 가기"
-        android:backgroundTint="#75C8D5"
-        app:layout_constraintBottom_toBottomOf="@id/spotifyLoginBtn"
-        android:layout_marginBottom="170dp"/>
-
-    <Button
         android:id="@+id/moveOnboardingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="(임시)온보딩 페이지로 가기"
+        android:text="(임시)온보딩 페이지로 넘어감"
+        android:backgroundTint="#D575D3"
         app:layout_constraintBottom_toBottomOf="@id/spotifyLoginBtn"
         android:layout_marginBottom="100dp"/>
+
 
     <Button
         android:id="@+id/spotifyLoginBtn"

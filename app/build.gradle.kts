@@ -80,6 +80,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(files("../spotify-auth-release-2.1.0.aar"))
     implementation("jp.wasabeef:glide-transformations:4.3.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2") // 이거랑 버전 비슷하면 됨
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
 
 
 }

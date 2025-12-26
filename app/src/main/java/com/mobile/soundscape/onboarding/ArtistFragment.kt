@@ -19,20 +19,21 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mobile.soundscape.R
-import com.mobile.soundscape.api.SpotifyClient
+import com.mobile.soundscape.api.client.SpotifyClient
 import com.mobile.soundscape.api.dto.ArtistSearchResponse
-import com.mobile.soundscape.api.dto.ArtistSelectionRequest
-import com.mobile.soundscape.api.dto.SelectedArtistDto
 import com.mobile.soundscape.data.local.TokenManager
 import com.mobile.soundscape.databinding.FragmentArtistBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.fragment.app.activityViewModels
 
 class ArtistFragment : Fragment() {
 
     private var _binding: FragmentArtistBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: OnboardingViewModel by activityViewModels()
 
     private lateinit var adapter: ArtistAdapter
     private val selectedArtistsMap = mutableMapOf<String, ArtistData>()
@@ -230,30 +231,30 @@ class ArtistFragment : Fragment() {
         // [다음 버튼]
         binding.nextButton.setOnClickListener {
             if (selectedArtistsMap.size == 3) {
+                // 뷰모델에 데이터 저장
+                val artistNames = selectedArtistsMap.keys.toMutableList()
+                viewModel.selectedArtists = artistNames
+
                 moveToGenreFragment()
             }
         }
 
-        // [초기화 버튼]
+        // 초기화 버튼
         binding.initButton.setOnClickListener {
             selectedArtistsMap.clear()
             adapter.clearSelection()
             updateButtonVisibility()
-
             // 초기화 시 맨 위로 스크롤
             binding.rvArtistList.scrollToPosition(0)
         }
 
-        // [X 버튼 - 검색어 삭제]
-        // xml ID가 search_clear 라고 가정했습니다. 본인 ID로 바꾸세요.
+        // X 버튼 - 검색어 삭제
         binding.searchClear.setOnClickListener {
-            // 1. 텍스트 지우기 (TextWatcher가 감지해서 테두리도 없어짐)
+            // 텍스트 지우기 (TextWatcher가 감지해서 테두리도 없어짐)
             binding.searchArtist.text.clear()
-
-            // 2. 핸들러 콜백 제거 (이전 검색 요청 취소) -> 유령 텍스트 방지
+            // 핸들러 콜백 제거 (이전 검색 요청 취소) -> 유령 텍스트 방지
             searchRunnable?.let { searchHandler.removeCallbacks(it) }
-
-            // 3. 즉시 초기 데이터 로드
+            // 즉시 초기 데이터 로드
             fetchInitialArtists()
         }
     }
@@ -324,41 +325,6 @@ class ArtistFragment : Fragment() {
             .commit()
     }
 
-    /**
-     * [백엔드 통신 함수]
-     * 현재 상태: 백엔드 연결 코드는 주석 처리됨.
-     */
-    private fun sendArtistsToBackend(selectedArtists: List<ArtistData>) {
-
-        // DTO 변환 확인용 로그
-        val dtoList = selectedArtists.map { artist ->
-            SelectedArtistDto(name = artist.name, imageUrl = artist.imageResId)
-        }
-        val requestBody = ArtistSelectionRequest(artists = dtoList)
-        Log.d("TEST_MODE", "백엔드 요청 데이터: $requestBody")
-
-        // [테스트 모드] 바로 이동
-        Toast.makeText(context, "[테스트] 백엔드 전송 없이 이동", Toast.LENGTH_SHORT).show()
-        moveToGenreFragment()
-
-        /* // ▼▼▼ [백엔드 연결 시 주석 해제] ▼▼▼
-        // 위쪽 테스트 모드 코드 지우고 아래 주석 해제
-
-        RetrofitClient.api.sendSelectedArtists(requestBody).enqueue(object : Callback<BaseResponse<String>> {
-            override fun onResponse(call: Call<BaseResponse<String>>, response: Response<BaseResponse<String>>) {
-                if (response.isSuccessful) {
-                    moveToGenreFragment()
-                } else {
-                    Toast.makeText(context, "서버 오류", Toast.LENGTH_SHORT).show()
-                }
-            }
-            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
-                Toast.makeText(context, "네트워크 오류", Toast.LENGTH_SHORT).show()
-            }
-        })
-        // ▲▲▲ [백엔드 연결 시 주석 해제 끝] ▲▲▲
-        */
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

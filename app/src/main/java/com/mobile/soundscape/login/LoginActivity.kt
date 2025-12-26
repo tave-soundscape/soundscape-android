@@ -10,7 +10,7 @@ import com.mobile.soundscape.R
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LoginRequest
 import com.mobile.soundscape.api.dto.LoginResponse
-import com.mobile.soundscape.api.RetrofitClient
+import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.data.local.TokenManager
 import com.mobile.soundscape.databinding.ActivityLoginBinding
 import com.mobile.soundscape.onboarding.PlaytestActivity
@@ -46,31 +46,14 @@ class LoginActivity : AppCompatActivity() {
             startSpotifyLogin()
         }
 
-        binding.movePlaylistResultButton.setOnClickListener {
-            val intent = Intent(this@LoginActivity, PlaylistResultActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.moveMainButton.setOnClickListener {
-            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-            startActivity(intent)
-        }
-
         binding.moveOnboardingButton.setOnClickListener {
-            // 1. 이동할 프래그먼트 객체 생성
             val fragment = SetnameFragment()
-
-            // 2. 프래그먼트 매니저를 통해 트랜잭션 시작
             val transaction = supportFragmentManager.beginTransaction()
-
-            // 3. R.id.fragment_container 영역을 fragment로 교체(replace)
-            // R.id.fragment_container는 메인 액티비티의 컨테이너 ID여야 함
             transaction.replace(R.id.onboarding_fragment_container, fragment)
-
-            // (선택사항) 뒤로가기 버튼 누르면 다시 돌아오게 하려면 아래 줄 추가
             transaction.addToBackStack(null)
             transaction.commit()
         }
+
     }
 
     /* --- 스포티파이 로그인 실행 --- */
@@ -130,7 +113,7 @@ class LoginActivity : AppCompatActivity() {
             val loginRequest = LoginRequest(code = code)
 
             // Retrofit 호출
-            RetrofitClient.api.loginSpotify(loginRequest)
+            RetrofitClient.loginApi.loginSpotify(loginRequest)
                 .enqueue(object : Callback<BaseResponse<LoginResponse>> {
 
                     override fun onResponse(
@@ -176,9 +159,16 @@ class LoginActivity : AppCompatActivity() {
 
                                      */
 
-                                    // 일단 임시로 음악 재생되는지 확인하는 페이지로 넘어가기
-                                    val intent = Intent(this@LoginActivity, PlaytestActivity::class.java)
-                                    startActivity(intent)
+                                    /* --- 온보딩 프래그먼트로 이동 ---*/
+                                    // 이동할 프래그먼트 객체 생성
+                                    val fragment = SetnameFragment()
+                                    // 프래그먼트 매니저를 통해 트랜잭션 시작
+                                    val transaction = supportFragmentManager.beginTransaction()
+                                    // R.id.fragment_container 영역을 fragment로 교체(replace)
+                                    transaction.replace(R.id.onboarding_fragment_container, fragment)
+                                    // (선택사항) 뒤로가기 버튼 누르면 다시 돌아오게 하려면 아래 줄 추가
+                                    transaction.addToBackStack(null)
+                                    transaction.commit()
 
                                 } else {
                                     Log.e(TAG, "data는 있지만 accessToken이 비어있음")

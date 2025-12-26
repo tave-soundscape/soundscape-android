@@ -12,13 +12,15 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mobile.soundscape.api.dto.BaseResponse
-import com.mobile.soundscape.api.RetrofitClient
-import com.mobile.soundscape.api.dto.GenreSelectionRequest
-import com.mobile.soundscape.api.dto.SelectedGenreDto
+import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.databinding.FragmentGenreBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.MainActivity
+import com.mobile.soundscape.api.dto.OnboardingSelectedRequest
+import kotlin.jvm.java
 
 class GenreFragment : Fragment() {
 
@@ -26,12 +28,12 @@ class GenreFragment : Fragment() {
     private var _binding: FragmentGenreBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: OnboardingViewModel by activityViewModels()
+
     // 어댑터
     private lateinit var adapter: ArtistAdapter
-
     // 선택된 장르를 기억하는 전역 저장소 (이름을 키로 사용)
     private val selectedGenresMap = mutableMapOf<String, ArtistData>()
-
     // 전체 장르 원본 데이터 (GenreDataFix에서 불러옴)
     private lateinit var originalGenreList: List<ArtistData>
 
@@ -135,20 +137,20 @@ class GenreFragment : Fragment() {
     }
 
     private fun setupButtons() {
-        // [다음 버튼]
+        // 온보딩 완료 버튼 
         binding.nextButton.setOnClickListener {
-            // Map에 저장된 3개의 장르 가져오기
-            val selectedGenres = selectedGenresMap.values.toList()
+            if(selectedGenresMap.size == 3) {
+                // 선택한 장르 뷰모델에 저장
+                val genreList = selectedGenresMap.keys.toMutableList()
+                viewModel.selectedGenres = genreList
 
-            if (selectedGenres.size == 3) {
-                // 백엔드 전송
-                sendGenresToBackend(selectedGenres)
+                completeOnboardingAndSend()
             } else {
                 Toast.makeText(context, "3가지를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // [초기화 버튼]
+        // 초기화 버튼
         binding.initButton.setOnClickListener {
             selectedGenresMap.clear() // 저장소 초기화
             adapter.clearSelection()  // UI 초기화
@@ -157,52 +159,54 @@ class GenreFragment : Fragment() {
     }
 
     /**
-     * [백엔드 통신 함수]
+     * [최종 백엔드 전송 함수]
      * 현재 상태: 백엔드 연결 코드는 주석 처리됨.
      */
-    private fun sendGenresToBackend(selectedGenres: List<ArtistData>) {
+    private fun completeOnboardingAndSend() {
+        // 뷰모델에서 모든 데이터 꺼내서 Dto 만들기
+        val finalRequest = OnboardingSelectedRequest(
+            nickname = viewModel.nickname,
+            artists = viewModel.selectedArtists,
+            genres = viewModel.selectedGenres
+        )
 
-        // 1. [데이터 변환]
-        val dtoList = selectedGenres.map { genre ->
-            SelectedGenreDto(name = genre.name)
-        }
-        val requestBody = GenreSelectionRequest(genres = dtoList)
+        // ============================================================
+        // [테스트 모드] : 백엔드 없이 바로 다음 화면으로 이동
+        // ============================================================
+        Toast.makeText(context, "[테스트] 온보딩 완료! 서버 전송은 건너뜁니다.", Toast.LENGTH_SHORT).show()
+        moveToNextActivity()
 
-        Log.d("TEST_MODE", "장르 요청 데이터: $requestBody")
-
-        // 2. [임시 코드] 테스트 모드 (바로 이동)
-        // ---------------------------------------------------------------
-        Toast.makeText(context, "[테스트] 장르 선택 완료 -> 이동", Toast.LENGTH_SHORT).show()
-        moveToPlaytestActivity()
-        // ---------------------------------------------------------------
-
-
+        // ============================================================
+        // [실제 배포 모드] : 백엔드 완성되면 위 코드 지우고 아래 주석 해제하세요!
+        // ============================================================
         /* // ▼▼▼ [백엔드 연결 시 주석 해제] ▼▼▼
-
-        RetrofitClient.api.sendSelectedGenres(requestBody).enqueue(object : Callback<BaseResponse<String>> {
+        RetrofitClient.onboardingApi.sendOnboarding(finalRequest).enqueue(object : Callback<BaseResponse<String>> {
             override fun onResponse(
                 call: Call<BaseResponse<String>>,
                 response: Response<BaseResponse<String>>
             ) {
                 if (response.isSuccessful) {
-                    moveToPlaytestActivity()
+                    // 200 OK 통신 성공
+                    // 필요하다면 response.body()?.message 등을 확인해도 됨
+                    Log.d("API_SUCCESS", "온보딩 정보 전송 성공")
+                    moveToNextActivity()
                 } else {
-                    Log.e("API_ERROR", "코드: ${response.code()}")
-                    Toast.makeText(context, "서버 오류 발생", Toast.LENGTH_SHORT).show()
+                    // 통신은 됐는데 서버가 에러를 뱉음 (400, 500 등)
+                    Log.e("API_ERROR", "전송 실패 코드: ${response.code()}")
+                    Toast.makeText(context, "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 }
             }
-
-            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
-                Log.e("API_FAILURE", "에러: ${t.message}")
-                Toast.makeText(context, "네트워크 연결 확인 필요", Toast.LENGTH_SHORT).show()
-            }
         })
-        // ▲▲▲ [백엔드 연결 시 주석 해제 끝] ▲▲▲
-        */
+
+        // ▲▲▲ [백엔드 연결 시 주석 해제 끝] ▲▲▲ */
+
     }
 
-    private fun moveToPlaytestActivity() {
-        val intent = Intent(requireContext(), PlaytestActivity::class.java)
+    private fun moveToNextActivity() {
+        // 온보딩 끝나면 메인 액티비티(또는 PlaytestActivity)로 이동 및 스택 초기화
+        // flag를 써서 뒤로가기 눌러도 온보딩으로 못 돌아오게 막음
+        val intent = Intent(requireContext(), MainActivity::class.java) // 또는 MainActivity
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
 

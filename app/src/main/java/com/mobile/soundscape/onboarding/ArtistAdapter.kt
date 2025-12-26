@@ -43,7 +43,7 @@ class ArtistAdapter(
 
             // 선택 상태에 따른 테두리 처리
             if (artist.isSelected) {
-                // cardView.alpha = 0.6f // 선택된 느낌을 주기 위해 살짝 투명하게
+                cardView.alpha = 0.5f // 선택된 느낌을 주기 위해 살짝 투명하게
                 cardView.strokeWidth = 12
                 cardView.strokeColor = ContextCompat.getColor(itemView.context, R.color.white) // 선택 색상
                 checkIcon.visibility = View.VISIBLE

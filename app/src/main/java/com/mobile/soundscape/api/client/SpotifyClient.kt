@@ -1,5 +1,6 @@
-package com.mobile.soundscape.api
+package com.mobile.soundscape.api.client
 
+import com.mobile.soundscape.api.apis.SpotifyWebApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

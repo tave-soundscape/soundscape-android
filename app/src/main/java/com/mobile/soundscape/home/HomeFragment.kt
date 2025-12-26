@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentHomeBinding
 
+/*
 data class Song(
     val songName: String,   // 곡 이름
     val spotifyUrl: String  // Spotify 재생 URL
@@ -24,7 +25,7 @@ data class Playlist(
     val iconName: String,       // 사용할 Drawable 파일 이름
     val songs: List<Song>,      // 플레이리스트 안의 곡들 (List<Song>)
     val spotifyUri: String      // Spotify 재생 요청 주소 (플레이리스트 전체 URI)
-)
+) */
 
 class HomeFragment : Fragment() {
     // TODO: Rename and change types of parameters
