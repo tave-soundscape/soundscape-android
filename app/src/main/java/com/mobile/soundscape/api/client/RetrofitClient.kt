@@ -2,6 +2,7 @@ package com.mobile.soundscape.api.client
 
 import com.mobile.soundscape.api.apis.LoginApi
 import com.mobile.soundscape.api.apis.OnboardingApi
+import com.mobile.soundscape.api.apis.RecommendationApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.jvm.java
@@ -29,5 +30,10 @@ object RetrofitClient {
     // 온보딩 api (서버로 보내는 request만 있음)
     val onboardingApi: OnboardingApi by lazy {
         retrofit.create(OnboardingApi::class.java)
+    }
+
+    // (노래추천) 장소, 데시벨, 목표 api
+    val recommendationApi: RecommendationApi by lazy {
+        retrofit.create(RecommendationApi::class.java)
     }
 }
