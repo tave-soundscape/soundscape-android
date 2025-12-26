@@ -47,6 +47,17 @@
         app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
     <Button
+        android:id="@+id/moveListEvaluation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="310dp"
+        android:backgroundTint="#2196F3"
+        android:text="(임시)리스트 평가페이지로 가기"
+        app:layout_constraintBottom_toBottomOf="@+id/spotifyLoginBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/moveMainButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -109,7 +120,9 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0" >
+
+    </FrameLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

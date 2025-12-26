@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="평가하기"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/layout_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="45dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tv_title">
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="#3E3D41" android:layout_marginEnd="5dp"/>
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="#3E3D41" android:layout_marginEnd="5dp"/>
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="@color/white" android:layout_marginEnd="5dp"/>
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="#3E3D41" android:layout_marginEnd="5dp"/>
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="#3E3D41" android:layout_marginEnd="5dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:text="어떤 음악이 더 좋았을까요?"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_progress" />
+
+    <TextView
+        android:id="@+id/tv_caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="개선되면 좋을 방향의 버튼을 선택해주세요."
+        android:textColor="#B0AFB2"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_question" />
+
+    <LinearLayout
+        android:id="@+id/layout_step3_1_cards"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="144dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/tv_caption"
+        tools:layout_editor_absoluteX="40dp">
+
+        <LinearLayout
+            android:id="@+id/btn_calm"
+            style="@style/EvaluationCardStyle"
+            android:layout_marginEnd="10dp">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_calm" />
+
+            <TextView
+                style="@style/EvaluationCardTextStyle"
+                android:text="차분하게" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_energetic"
+            style="@style/EvaluationCardStyle"
+            android:layout_marginStart="10dp">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_energetic" />
+
+            <TextView
+                style="@style/EvaluationCardTextStyle"
+                android:text="에너제틱하게" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_step3_2_cards"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="60dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tv_caption">
+
+        <LinearLayout
+            android:id="@+id/btn_lyrics_on"
+            style="@style/EvaluationCardStyle"
+            android:layout_marginEnd="10dp">
+            <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_lyrics_on" />
+            <TextView style="@style/EvaluationCardTextStyle" android:text="가사 있는 곡" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_lyrics_off"
+            style="@style/EvaluationCardStyle"
+            android:layout_marginStart="10dp">
+            <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_lyrics_off" />
+            <TextView style="@style/EvaluationCardTextStyle" android:text="가사 없는 곡" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
