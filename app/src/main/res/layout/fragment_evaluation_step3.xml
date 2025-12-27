@@ -106,7 +106,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="144dp"
         android:orientation="horizontal"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/tv_caption">
@@ -114,18 +114,33 @@
         <LinearLayout
             android:id="@+id/btn_lyrics_on"
             style="@style/EvaluationCardStyle"
-            android:layout_marginEnd="10dp">
-            <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_lyrics_on" />
-            <TextView style="@style/EvaluationCardTextStyle" android:text="가사 있는 곡" />
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"> <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_lyrics_on" />
+
+            <TextView
+                style="@style/EvaluationCardTextStyle"
+                android:text="가사 있는 곡" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/btn_lyrics_off"
             style="@style/EvaluationCardStyle"
-            android:layout_marginStart="10dp">
-            <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_lyrics_off" />
-            <TextView style="@style/EvaluationCardTextStyle" android:text="가사 없는 곡" />
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"> <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_lyrics_off" />
+
+            <TextView
+                style="@style/EvaluationCardTextStyle"
+                android:text="가사 없는 곡" />
         </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

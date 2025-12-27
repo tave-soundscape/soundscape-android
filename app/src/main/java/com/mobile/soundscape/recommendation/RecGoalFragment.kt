@@ -128,22 +128,25 @@ class RecGoalFragment : Fragment() {
             // 새로운 버튼 선택
             val selectedColorInt = ContextCompat.getColor(requireContext(), selectedData.iconColorId)
 
-            // 3. 그라데이션
-            val outerEdgeColor = Color.argb(0xFF, Color.red(selectedColorInt), Color.green(selectedColorInt), Color.blue(selectedColorInt))
-            val newAlpha = 0x40
-
+            // 3. 고대비 그라데이션 적용 (PlaceFragment와 동일한 로직)
+            // 중앙(Transparent) -> 중간(0x60 농도) -> 외곽(Full Color)
             val colors = intArrayOf(
                 Color.TRANSPARENT,
-                Color.argb(newAlpha, Color.red(selectedColorInt), Color.green(selectedColorInt), Color.blue(selectedColorInt)),
-                outerEdgeColor
+                Color.argb(0x60, Color.red(selectedColorInt), Color.green(selectedColorInt), Color.blue(selectedColorInt)),
+                selectedColorInt
             )
 
-            val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TL_BR, colors)
-            gradientDrawable.shape = GradientDrawable.OVAL
-            gradientDrawable.gradientType = GradientDrawable.RADIAL_GRADIENT
+            val gradientDrawable = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                colors
+            ).apply {
+                shape = GradientDrawable.OVAL
+                gradientType = GradientDrawable.RADIAL_GRADIENT
 
-            val buttonSizePx = newlySelectedWrapper.width.toFloat().takeIf { it > 0 } ?: 100f * resources.displayMetrics.density
-            gradientDrawable.gradientRadius = buttonSizePx * 1.0f // 반지름 조정 로직 유지
+                // 반지름을 버튼 크기와 1:1로 맞춰 대비감을 살림
+                val buttonSizePx = newlySelectedWrapper.width.toFloat().takeIf { it > 0 } ?: 100f * resources.displayMetrics.density
+                gradientRadius = buttonSizePx * 1.0f
+            }
 
             newlySelectedWrapper.background = gradientDrawable
 

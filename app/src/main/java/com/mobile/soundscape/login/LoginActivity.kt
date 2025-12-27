@@ -42,6 +42,10 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.moveHome.setOnClickListener {
+            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            startActivity(intent)
+        }
 
         binding.btnHeom.setOnClickListener {
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
@@ -52,6 +56,7 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this@LoginActivity, EvaluationActivity::class.java)
             startActivity(intent)
         }
+
         binding.spotifyLoginBtn.setOnClickListener {
             startSpotifyLogin()
         }

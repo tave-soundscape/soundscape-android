@@ -16,8 +16,9 @@
         android:scaleType="centerCrop"
         android:scaleX="1.3"
         android:scaleY="1.4"
-
         android:src="@drawable/ellipse"
+        android:alpha="0.7"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
