@@ -11,7 +11,7 @@ object RetrofitClient {
 
     // 일단 로컬 호스트로 설정
     // 로컬에서 실행하기 전에 adb reverse tcp:8080 tcp:8080 터미널에 써서 실행해야함
-    private const val BASE_URL = "http://localhost:8080/"
+    private const val BASE_URL = "https://localhost:8080/"
 
     // Retrofit 객체 생성
     private val retrofit: Retrofit by lazy {

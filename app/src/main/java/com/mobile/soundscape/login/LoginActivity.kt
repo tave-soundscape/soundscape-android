@@ -43,6 +43,11 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
+        binding.btnHeom.setOnClickListener {
+            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnEvaluation.setOnClickListener {
             val intent = Intent(this@LoginActivity, EvaluationActivity::class.java)
             startActivity(intent)
@@ -136,7 +141,7 @@ class LoginActivity : AppCompatActivity() {
                             if (loginData != null) {
                                 Log.d(TAG, "서버 응답 성공(내용물): $loginData")
 
-                                // ⭐ 토큰이 비어있지 않으면 찐성공 ‼️‼️‼️‼️‼️‼️‼️
+                                // ⭐ 토큰이 비어있지 않으면 찐성공
                                 if (loginData.accessToken.isNotEmpty()) {
 
                                     // TODO: 토큰 저장 로직
@@ -148,21 +153,6 @@ class LoginActivity : AppCompatActivity() {
                                         accessToken = loginData.accessToken,
                                         refreshToken = loginData.refreshToken
                                     )
-/*
-                                    Log.d(TAG, "토큰 저장 완료! : ${loginData.accessToken}")
-                                    Toast.makeText(applicationContext, "로그인 성공! 토큰 획득", Toast.LENGTH_LONG).show()
-
-                                    // 화면 이동
-                                    val fragment = SetnameFragment()
-                                    val transaction = supportFragmentManager.beginTransaction()
-                                    transaction.replace(
-                                        R.id.onboarding_fragment_container,
-                                        fragment
-                                    )
-                                    transaction.addToBackStack(null)
-                                    transaction.commit()
-
-                                     */
 
                                     /* --- 온보딩 프래그먼트로 이동 ---*/
                                     // 이동할 프래그먼트 객체 생성

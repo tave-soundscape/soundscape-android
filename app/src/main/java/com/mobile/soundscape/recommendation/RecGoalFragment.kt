@@ -4,19 +4,28 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.mobile.soundscape.R
+import com.mobile.soundscape.api.dto.RecommendationRequest
 import com.mobile.soundscape.databinding.FragmentRecGoalBinding
-import com.mobile.soundscape.databinding.WidgetProgressBarBinding
+import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.RecommendationResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import androidx.fragment.app.activityViewModels
 
 data class Goal(
     val id: String,
@@ -26,10 +35,12 @@ data class Goal(
     val wrapperId: Int      // R.id.center_button, R.id.btn1_wrapper 등 ConstraintLayout ID
 )
 class RecGoalFragment : Fragment() {
+    private val TAG = "API_CHECK"
 
     private var _binding: FragmentRecGoalBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: RecommendationViewModel by activityViewModels()
     private lateinit var allButtons: List<View>
     private var selectedButtonWrapper: View? = null // 현재 선택된 버튼 저장
 
@@ -84,7 +95,8 @@ class RecGoalFragment : Fragment() {
         //  다음 버튼 클릭 (최종 결과 화면으로 이동)
         binding.nextBtn.setOnClickListener {
             // RecResultFragment로 이동하는 Navigation Action 실행
-            findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)
+            // findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)
+            sendRecommendationRequest()
         }
 
         // TODO: loadRadialButtons 호출 (목표 데이터로 Custom View 채우기)
@@ -177,6 +189,69 @@ class RecGoalFragment : Fragment() {
             R.id.btn7_wrapper -> R.id.btn7_icon // btn7 추가
             else -> throw IllegalArgumentException("Unknown wrapper ID: $wrapperId")
         }
+    }
+
+    /**
+     * [백엔드 전송 함수]
+     * 1. 뷰모델의 (장소, 데시벨, 목표)를 모두 꺼내서 서버로 전송
+     * 2. 서버에서 받은 결과(RecommendationResponse)를 뷰모델에 저장
+     * 3. 다음 화면으로 이동
+     */
+    private fun sendRecommendationRequest() {
+        // 1. 뷰모델에서 장소, 데시벨, 목표 꺼내서 서버로 전송
+        val request = RecommendationRequest(
+            place = viewModel.place,
+            decibel = viewModel.decibel,
+            goal = viewModel.goal
+        )
+        viewModel.checkData()
+
+        /*
+        // =========================================================
+        // [테스트 모드] : 백엔드 없이 바로 결과 화면으로 이동
+        // =========================================================
+        Toast.makeText(context, "[테스트] 추천 요청 전송 완료 -> 이동", Toast.LENGTH_SHORT).show()
+        moveToResultFragment() // (원래는 데이터를 받아서 넘겨줘야 함)
+
+        // =========================================================
+        // [실제 배포 모드] : 백엔드 연결 시 아래 주석 해제
+        // =========================================================
+        */
+
+        // 2. 서버에서 응답 받아서 뷰모델에 저장
+        RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
+            override fun onResponse(
+                call: Call<BaseResponse<RecommendationResponse>>,
+                response: Response<BaseResponse<RecommendationResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val resultData = response.body()?.result
+
+                    if (resultData != null) {
+                        Log.d(TAG, "추천 성공: ${resultData.playlistName}")
+
+                        // 서버에서 받은 플레이리스트를 뷰모델에 저장
+                        viewModel.currentPlaylist.value = resultData
+                        // 다음 화면으로 넘어가기
+                        moveToResultFragment()
+                    } else {
+                        Toast.makeText(context, "추천 결과가 비어있습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Log.e(TAG, "코드: ${response.code()}")
+                    Toast.makeText(context, "서버 에러 발생", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<RecommendationResponse>>, t: Throwable) {
+                Log.e(TAG, "통신 실패: ${t.message}")
+                Toast.makeText(context, "네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun moveToResultFragment() {
+        findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)
     }
 
     private fun getTextViewIdForWrapper(wrapperId: Int): Int {

@@ -5,5 +5,5 @@ data class MusicModel(
     val title: String,          // 음악 제목
     val artist: String,         // 가수 이름
     val albumCover: String,     // 앨범 커버
-    val streamUrl: String = ""  // 트랙 주소 (기본값은 빈 문자열)
+    val trackUri: String  // 트랙 주소 (기본값은 빈 문자열)
 )

@@ -15,6 +15,7 @@ import com.mobile.soundscape.databinding.FragmentRecPlaceBinding
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 
 data class Place(
     val id: String,
@@ -28,6 +29,7 @@ class RecPlaceFragment : Fragment() {
 
     private var _binding: FragmentRecPlaceBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: RecommendationViewModel by activityViewModels()
 
     private lateinit var allButtons: List<View>
     private var selectedButtonWrapper: View? = null
@@ -124,6 +126,10 @@ class RecPlaceFragment : Fragment() {
             iconView?.imageTintList = ColorStateList.valueOf(selectedColorInt)
 
             selectedButtonWrapper = newlySelectedWrapper
+
+            // 뷰모델에 데이터 저장
+            viewModel.place = selectedData.name
+            viewModel.checkData()
         }
 
         // 3. 주변 버튼 뿌옇게

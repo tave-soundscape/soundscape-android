@@ -1,7 +1,7 @@
 package com.mobile.soundscape.result
 
 import android.os.Bundle
-import android.util.Log.v
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +19,18 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentListBinding
 import com.mobile.soundscape.playlist.GalleryFragment
+import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.RecommendationResponse
+import com.mobile.soundscape.api.dto.UpdatePlaylistNameRequest
+import com.mobile.soundscape.recommendation.RecommendationViewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import android.content.Intent
+import android.net.Uri
+
 
 class ListFragment : Fragment() {
 
@@ -26,6 +38,9 @@ class ListFragment : Fragment() {
     // 프래그먼트에서 바인딩은 get()을 통해 접근하는 것이 안전합니다.
     private val binding get() = _binding!!
 
+    private val viewModel: RecommendationViewModel by activityViewModels()
+
+    private val TAG = "API_CHECK"
     private lateinit var adapter: PlaylistResultAdapter
 
     override fun onCreateView(
@@ -40,7 +55,7 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+/*
         // 1. 더미 데이터 생성
         val dummyList = MusicDataProvider.createDummyData()
 
@@ -49,33 +64,84 @@ class ListFragment : Fragment() {
 
         // 3. 상단 헤더 이미지 설정 (자동으로 dummyList의 앞 4개를 가져옴)
         setupHeaderImages(dummyList)
-
+*/
         setupButtons()
 
+        // 뷰모델에서 데이터 관찰 (RecGoalFragment에서 저장한 데이터 사용)
+        viewModel.currentPlaylist.observe(viewLifecycleOwner) { data ->
+            if(data != null) {
+                updateUIWithRealData(data)
+            }
+        }
+    }
+
+    // --- 받아온 데이터로 화면 채우기 ---
+    private fun updateUIWithRealData(data: RecommendationResponse) {
+
+        // 플레이리스트 기본 정보 설정
+        binding.tvPlaylistName.text = data.playlistName
+
+        // 뷰모델에 있는 데이터로 서브타이틀 구성 (예: "카페 · 집중")
+        binding.tvSubtitle.text = "${viewModel.place} · ${viewModel.goal}"
+
+        // DTO(Song) -> MusicModel(UI용) 변환
+        // imageUrl이 String으로 바뀌어서 처리가 훨씬 쉬워짐!
+        val uiList = data.songs.map { song ->
+            MusicModel(
+                title = song.title,
+                artist = song.artistName,
+                albumCover = song.imageUrl,
+                trackUri = song.uri
+            )
+        }
+
+        setupRecyclerView(uiList)
+        setupHeaderImages(uiList)
+
+        // (참고) 플레이리스트 전체 링크 저장 (필요 시 사용)
+        // val playlistUrl = data.playlistUrl
+    }
+
+    private fun setupButtons() {
+        // 플리 다시 만들기 (바텀시트)
+        binding.regenerateBtn.setOnClickListener {
+            showRegenerateBottomSheet()
+        }
+
+        // 라이브러리 저장 (이름 수정 바텀시트)
+        binding.addLibrary.setOnClickListener {
+            showAddLibraryBottomSheet(binding.tvPlaylistName.text.toString())
+        }
+
+        binding.tvPlaylistName.setOnClickListener {
+            showAddLibraryBottomSheet(binding.tvPlaylistName.text.toString())
+        }
+
+        // 갤러리로 이동
         binding.btnListToGallery.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.playlist_fragment_container, GalleryFragment()) // 프래그먼트 교체
                 .addToBackStack(null) // 뒤로가기 누르면 앱이 꺼지는 대신 다시 리스트로 돌아오게 함
                 .commit()
         }
-    }
 
-    private fun setupButtons() {
-        // 기존 플리 이름
-        val currentName = binding.tvPlaylistName.text.toString()
+        // spotify deep link로 연결
+        binding.btnDeepLinkSpotify.setOnClickListener {
+            val spotifyUrl = viewModel.currentPlaylist.value?.playlistUrl
 
-        // 플리 다시 만들기
-        binding.regenerateBtn.setOnClickListener {
-            showRegenerateBottomSheet()
-        }
-
-        // addLibrary 버튼 누르면 -> 저장하겠다는 바텀시트
-        binding.addLibrary.setOnClickListener {
-            showAddLibraryBottomSheet(currentName)
-        }
-
-        binding.tvPlaylistName.setOnClickListener {
-            showAddLibraryBottomSheet(currentName)
+            if (!spotifyUrl.isNullOrEmpty()) {
+                try {
+                    // 인텐트 생성 (ACTION_VIEW: 보여달라)
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(spotifyUrl))
+                    // 실행 (스포티파이 앱이 있으면 앱으로, 없으면 브라우저로 켜짐)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    // 만약 링크를 열 수 있는 앱(브라우저 등)이 아예 없을 때 죽는 것 방지
+                    Toast.makeText(requireContext(), "링크를 열 수 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(requireContext(), "스포티파이 링크 정보가 없습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -193,8 +259,6 @@ class ListFragment : Fragment() {
                 // 입력이 있을 때 -> 선명하게 & 클릭 가능
                 btnConfirm.isEnabled = true
                 btnConfirm.alpha = 1.0f // 투명도 원상복구
-                // 배경색을 바꿨었다면 다시 원래 색으로:
-                // btnConfirm.setBackgroundColor(Color.BLACK)
             } else {  // 입력이 없을 때 -> 흐리게 & 클릭 불가
                 btnConfirm.isEnabled = false
                 btnConfirm.alpha = 0.4f
@@ -212,9 +276,36 @@ class ListFragment : Fragment() {
             showCustomToast("이름이 수정되었습니다.")
             bottomSheetDialog.dismiss()
 
+            // *** 백엔드로 수정된 플리이름 보내는 함수 ***
+            updatePlaylistNameOnServer(newName)
         }
-
         bottomSheetDialog.show()
+    }
+
+    // --- 백엔드에 이름 수정 요청 보내기 ---
+    private fun updatePlaylistNameOnServer(newName: String) {
+        val requestBody = UpdatePlaylistNameRequest(newPlaylistName = newName)
+
+        // 2. API 호출
+        RetrofitClient.recommendationApi.updatePlaylistName(requestBody).enqueue(object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if (response.isSuccessful) {
+                    // 성공 로그
+                    Log.d("API_UPDATE", "이름 수정 성공: $newName")
+                } else {
+                    // 실패 로그 (하지만 이미 화면은 바꿨으니 조용히 로그만 남김)
+                    Log.e("API_UPDATE", "수정 실패 Code: ${response.code()}")
+                    // 필요하다면 다시 원래 이름으로 되돌리거나 토스트 띄우기
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                Log.e("API_UPDATE", "통신 에러: ${t.message}")
+            }
+        })
     }
 
     // --- 커스텀 토스트 사용하기 위한 함수 ---

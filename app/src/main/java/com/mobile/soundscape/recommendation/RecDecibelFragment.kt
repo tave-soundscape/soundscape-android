@@ -17,6 +17,7 @@ import android.Manifest
 import android.media.MediaRecorder
 import android.util.Log
 import com.mobile.soundscape.databinding.WidgetProgressBarBinding
+import androidx.fragment.app.activityViewModels
 
 
 // 버퍼 크기 계산 (AudioRecord를 초기화하는 데 필요)
@@ -26,6 +27,7 @@ class RecDecibelFragment : Fragment() {
     private var audioRecord: AudioRecord? = null
     private var isRecording = false // 녹음 상태 플래그
     private lateinit var recordingThread: Thread
+    private val viewModel: RecommendationViewModel by activityViewModels()
 
     private var allRecordedValues = mutableListOf<Double>()
     private val bufferSize = AudioRecord.getMinBufferSize(
@@ -201,7 +203,11 @@ class RecDecibelFragment : Fragment() {
         currentDecibelValue = matchResult?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
         // 최종 상태로 UI 업데이트
         updateUI(DecibelState.FINISHED)
-        Log.d("Decibel", "Final Measured dB: $currentDecibelValue")
+
+        // 뷰모델에 저장
+        viewModel.decibel = currentDecibelValue.toFloat()
+        viewModel.checkData()
+
     }
 
     private fun restartRecording() {

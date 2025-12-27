@@ -23,12 +23,31 @@ import com.mobile.soundscape.result.ListFragment
 import com.mobile.soundscape.result.MusicDataProvider
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlin.math.abs
+import com.mobile.soundscape.recommendation.RecommendationViewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.RecommendationResponse
+import com.mobile.soundscape.api.dto.UpdatePlaylistNameRequest
+import com.mobile.soundscape.result.MusicModel
+import kotlin.getValue
 
 class GalleryFragment : Fragment() {
 
     // 1. 바인딩 변수 설정
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
+
+    private val TAG = "API_CHECK"
+
+    private val viewModel: RecommendationViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,26 +61,110 @@ class GalleryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val musicList = MusicDataProvider.createDummyData()
+        // 화면 세팅
+        setupViewPagerSettings()
 
-        // 2. [수정됨] findViewById 대신 binding 사용
-        // (XML ID: vpGallery, ivBlurBackground, tvCurrentTitle, tvCurrentArtist)
-        val viewPager = binding.vpGallery
+        viewModel.currentPlaylist.observe(viewLifecycleOwner) { data ->
+            if(data != null) updateUIWithSharedData(data)
+        }
+
+        // spotify deep link로 연결
+        binding.btnDeepLinkSpotify.setOnClickListener {
+            val spotifyUrl = viewModel.currentPlaylist.value?.playlistUrl
+
+            if (!spotifyUrl.isNullOrEmpty()) {
+                try {
+                    // 인텐트 생성 (ACTION_VIEW: 보여달라)
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(spotifyUrl))
+                    // 실행 (스포티파이 앱이 있으면 앱으로, 없으면 브라우저로 켜짐)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    // 만약 링크를 열 수 있는 앱(브라우저 등)이 아예 없을 때 죽는 것 방지
+                    Toast.makeText(requireContext(), "링크를 열 수 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(requireContext(), "스포티파이 링크 정보가 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // 리스트 모드로 변경 버튼
+        binding.btnGalleryToList.setOnClickListener {
+            if (parentFragmentManager.backStackEntryCount > 0) {
+                parentFragmentManager.popBackStack()
+            } else {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.playlist_fragment_container, ListFragment())
+                    .commit()
+            }
+        }
+        
+        // 라이브러리에 추가 버튼
+        binding.addLibrary.setOnClickListener {
+            val currentName = binding.tvPlaylistTitle.text.toString()
+            showAddLibraryBottomSheet(currentName)
+        }
+    }
+
+    // --- 뷰모델 데이터로 화면 그리기 ---
+    private fun updateUIWithSharedData(data: RecommendationResponse) {
+
+        // 플레이리스트 제목
+        binding.tvPlaylistTitle.text = data.playlistName
+
+        // DTO -> MusicModel 변환
+        val musicList = data.songs.map { song ->
+            MusicModel(
+                title = song.title,
+                artist = song.artistName,
+                albumCover = song.imageUrl,
+                trackUri = song.uri
+            )
+        }
+
+        if (musicList.isEmpty()) return
 
         // 어댑터 연결
         val adapter = GalleryAdapter(musicList)
-        viewPager.adapter = adapter
+        binding.vpGallery.adapter = adapter
 
-        // 시작 위치 계산
+        // 시작 위치 계산 (무한 스크롤 효과)
         val centerPosition = Int.MAX_VALUE / 2
         val startPosition = centerPosition - (centerPosition % musicList.size)
-        viewPager.setCurrentItem(startPosition, false)
+        binding.vpGallery.setCurrentItem(startPosition, false)
 
-        // ViewPager2 설정
+        // 초기 배경 및 텍스트 설정 (첫 곡)
+        updateBackgroundAndText(musicList[0])
+
+        // 페이지 변경 리스너 등록
+        binding.vpGallery.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                val realPosition = position % musicList.size
+                updateBackgroundAndText(musicList[realPosition])
+            }
+        })
+    }
+
+    // 배경 블러 및 하단 텍스트 업데이트 헬퍼 함수
+    private fun updateBackgroundAndText(music: MusicModel) {
+        binding.tvCurrentTitle.text = music.title
+        binding.tvCurrentArtist.text = music.artist
+
+        context?.let { ctx ->
+            Glide.with(ctx)
+                .load(music.albumCover)
+                .apply(RequestOptions.bitmapTransform(BlurTransformation(25, 3)))
+                .into(binding.ivBlurBackground)
+        }
+    }
+
+
+    // ViewPager2 모양 설정 (Transformer 등)
+    private fun setupViewPagerSettings() {
+        val viewPager = binding.vpGallery
         viewPager.offscreenPageLimit = 3
         viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
 
-        // 변환 효과 (Transformer)
         val compositePageTransformer = CompositePageTransformer()
         compositePageTransformer.addTransformer(MarginPageTransformer(20))
         compositePageTransformer.addTransformer { page, position ->
@@ -78,54 +181,6 @@ class GalleryFragment : Fragment() {
             }
         }
         viewPager.setPageTransformer(compositePageTransformer)
-
-        // UI 업데이트 함수
-        fun updateUI(position: Int) {
-            val realPosition = position % musicList.size
-            val currentMusic = musicList[realPosition]
-
-            binding.tvCurrentTitle.text = currentMusic.title
-            binding.tvCurrentArtist.text = currentMusic.artist
-
-            // 배경 블러 처리 (Context 안전하게 사용)
-            context?.let { ctx ->
-                Glide.with(ctx)
-                    .load(currentMusic.albumCover)
-                    .apply(RequestOptions.bitmapTransform(BlurTransformation(25, 3)))
-                    .into(binding.ivBlurBackground)
-            }
-        }
-
-        // 초기 실행
-        viewPager.post {
-            updateUI(startPosition)
-        }
-
-        // 페이지 변경 감지
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                updateUI(position)
-            }
-        })
-
-        // 3. [수정됨] 리스트 모드로 변경 버튼 (binding 사용)
-        binding.btnGalleryToList.setOnClickListener {
-            if (parentFragmentManager.backStackEntryCount > 0) {
-                parentFragmentManager.popBackStack()
-            } else {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.playlist_fragment_container, ListFragment())
-                    .commit()
-            }
-        }
-
-        // 4. [수정됨] 라이브러리 추가 버튼
-        // ★ 중요: XML에 android:id="@+id/btnAddLibrary"를 꼭 추가해야 합니다!
-        binding.addLibrary.setOnClickListener {
-            val currentName = binding.tvPlaylistTitle.text.toString()
-            showAddLibraryBottomSheet(currentName)
-        }
     }
 
     private fun showAddLibraryBottomSheet(currentName: String) {
@@ -162,9 +217,38 @@ class GalleryFragment : Fragment() {
             binding.tvPlaylistTitle.text = newName
             showCustomToast("이름이 수정되었습니다.")
             bottomSheetDialog.dismiss()
-        }
 
+            // 백엔드로 수정된 플리이름 보내는 함수
+            updatePlaylistNameOnServer(newName)
+        }
         bottomSheetDialog.show()
+    }
+
+
+    // --- 백엔드에 이름 수정 요청 보내기 ---
+    private fun updatePlaylistNameOnServer(newName: String) {
+        val requestBody = UpdatePlaylistNameRequest(newPlaylistName = newName)
+
+        // 2. API 호출
+        RetrofitClient.recommendationApi.updatePlaylistName(requestBody).enqueue(object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if (response.isSuccessful) {
+                    // 성공 로그
+                    Log.d("API_UPDATE", "이름 수정 성공: $newName")
+                } else {
+                    // 실패 로그 (하지만 이미 화면은 바꿨으니 조용히 로그만 남김)
+                    Log.e("API_UPDATE", "수정 실패 Code: ${response.code()}")
+                    // 필요하다면 다시 원래 이름으로 되돌리거나 토스트 띄우기
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                Log.e("API_UPDATE", "통신 에러: ${t.message}")
+            }
+        })
     }
 
     fun showCustomToast(message: String) {

@@ -1,6 +1,7 @@
 package com.mobile.soundscape.api.dto
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serial
 
 // 서버로 보낼 때 쓰는 DTO
 data class RecommendationRequest (
@@ -20,41 +21,40 @@ data class RecommendationResponse(
     @SerializedName("playlistName")
     val playlistName: String,
 
-    @SerializedName("placegoal")
-    val placeGoal: String,
+    @SerializedName("playlistUrl")
+    val playlistUrl: String,
 
-    @SerializedName("spotifyDeepLink")
-    val spotifyDeepLink: String,
-
-    @SerializedName("tracks")
-    val tracks: List<MusicDto>
+    @SerializedName("songs")
+    val songs: List<Song>
 )
 
-
-// 곡 정보 MusicDto
-data class MusicDto(
-    @SerializedName("trackUri")
-    val trackUri: String,
-
+// class Song
+data class Song(
     @SerializedName("title")
     val title: String,
 
-    @SerializedName("artist")
-    val artist: String,
+    @SerializedName("artistName")
+    val artistName: String,
 
-    @SerializedName("albumCover")
-    val albumCover: List<AlbumCoverDto> // 앨범 커버도 리스트 형태
+    @SerializedName("albumName")
+    val albumName: String,
+
+    @SerializedName("uri")
+    val uri: String,
+
+    @SerializedName("spotifyUrl")
+    val spotifyUrl: String,
+
+    @SerializedName("imageUrl")
+    val imageUrl: String,
+
+    @SerializedName("duration")
+    val duration: String,
 )
 
 
-// 앨범 커버 상세
-data class AlbumCoverDto(
-    @SerializedName("url")
-    val url: String,
-
-    @SerializedName("width")
-    val width: Int,
-
-    @SerializedName("height")
-    val height: Int
+data class UpdatePlaylistNameRequest(
+    // 만약 특정 플리의 ID가 필요하다면 여기에 val playlistId: Int 도 추가해야 함
+    @SerializedName("playlistName")
+    val newPlaylistName: String
 )
