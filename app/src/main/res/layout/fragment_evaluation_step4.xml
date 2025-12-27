@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="평가하기"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/layout_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="45dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tv_title">
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="#3E3D41" android:layout_marginEnd="5dp"/>
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="#3E3D41" android:layout_marginEnd="5dp"/>
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="#3E3D41" android:layout_marginEnd="5dp"/>
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="@color/white" android:layout_marginEnd="5dp"/>
+        <View android:layout_width="0dp" android:layout_height="2dp" android:layout_weight="1" android:background="#3E3D41" android:layout_marginEnd="5dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:text="다음엔 어떤 음악이 더 좋을까요?"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_progress" />
+
+    <TextView
+        android:id="@+id/tv_caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="구체적으로 써주시면 큰 도움이 됩니다."
+        android:textColor="#B0AFB2"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_question" />
+
+    <EditText
+        android:id="@+id/et_opinion"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/bg_evaluation_selection"
+        android:gravity="top"
+        android:hint="이유를 작성해주세요."
+        android:padding="20dp"
+        android:textColor="@color/white"
+        android:textColorHint="#888888"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/tv_caption" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="56dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/prevButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_input_rounded"
+            android:backgroundTint="#3E3D41"
+            android:text="이전"
+            android:textColor="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/nextButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="@drawable/bg_input_rounded"
+            android:backgroundTint="#4F33FF"
+            android:text="다음으로"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

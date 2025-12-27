@@ -205,7 +205,7 @@ class RecDecibelFragment : Fragment() {
     }
 
     private fun restartRecording() {
-        // 💡 1. UI를 초기 상태로 명시적으로 업데이트 (글자가 다시 보이는 것을 보장)
+        // 1. UI를 초기 상태로 명시적으로 업데이트 (글자가 다시 보이는 것을 보장)
         updateUI(DecibelState.INITIAL)
 
         // 2. 잠시 후 녹음 시작 (optional: 지연 시간을 주어 상태 전환 보장)

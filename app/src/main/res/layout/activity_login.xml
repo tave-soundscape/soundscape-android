@@ -52,11 +52,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="(임시)온보딩 페이지로 넘어감"
-        android:backgroundTint="#D575D3"
+        android:text="(임시)온보딩 페이지로 가기"
         app:layout_constraintBottom_toBottomOf="@id/spotifyLoginBtn"
         android:layout_marginBottom="100dp"/>
-
 
     <Button
         android:id="@+id/spotifyLoginBtn"
