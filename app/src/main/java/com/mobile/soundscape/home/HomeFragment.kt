@@ -57,12 +57,12 @@ class HomeFragment : Fragment() {
         if (needsEvaluation) {
             // 2~3초 뒤에 실행되도록 postDelayed 사용
             view?.postDelayed({
-                // 프래그먼트가 아직 화면에 붙어 있는지(isAdded) 확인하는 것이 안전합니다.
+                // 프래그먼트가 아직 화면에 붙어 있는지(isAdded) 확인하는 것이 안전함
                 if (isAdded) {
                     val dialog = EvaluationPopupDialog()
                     dialog.show(parentFragmentManager, "EvaluationPopup")
                 }
-            }, 3000) // 3000ms = 3초
+            }, 2500) // 2.5초
         }
     }
 }

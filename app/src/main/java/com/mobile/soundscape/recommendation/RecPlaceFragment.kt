@@ -104,7 +104,7 @@ class RecPlaceFragment : Fragment() {
             // RecGoalFragment와 동일한 진한 농도
             val colors = intArrayOf(
                 Color.TRANSPARENT,
-                Color.argb(0x40, Color.red(selectedColorInt), Color.green(selectedColorInt), Color.blue(selectedColorInt)), // 0x10 -> 0x40 변경
+                Color.argb(0x60, Color.red(selectedColorInt), Color.green(selectedColorInt), Color.blue(selectedColorInt)), // 0x10 -> 0x40 변경
                 selectedColorInt
             )
 
