@@ -15,6 +15,7 @@
         android:layout_marginStart="36dp"
         android:layout_marginTop="36dp"
         android:layout_marginEnd="36dp"
+        android:elevation="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.474"
         app:layout_constraintStart_toStartOf="parent"
@@ -379,15 +380,18 @@
         android:id="@+id/tv_description"
         android:layout_width="380dp"
         android:layout_height="20dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
         android:gravity="center_horizontal|top"
         android:lineSpacingExtra="4sp"
-        android:textSize="16sp"
         android:text="공간에 어울리는 음악을 준비할게요."
         android:textColor="@color/description"
+        android:textSize="16sp"
         android:translationY="-1.75sp"
-        app:layout_constraintTop_toBottomOf="@+id/tvCaption"
-        tools:layout_editor_absoluteX="15dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCaption" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ellipse"
@@ -397,6 +401,7 @@
         android:scaleX="1.3"
         android:scaleY="1.4"
         android:src="@drawable/ellipse"
+        android:alpha="0.7"
 
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="524dp"
