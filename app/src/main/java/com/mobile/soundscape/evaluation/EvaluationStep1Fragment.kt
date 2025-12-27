@@ -35,10 +35,10 @@ class EvaluationStep1Fragment : Fragment(R.layout.fragment_evaluation_step1) {
         setupSlider()
 
         // 1. 저장된 점수가 -1(초기상태)이면 0(매우 좋음)을 사용, 아니면 저장된 값 복구
-        val savedIndex = if (viewModel.score == -1) {
+        val savedIndex = if (viewModel.overallRating == -1) {
             0 // 처음 왔을 때는 매우 좋음 위치
         } else {
-            (5 - viewModel.score).coerceIn(0, 4) // 돌아왔을 때는 이전 점수 위치
+            (5 - viewModel.overallRating).coerceIn(0, 4) // 돌아왔을 때는 이전 점수 위치
         }
 
         // 2. UI와 점수 변수 동기화
@@ -51,7 +51,7 @@ class EvaluationStep1Fragment : Fragment(R.layout.fragment_evaluation_step1) {
 
         binding.nextButton.setOnClickListener {
             // 2. [중요] 이동 직전 현재 점수를 한 번 더 ViewModel에 확정 저장
-            viewModel.score = currentScore
+            viewModel.overallRating = currentScore
 
             val targetFragment = if (currentSelectedIndex <= 1) {
                 EvaluationStep3Fragment()
@@ -99,7 +99,7 @@ class EvaluationStep1Fragment : Fragment(R.layout.fragment_evaluation_step1) {
         currentScore = 5 - selectedIndex    // 0이면 5점, 4이면 1점
 
         // ViewModel에 실시간 반영
-        viewModel.score = currentScore
+        viewModel.overallRating = currentScore
 
         // 선택된 단계만 진하게, 나머지는 흐리게 (alpha 조절)
         // stepLayouts: [layoutStep1, layoutStep2, layoutStep3, layoutStep4, layoutStep5]

@@ -17,7 +17,7 @@ interface RecommendationApi {
     ): Call<BaseResponse<RecommendationResponse>>
 
     // 플레이리스트 이름 수정 요청
-    @PATCH("playlists/title")
+    @PATCH("playlists/updatePlaylistName")
     fun updatePlaylistName(
         @Body request: UpdatePlaylistNameRequest
     ): Call<BaseResponse<String>>

@@ -20,6 +20,7 @@ import retrofit2.Response
 import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.api.dto.OnboardingSelectedRequest
+import com.mobile.soundscape.data.GenreDataFix
 import kotlin.jvm.java
 
 class GenreFragment : Fragment() {
@@ -62,6 +63,8 @@ class GenreFragment : Fragment() {
 
         // 4. 검색 기능 설정
         setupSearchListener()
+
+        observeViewModel()
     }
 
     private fun setupRecyclerView() {
@@ -144,7 +147,7 @@ class GenreFragment : Fragment() {
                 val genreList = selectedGenresMap.keys.toMutableList()
                 viewModel.selectedGenres = genreList
 
-                completeOnboardingAndSend()
+                viewModel.submitOnboarding()
             } else {
                 Toast.makeText(context, "3가지를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
@@ -158,48 +161,17 @@ class GenreFragment : Fragment() {
         }
     }
 
-    /**
-     * [최종 백엔드 전송 함수]
-     * 현재 상태: 백엔드 연결 코드는 주석 처리됨.
-     */
-    private fun completeOnboardingAndSend() {
-        // 뷰모델에서 모든 데이터 꺼내서 Dto 만들기
-        val finalRequest = OnboardingSelectedRequest(
-            nickname = viewModel.nickname,
-            artists = viewModel.selectedArtists,
-            genres = viewModel.selectedGenres
-        )
-
-        // ============================================================
-        // [테스트 모드] : 백엔드 없이 바로 다음 화면으로 이동
-        // ============================================================
-        Toast.makeText(context, "[테스트] 온보딩 완료! 서버 전송은 건너뜁니다.", Toast.LENGTH_SHORT).show()
-        moveToNextActivity()
-
-        // ============================================================
-        // [실제 배포 모드] : 백엔드 완성되면 위 코드 지우고 아래 주석 해제하세요!
-        // ============================================================
-        /* // ▼▼▼ [백엔드 연결 시 주석 해제] ▼▼▼
-        RetrofitClient.onboardingApi.sendOnboarding(finalRequest).enqueue(object : Callback<BaseResponse<String>> {
-            override fun onResponse(
-                call: Call<BaseResponse<String>>,
-                response: Response<BaseResponse<String>>
-            ) {
-                if (response.isSuccessful) {
-                    // 200 OK 통신 성공
-                    // 필요하다면 response.body()?.message 등을 확인해도 됨
-                    Log.d("API_SUCCESS", "온보딩 정보 전송 성공")
-                    moveToNextActivity()
-                } else {
-                    // 통신은 됐는데 서버가 에러를 뱉음 (400, 500 등)
-                    Log.e("API_ERROR", "전송 실패 코드: ${response.code()}")
-                    Toast.makeText(context, "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                }
+    private fun observeViewModel() {
+        viewModel.onboardingResult.observe(viewLifecycleOwner) { isSuccess ->
+            if (isSuccess) {
+                // 성공 신호 받음 -> 화면 이동
+                Toast.makeText(context, "환영합니다! ${viewModel.nickname}님", Toast.LENGTH_SHORT).show()
+                moveToNextActivity()
+            } else {
+                // 실패 신호 받음 -> 토스트 띄우기
+                Toast.makeText(context, "서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
             }
-        })
-
-        // ▲▲▲ [백엔드 연결 시 주석 해제 끝] ▲▲▲ */
-
+        }
     }
 
     private fun moveToNextActivity() {

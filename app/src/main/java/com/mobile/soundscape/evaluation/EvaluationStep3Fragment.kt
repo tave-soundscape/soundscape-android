@@ -24,12 +24,12 @@ class EvaluationStep3Fragment : Fragment(R.layout.fragment_evaluation_step3) {
     //step3_1 차분 vs 에너제틱
     private fun setupStep31Listeners() {
         binding.btnCalm.setOnClickListener {
-            viewModel.atmosphere = "calm" // 분위기 저장
+            viewModel.preferredMood = "calm" // 분위기 저장
             showStep32()
         }
 
         binding.btnEnergetic.setOnClickListener {
-            viewModel.atmosphere = "energetic" // 분위기 저장
+            viewModel.preferredMood = "energetic" // 분위기 저장
             showStep32()
         }
     }

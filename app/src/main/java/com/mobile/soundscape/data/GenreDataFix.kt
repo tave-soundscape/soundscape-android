@@ -1,4 +1,6 @@
-package com.mobile.soundscape.onboarding
+package com.mobile.soundscape.data
+
+import com.mobile.soundscape.onboarding.ArtistData
 
 object GenreDataFix {
     fun getGenreList(): MutableList<ArtistData> {

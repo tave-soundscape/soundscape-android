@@ -29,7 +29,7 @@ class EvaluationStep5Fragment : Fragment(R.layout.fragment_evaluation_step5) {
     }
 
     private fun saveFinalDataAndFinish(willReuse: Boolean) {
-        viewModel.reuseIntention = willReuse
+        viewModel.willReuse = willReuse
         // ViewModel의 제출 함수 호출 (로그 출력 및 서버 전송 준비)
         viewModel.submitEvaluation()
 

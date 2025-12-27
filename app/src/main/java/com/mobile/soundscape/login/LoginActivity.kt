@@ -14,7 +14,6 @@ import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.data.local.TokenManager
 import com.mobile.soundscape.databinding.ActivityLoginBinding
 import com.mobile.soundscape.evaluation.EvaluationActivity
-import com.mobile.soundscape.onboarding.PlaytestActivity
 import com.mobile.soundscape.onboarding.SetnameFragment
 import com.mobile.soundscape.result.PlaylistResultActivity
 import com.spotify.sdk.android.auth.AuthorizationClient
@@ -43,11 +42,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.moveHome.setOnClickListener {
-            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.btnHeom.setOnClickListener {
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
             startActivity(intent)
         }
@@ -121,82 +115,71 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Retrofit을 사용하여 백엔드 서버로 엑세스 토큰 보내는 코드
      */
-    private fun sendCodeToBackend(code: String) {
-        Toast.makeText(this, "서버와 통신 중...", Toast.LENGTH_SHORT).show()
+    /* 3. 백엔드로 Auth Code 전송 및 토큰 발급 */
+    private fun sendCodeToBackend(authCode: String) {
+        // 로딩 UI가 있다면 여기서 showLoading()
 
-        try {
-            val loginRequest = LoginRequest(code = code)
+        RetrofitClient.loginApi.loginSpotify(LoginRequest(code = authCode))
+            .enqueue(object : Callback<BaseResponse<LoginResponse>> {
 
-            // Retrofit 호출
-            RetrofitClient.loginApi.loginSpotify(loginRequest)
-                .enqueue(object : Callback<BaseResponse<LoginResponse>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<LoginResponse>>,
+                    response: Response<BaseResponse<LoginResponse>>
+                ) {
+                    if (response.isSuccessful) {
+                        val loginResponse = response.body()?.data
 
-                    override fun onResponse(
-                        call: Call<BaseResponse<LoginResponse>>,
-                        response: Response<BaseResponse<LoginResponse>>
-                    ) {
-                        if (response.isSuccessful) {
-                            // 1. 포장지(BaseResponse) 받기
-                            val baseResponse = response.body()
+                        if (loginResponse != null && loginResponse.accessToken.isNotEmpty()) {
+                            // 토큰 저장 (시간 포함)
+                            TokenManager.saveToken(
+                                context = applicationContext,
+                                accessToken = loginResponse.accessToken,
+                                refreshToken = loginResponse.refreshToken
+                            )
 
-                            // 2. result 확인 안 함! 바로 내용물(data) 꺼내기
-                            val loginData = baseResponse?.data
-
-                            // 3. 내용물이 진짜 있는지 확인
-                            if (loginData != null) {
-                                Log.d(TAG, "서버 응답 성공(내용물): $loginData")
-
-                                // ⭐ 토큰이 비어있지 않으면 찐성공
-                                if (loginData.accessToken.isNotEmpty()) {
-
-                                    // TODO: 토큰 저장 로직
-                                    // TODO: 토큰 매니저 만들어서 앱 전역에서 엑세스 토큰을 사용할 수 있도록함
-                                    // ★★★ [여기!] TokenManager를 사용해 토큰 영구 저장 ★★★
-                                    // context 자리에는 'this' 또는 'applicationContext'를 넣으면 됩니다.
-                                    TokenManager.saveToken(
-                                        context = applicationContext,
-                                        accessToken = loginData.accessToken,
-                                        refreshToken = loginData.refreshToken
-                                    )
-
-                                    /* --- 온보딩 프래그먼트로 이동 ---*/
-                                    // 이동할 프래그먼트 객체 생성
-                                    val fragment = SetnameFragment()
-                                    // 프래그먼트 매니저를 통해 트랜잭션 시작
-                                    val transaction = supportFragmentManager.beginTransaction()
-                                    // R.id.fragment_container 영역을 fragment로 교체(replace)
-                                    transaction.replace(R.id.onboarding_fragment_container, fragment)
-                                    // (선택사항) 뒤로가기 버튼 누르면 다시 돌아오게 하려면 아래 줄 추가
-                                    transaction.addToBackStack(null)
-                                    transaction.commit()
-
-                                } else {
-                                    Log.e(TAG, "data는 있지만 accessToken이 비어있음")
-                                }
-                            } else {
-                                // HTTP 200이지만 data가 null인 경우 (백엔드 로직 실패)
-                                // ex) 백엔드에서 에러 메시지만 보내고 data는 null로 보냈을 때, 가입 불가 등
-                                val msg = baseResponse?.message ?: "서버 데이터 없음"
-                                Log.e(TAG, "요청 실패 (Data is null): $msg")
-                                Toast.makeText(applicationContext, "실패: $msg", Toast.LENGTH_SHORT).show()
-                            }
+                            // 2. 온보딩 여부에 따라 화면 이동
+                            handleLoginSuccess(loginResponse.isOnboarded)
 
                         } else {
-                            // HTTP 통신 오류 (400, 500 등)
-                            Log.e(TAG, "서버 에러 코드: ${response.code()} / 메시지: ${response.errorBody()?.string()}")
-                            Toast.makeText(applicationContext, "서버 통신 오류: ${response.code()}", Toast.LENGTH_SHORT).show()
+                            showToast("서버 응답 오류: 데이터가 없습니다.")
                         }
+                    } else {
+                        Log.e(TAG, "서버 에러: ${response.code()}")
+                        showToast("로그인 서버 통신 실패")
                     }
+                }
 
-                    override fun onFailure(call: Call<BaseResponse<LoginResponse>>, t: Throwable) {
-                        Log.e(TAG, "통신 완전 실패 (onFailure): ${t.message}")
-                        t.printStackTrace()
-                        Toast.makeText(applicationContext, "네트워크 연결 실패", Toast.LENGTH_LONG).show()
-                    }
-                })
-        } catch (e: Exception) {
-            Log.e(TAG, "Retrofit 실행 전 에러: ${e.message}")
-            e.printStackTrace()
+                override fun onFailure(call: Call<BaseResponse<LoginResponse>>, t: Throwable) {
+                    Log.e(TAG, "네트워크 오류: ${t.message}")
+                    showToast("네트워크 연결을 확인해주세요.")
+                }
+            })
+    }
+
+    /* 로그인 성공 후 분기 처리 */
+    private fun handleLoginSuccess(isOnboarded: Boolean) {
+        if (isOnboarded) {
+            // [CASE A] 기존 회원 (온보딩 완료) -> 메인 액티비티로 이동
+            val intent = Intent(this, MainActivity::class.java)
+
+            // 뒤로가기 눌렀을 때 로그인 화면 다시 안 나오게 플래그 설정
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+            finish() // 로그인 액티비티 종료
+
+        } else {
+            // [CASE B] 신규 회원 (온보딩 미완료) -> 현재 화면에 온보딩 프래그먼트 띄우기
+            // 2. 프래그먼트 교체
+            val fragment = SetnameFragment()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.onboarding_fragment_container, fragment)
+                .commit()
         }
+    }
+
+    // 간단한 토스트 메시지 헬퍼
+    private fun showToast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }

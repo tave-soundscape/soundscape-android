@@ -1,32 +1,59 @@
 package com.mobile.soundscape.evaluation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.EvaluationRequest
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EvaluationViewModel : ViewModel() {
 
-    // 각 단계별 데이터를 담을 변수들
-    var score: Int = -1                  // Step 1: 점수 (1~5)  -1은 아직 평가 전
-    var reasons: Set<String> = setOf()  // Step 2: 불만족 이유들
-    var atmosphere: String = ""         // Step 3-1: 선호 분위기
-    var lyricsPreference: String = ""   // Step 3-2: 가사 유무 선호
-    var opinion: String = ""            // Step 4: 주관식 의견
-    var reuseIntention: Boolean = false // Step 5: 이용 의향
+    // 데이터 저장 변수들
+    var spotifyUserId: String = ""
+    var overallRating: Int = -1
+    var dislikeReason: List<String> = emptyList()
+    var preferredMood: String = ""
+    var lyricsPreference: String = ""
+    var userOpinion: String = ""
+    var willReuse: Boolean = false
 
     /**
-     * 최종 수집된 데이터를 서버로 전송하거나 로그로 출력하는 함수
+     * 최종 수집된 데이터를 서버로 전송
      */
     fun submitEvaluation() {
-        // 모든 데이터가 모였을 때 여기서 API 호출을 진행
-        val finalData = mapOf(
-            "score" to score,
-            "reasons" to reasons,
-            "atmosphere" to atmosphere,
-            "lyrics" to lyricsPreference,
-            "opinion" to opinion,
-            "reuse" to reuseIntention
+        // DTO 생성
+        val request = EvaluationRequest(
+            spotifyUserId = spotifyUserId,
+            overallRating = overallRating,
+            dislikeReason = dislikeReason,
+            preferredMood = preferredMood,
+            lyricsPreference = lyricsPreference,
+            userOpinion = userOpinion,
+            willReuse = willReuse
         )
 
-        println("최종 제출 데이터: $finalData")
-        // Retrofit 등을 사용하여 서버 전송 로직 추가
+        Log.d("EVALUATION", "전송할 데이터: $request")
+
+        // API 호출
+        RetrofitClient.evaluationApi.sendEvaluation(request).enqueue(object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if (response.isSuccessful) {
+                    Log.d("EVALUATION", "설문 제출 성공")
+                    // 필요하다면 여기서 LiveData를 업데이트하여 화면을 닫거나 이동
+                } else {
+                    Log.e("EVALUATION", "제출 실패 코드: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                Log.e("EVALUATION", "통신 오류: ${t.message}")
+            }
+        })
     }
 }

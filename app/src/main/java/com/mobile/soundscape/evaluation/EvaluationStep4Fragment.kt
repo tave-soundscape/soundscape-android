@@ -35,7 +35,7 @@ class EvaluationStep4Fragment : Fragment(R.layout.fragment_evaluation_step4) {
 
         binding.nextButton.setOnClickListener {
             val userOpinion = binding.etOpinion.text.toString()
-            viewModel.opinion = userOpinion
+            viewModel.userOpinion = userOpinion
 
             navigateToStep5()
         }

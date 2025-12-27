@@ -53,7 +53,6 @@ class GalleryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // ★★★ [수정됨] 바인딩 초기화 (이게 빠져서 죽었던 겁니다!)
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -213,7 +212,6 @@ class GalleryFragment : Fragment() {
 
         btnConfirm.setOnClickListener {
             val newName = etName.text.toString().trim()
-            // [수정됨] binding 사용
             binding.tvPlaylistTitle.text = newName
             showCustomToast("이름이 수정되었습니다.")
             bottomSheetDialog.dismiss()

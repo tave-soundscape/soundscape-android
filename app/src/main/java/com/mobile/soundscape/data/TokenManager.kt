@@ -1,4 +1,4 @@
-package com.mobile.soundscape.data.local
+package com.mobile.soundscape.data
 
 import android.content.Context
 import android.content.SharedPreferences

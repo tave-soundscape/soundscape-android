@@ -94,8 +94,11 @@ class RecGoalFragment : Fragment() {
 
         //  다음 버튼 클릭 (최종 결과 화면으로 이동)
         binding.nextBtn.setOnClickListener {
-            // RecResultFragment로 이동하는 Navigation Action 실행
-            // findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)
+            val selectedData = allGoalData.find { it.wrapperId == selectedButtonWrapper?.id }
+            if (selectedData != null) {
+                viewModel.goal = selectedData.name
+            }
+
             sendRecommendationRequest()
         }
 
@@ -209,7 +212,7 @@ class RecGoalFragment : Fragment() {
         )
         viewModel.checkData()
 
-        /*
+
         // =========================================================
         // [테스트 모드] : 백엔드 없이 바로 결과 화면으로 이동
         // =========================================================
@@ -219,7 +222,7 @@ class RecGoalFragment : Fragment() {
         // =========================================================
         // [실제 배포 모드] : 백엔드 연결 시 아래 주석 해제
         // =========================================================
-        */
+        /*
 
         // 2. 서버에서 응답 받아서 뷰모델에 저장
         RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
@@ -231,8 +234,6 @@ class RecGoalFragment : Fragment() {
                     val resultData = response.body()?.result
 
                     if (resultData != null) {
-                        Log.d(TAG, "추천 성공: ${resultData.playlistName}")
-
                         // 서버에서 받은 플레이리스트를 뷰모델에 저장
                         viewModel.currentPlaylist.value = resultData
                         // 다음 화면으로 넘어가기
@@ -251,6 +252,8 @@ class RecGoalFragment : Fragment() {
                 Toast.makeText(context, "네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show()
             }
         })
+
+         */
     }
 
     private fun moveToResultFragment() {

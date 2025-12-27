@@ -19,7 +19,7 @@ class EvaluationStep2Fragment : Fragment(R.layout.fragment_evaluation_step2) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentEvaluationStep2Binding.bind(view)
-
+        
         setupReasonButtons()
         setupNavigationButtons()
     }
@@ -73,7 +73,7 @@ class EvaluationStep2Fragment : Fragment(R.layout.fragment_evaluation_step2) {
         binding.nextButton.setOnClickListener {
             // TODO: ViewModel에 selectedReasons 저장 (서버 전송용)
 
-            viewModel.reasons = selectedReasons
+            viewModel.dislikeReason = selectedReasons.toList()
 
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, EvaluationStep3Fragment()) // 다음 프래그먼트 이름 확인 필요
