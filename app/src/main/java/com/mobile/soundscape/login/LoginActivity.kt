@@ -13,6 +13,7 @@ import com.mobile.soundscape.api.dto.LoginResponse
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.data.local.TokenManager
 import com.mobile.soundscape.databinding.ActivityLoginBinding
+import com.mobile.soundscape.evaluation.EvaluationActivity
 import com.mobile.soundscape.onboarding.PlaytestActivity
 import com.mobile.soundscape.onboarding.SetnameFragment
 import com.mobile.soundscape.result.PlaylistResultActivity
@@ -42,6 +43,10 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
+        binding.btnEvaluation.setOnClickListener {
+            val intent = Intent(this@LoginActivity, EvaluationActivity::class.java)
+            startActivity(intent)
+        }
         binding.spotifyLoginBtn.setOnClickListener {
             startSpotifyLogin()
         }
