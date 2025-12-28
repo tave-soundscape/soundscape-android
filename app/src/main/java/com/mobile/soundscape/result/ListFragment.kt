@@ -1,8 +1,12 @@
 package com.mobile.soundscape.result
 
+import android.R.attr.visible
+import android.R.id.message
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +34,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
+import android.view.animation.AlphaAnimation
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.mobile.soundscape.MainActivity
 
 
 class ListFragment : Fragment() {
@@ -40,7 +47,7 @@ class ListFragment : Fragment() {
 
     private val viewModel: RecommendationViewModel by activityViewModels()
 
-    private val TAG = "API_CHECK"
+    private val TAG = "PlayTest"
     private lateinit var adapter: PlaylistResultAdapter
 
     override fun onCreateView(
@@ -104,9 +111,9 @@ class ListFragment : Fragment() {
 
     private fun setupButtons() {
         // 플리 다시 만들기 (바텀시트)
-        binding.regenerateBtn.setOnClickListener {
-            showRegenerateBottomSheet()
-        }
+//        binding.regenerateBtn.setOnClickListener {
+//            showRegenerateBottomSheet()
+//        }
 
         // 라이브러리 저장 (이름 수정 바텀시트)
         binding.addLibrary.setOnClickListener {
@@ -272,12 +279,28 @@ class ListFragment : Fragment() {
             // 액티비티 화면의 제목을 변경
             binding.tvPlaylistName.text = newName
             // 안내 메시지 및 닫기
-            //Toast.makeText(this, "이름이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+            val layout = layoutInflater.inflate(R.layout.toast_custom, null)
+            val iconView = layout.findViewById<ImageView>(R.id.iv_toast_icon)
+            iconView?.visibility = View.VISIBLE // 아이콘이 있으면 GONE 처리
+
             showCustomToast("이름이 수정되었습니다.")
             bottomSheetDialog.dismiss()
 
+            binding.addLibrary.visibility = View.GONE
+            binding.btnMoveToLibrary.visibility = View.VISIBLE
+
             // *** 백엔드로 수정된 플리이름 보내는 함수 ***
             updatePlaylistNameOnServer(newName)
+        }
+
+        binding.btnMoveToLibrary.setOnClickListener {
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            // 메인 액티비티를 다시 띄우면서 기존 스택 정리
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            // 메인에서 라이브러리 탭을 열도록 신호 전달
+            intent.putExtra("NAVIGATE_TO", "LIBRARY")
+            startActivity(intent)
+            requireActivity().finish()
         }
         bottomSheetDialog.show()
     }

@@ -203,8 +203,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:paddingBottom="56dp">
-
+        android:paddingBottom="50dp">
+<!-- 사전배포에서는 빼기
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/regenerateBtn"
             android:layout_width="70dp"
@@ -216,14 +216,13 @@
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
-
+-->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/addLibrary"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
 
             android:background="@drawable/bg_input_rounded"
             app:backgroundTint="@color/black"
@@ -235,7 +234,27 @@
             app:iconPadding="15dp"
             app:iconSize="14dp"
 
-            app:layout_constraintStart_toEndOf="@id/regenerateBtn"
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMoveToLibrary"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:visibility="gone"
+            android:background="@drawable/bg_input_rounded"
+            app:backgroundTint="@color/black"
+            android:text="라이브러리로 가기"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:iconGravity="textEnd"
+            app:iconPadding="15dp"
+            app:iconSize="14dp"
+
+            app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -255,7 +274,6 @@
             android:layout_marginTop="52dp"
             android:layout_marginLeft="19dp"
             />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

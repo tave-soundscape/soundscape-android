@@ -1,6 +1,7 @@
 package com.mobile.soundscape
 
 import android.app.Activity
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        handleNavigationIntent(intent)
+
         // 2. NavController 가져오기
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -41,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             val showNavDestinations = setOf(
                 R.id.homeFragment,
                 R.id.exploreFragment,
-                // R.id.libraryFragment, // (나중에 추가될 프래그먼트)
+                R.id.libraryFragment, // (나중에 추가될 프래그먼트)
                 // R.id.mypageFragment   // (나중에 추가될 프래그먼트)
             )
 
@@ -54,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 val selectedLayoutId = when (destination.id) {
                     R.id.homeFragment -> R.id.layout_nav_home
                     // R.id.exploreFragment -> R.id.layout_nav_explore
-                    // R.id.libraryFragment -> R.id.layout_nav_library
+                    R.id.libraryFragment -> R.id.layout_nav_library
                     // R.id.mypageFragment -> R.id.layout_nav_mypage
                     else -> R.id.layout_nav_home
                 }
@@ -67,6 +70,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // [추가] 이미 켜진 앱으로 다시 들어올 때 신호 처리
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent) // 새로운 인텐트로 교체
+        handleNavigationIntent(intent) // 처리 함수 호출
+    }
+
+    private fun handleNavigationIntent(intent: Intent?) {
+        if (intent?.getStringExtra("NAVIGATE_TO") == "LIBRARY") {
+            // NavController 가져오기
+            val navHostFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            val navController = navHostFragment.navController
+
+            navController.navigate(R.id.libraryFragment, null, getNavOptions())
+        }
+    }
+
     private fun setupBottomNav(navController: androidx.navigation.NavController) {
         binding.bottomNavBar.layoutNavHome.setOnClickListener {
             navController.navigate(R.id.homeFragment, null, getNavOptions())
@@ -76,9 +97,10 @@ class MainActivity : AppCompatActivity() {
 //            navController.navigate(R.id.exploreFragment, null, getNavOptions())
 //        }
         //나머지 라이브러리, 마이페이지는 아직 구현 X
+        binding.bottomNavBar.layoutNavLibrary.setOnClickListener {
+            navController.navigate(R.id.libraryFragment, null, getNavOptions())
+        }
     }
-
-    // MainActivity.kt 내부의 함수입니다.
 
     private fun updateBottomNavUI(selectedLayoutId: Int) {
         // 애니메이션 시작

@@ -11,13 +11,13 @@ import retrofit2.http.POST
 
 interface RecommendationApi {
     // 추천받은 거(목표, 데시벨) 보내면 -> playlist로 응답 받음
-    @POST("recommendations")
+    @POST("api/v1/playlists")
     fun sendRecommendations(
         @Body request: RecommendationRequest
     ): Call<BaseResponse<RecommendationResponse>>
 
     // 플레이리스트 이름 수정 요청
-    @PATCH("playlists/updatePlaylistName")
+    @PATCH("api/mypage/name")
     fun updatePlaylistName(
         @Body request: UpdatePlaylistNameRequest
     ): Call<BaseResponse<String>>

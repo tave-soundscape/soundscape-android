@@ -35,7 +35,7 @@ data class Goal(
     val wrapperId: Int      // R.id.center_button, R.id.btn1_wrapper 등 ConstraintLayout ID
 )
 class RecGoalFragment : Fragment() {
-    private val TAG = "API_CHECK"
+    private val TAG = "PlayTest"
 
     private var _binding: FragmentRecGoalBinding? = null
     private val binding get() = _binding!!
@@ -212,26 +212,18 @@ class RecGoalFragment : Fragment() {
         )
         viewModel.checkData()
 
-
-        // =========================================================
-        // [테스트 모드] : 백엔드 없이 바로 결과 화면으로 이동
-        // =========================================================
-        Toast.makeText(context, "[테스트] 추천 요청 전송 완료 -> 이동", Toast.LENGTH_SHORT).show()
-        moveToResultFragment() // (원래는 데이터를 받아서 넘겨줘야 함)
-
         // =========================================================
         // [실제 배포 모드] : 백엔드 연결 시 아래 주석 해제
         // =========================================================
-        /*
 
-        // 2. 서버에서 응답 받아서 뷰모델에 저장
+        // 서버에서 응답 받아서 뷰모델에 저장
         RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
             override fun onResponse(
                 call: Call<BaseResponse<RecommendationResponse>>,
                 response: Response<BaseResponse<RecommendationResponse>>
             ) {
                 if (response.isSuccessful) {
-                    val resultData = response.body()?.result
+                    val resultData = response.body()?.data
 
                     if (resultData != null) {
                         // 서버에서 받은 플레이리스트를 뷰모델에 저장
@@ -252,8 +244,6 @@ class RecGoalFragment : Fragment() {
                 Toast.makeText(context, "네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show()
             }
         })
-
-         */
     }
 
     private fun moveToResultFragment() {

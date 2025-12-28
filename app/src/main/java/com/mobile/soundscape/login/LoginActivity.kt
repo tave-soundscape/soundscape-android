@@ -3,15 +3,20 @@ package com.mobile.soundscape.login
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LoginRequest
 import com.mobile.soundscape.api.dto.LoginResponse
 import com.mobile.soundscape.api.client.RetrofitClient
-import com.mobile.soundscape.data.local.TokenManager
+import com.mobile.soundscape.data.TokenManager
 import com.mobile.soundscape.databinding.ActivityLoginBinding
 import com.mobile.soundscape.evaluation.EvaluationActivity
 import com.mobile.soundscape.onboarding.SetnameFragment
@@ -30,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
 
     companion object {
-        private const val CLIENT_ID = "11f5dcb42f4c4ae2a5f84ea6081abea5"  // 일단 내 아이디로
+        private const val CLIENT_ID = "2caa74d47f2b40449441b09fbaec95ed"  // 희구님
         private const val REDIRECT_URI = "com.mobile.soundscape://callback"
         private const val REQUEST_CODE = 1337  // 임시 코드
         private const val TAG = "PlayTest"
@@ -117,8 +122,6 @@ class LoginActivity : AppCompatActivity() {
      */
     /* 3. 백엔드로 Auth Code 전송 및 토큰 발급 */
     private fun sendCodeToBackend(authCode: String) {
-        // 로딩 UI가 있다면 여기서 showLoading()
-
         RetrofitClient.loginApi.loginSpotify(LoginRequest(code = authCode))
             .enqueue(object : Callback<BaseResponse<LoginResponse>> {
 
@@ -126,34 +129,64 @@ class LoginActivity : AppCompatActivity() {
                     call: Call<BaseResponse<LoginResponse>>,
                     response: Response<BaseResponse<LoginResponse>>
                 ) {
+                    // 1. HTTP 통신 자체는 성공했는지 (200 OK)
                     if (response.isSuccessful) {
-                        val loginResponse = response.body()?.data
+                        val body = response.body()
 
-                        if (loginResponse != null && loginResponse.accessToken.isNotEmpty()) {
-                            // 토큰 저장 (시간 포함)
-                            TokenManager.saveToken(
-                                context = applicationContext,
-                                accessToken = loginResponse.accessToken,
-                                refreshToken = loginResponse.refreshToken
-                            )
+                        // 2. 비즈니스 로직도 성공했는지 (result == "SUCCESS")
+                        // 백엔드가 result 필드를 주기로 했으므로 이걸 믿어야 합니다.
+                        if (body != null && body.result == "SUCCESS") {
+                            val loginResponse = body.data
 
-                            // 2. 온보딩 여부에 따라 화면 이동
-                            handleLoginSuccess(loginResponse.isOnboarded)
-
+                            if (loginResponse != null) {
+                                // ★ 진짜 로그인 성공!
+                                TokenManager.saveToken(
+                                    context = applicationContext,
+                                    accessToken = loginResponse.accessToken,
+                                    refreshToken = loginResponse.refreshToken
+                                )
+                                handleLoginSuccess(loginResponse.isOnboarded)
+                            }
                         } else {
-                            showToast("서버 응답 오류: 데이터가 없습니다.")
+                            // 3. 통신은 됐지만 실패한 경우 (지금 상황)
+                            // 서버가 보낸 에러 메시지를 띄워줍니다.
+                            val errorMsg = body?.message ?: "알 수 없는 오류"
+                            Log.e(TAG, "서버 실패: ${body?.errorCode}")
+                            showCustomToast("로그인 실패: $errorMsg")
                         }
                     } else {
-                        Log.e(TAG, "서버 에러: ${response.code()}")
-                        showToast("로그인 서버 통신 실패")
+                        // 404, 500 등의 에러
+                        Log.e(TAG, "HTTP 에러: ${response.code()}")
+                        showCustomToast("서버 통신 오류")
                     }
                 }
 
                 override fun onFailure(call: Call<BaseResponse<LoginResponse>>, t: Throwable) {
                     Log.e(TAG, "네트워크 오류: ${t.message}")
-                    showToast("네트워크 연결을 확인해주세요.")
+                    showCustomToast("네트워크 연결을 확인해주세요.")
                 }
             })
+    }
+
+
+    fun showCustomToast(message: String, iconResId: Int? = null) {
+        val layout = layoutInflater.inflate(R.layout.toast_custom, null)
+
+        val textView = layout.findViewById<TextView>(R.id.tv_toast_message)
+        textView.text = message
+
+        val iconView = layout.findViewById<ImageView>(R.id.iv_toast_icon)
+        iconView?.visibility = View.GONE // 아이콘이 있으면 GONE 처리
+
+
+        val toast = Toast(this)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = layout // 내가 만든 레이아웃을 끼워넣음
+
+        // 위치 조정 (선택사항: 화면 중앙 하단 등)
+        toast.setGravity(Gravity.BOTTOM, 0, 300)
+
+        toast.show()
     }
 
     /* 로그인 성공 후 분기 처리 */

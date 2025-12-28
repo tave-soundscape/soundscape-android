@@ -32,14 +32,6 @@ class OnboardingViewModel : ViewModel() {
             genres = selectedGenres
         )
 
-        // ============================================================
-        // [테스트 모드] : 백엔드 없이 성공 처리 (주석 해제/처리 필요)
-        // ============================================================
-        _onboardingResult.value = true // 바로 성공 신호 보냄
-        return
-        // ============================================================
-
-/* 실제 서버 통신 주석해제 해서 사용
         // [실제 서버 통신]
         RetrofitClient.onboardingApi.sendOnboarding(request).enqueue(object : Callback<BaseResponse<String>> {
             override fun onResponse(
@@ -62,7 +54,5 @@ class OnboardingViewModel : ViewModel() {
                 _onboardingResult.value = false
             }
         })
-
- */
     }
 }

@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.mobile.soundscape.data.local.TokenManager
+import com.mobile.soundscape.data.TokenManager
 import com.mobile.soundscape.login.LoginActivity
 import kotlin.jvm.java
 
@@ -21,7 +21,7 @@ class SplashActivity : AppCompatActivity() {
         // 3초 딜레이 후 검사 시작
         Handler(Looper.getMainLooper()).postDelayed({
             checkLoginStatus()
-        }, 3000)
+        }, 1500)
     }
 
     private fun checkLoginStatus() {

@@ -7,12 +7,15 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="24dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginLeft="20dp"
     android:paddingVertical="12dp">
 
 
     <ImageView
         android:id="@+id/iv_toast_icon"
         android:layout_width="24dp"
+        android:visibility="gone"
         android:layout_height="24dp"
         android:layout_marginEnd="10dp"
         android:src="@drawable/onboarding_check"/>
@@ -20,7 +23,7 @@
     <TextView
         android:id="@+id/tv_toast_message"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
         android:text="토스트 메시지입니다"

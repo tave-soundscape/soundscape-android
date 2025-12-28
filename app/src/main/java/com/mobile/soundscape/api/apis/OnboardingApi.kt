@@ -9,7 +9,7 @@ import retrofit2.http.POST
 interface OnboardingApi {
 
     // Onboardign Request
-    @POST("onboarding")
+    @POST("api/onboarding")
     fun sendOnboarding(
         @Body request: OnboardingSelectedRequest
     ): Call<BaseResponse<String>>

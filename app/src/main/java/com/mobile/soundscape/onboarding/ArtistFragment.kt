@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.client.SpotifyClient
 import com.mobile.soundscape.api.dto.ArtistSearchResponse
-import com.mobile.soundscape.data.local.TokenManager
+import com.mobile.soundscape.data.TokenManager
 import com.mobile.soundscape.databinding.FragmentArtistBinding
 import retrofit2.Call
 import retrofit2.Callback

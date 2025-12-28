@@ -17,11 +17,11 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"/>
         <action
-            android:id="@+id/action_homeFragment_to_playlistDetailFragment"
-            app:destination="@id/playlistDetailFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_exploreFragment"
             app:destination="@id/exploreFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_libraryFragment"
+            app:destination="@id/libraryFragment" />
     </fragment>
     <fragment
         android:id="@+id/recPlaceFragment"
@@ -56,22 +56,20 @@
         android:label="fragment_rec_result"
         tools:layout="@layout/fragment_rec_result" />
     <fragment
-        android:id="@+id/playlistDetailFragment"
-        android:name="com.mobile.soundscape.playlist.PlaylistDetailFragment"
-        android:label="fragment_playlist_detail"
-        tools:layout="@layout/fragment_playlist_detail">
-
-        <argument
-            android:name="playlistId"
-            app:argType="long"         android:defaultValue="0L"  />
-
-    </fragment>
-    <fragment
         android:id="@+id/exploreFragment"
         android:name="com.mobile.soundscape.explore.ExploreFragment"
         android:label="ExploreFragment" >
         <action
             android:id="@+id/action_exploreFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/libraryFragment"
+        android:name="com.mobile.soundscape.home.LibraryFragment"
+        android:label="fragment_library"
+        tools:layout="@layout/fragment_library" >
+        <action
+            android:id="@+id/action_libraryFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
 

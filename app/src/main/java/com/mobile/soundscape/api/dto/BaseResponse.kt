@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 data class BaseResponse<T>(
     // 요청 성공 여부
     @SerializedName("result")
-    val result: T?,
+    val result: String?,
 
     // 에러코드 - 성공일 땐 없을 수 있으니 Nullable (?)
     @SerializedName("errorCode")

@@ -10,12 +10,13 @@ import kotlin.jvm.java
 import android.annotation.SuppressLint
 import android.content.Context
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
 
-    // 일단 로컬 호스트로 설정
     // 로컬에서 실행하기 전에 adb reverse tcp:8080 tcp:8080 터미널에 써서 실행해야함
-    private const val BASE_URL = "https://localhost:8080/"
+    // private const val BASE_URL = "http://localhost:8080/"
+    private const val BASE_URL = "http://3.37.62.220:8080/"
 
     // Context를 저장할 변수
     private lateinit var appContext: Context
@@ -27,8 +28,14 @@ object RetrofitClient {
 
     // OkHttpClient 생성 (lazy를 써서 init이 호출된 뒤에 만들어지도록 함)
     private val okHttpClient by lazy {
+        val logging = HttpLoggingInterceptor().apply {
+            // 로그 레벨을 BODY로 설정하면 서버가 보내준 JSON 내용이 전부 찍힘
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
         OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(appContext)) // 여기서 Context를 넘겨줌
+            .addInterceptor(logging)
             .build()
     }
 
