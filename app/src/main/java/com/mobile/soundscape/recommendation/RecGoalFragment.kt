@@ -20,12 +20,12 @@ import com.mobile.soundscape.api.dto.RecommendationRequest
 import com.mobile.soundscape.databinding.FragmentRecGoalBinding
 import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.api.client.RetrofitClient
-import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.RecommendationResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.data.RecommendationRepository
 
 data class Goal(
     val id: String,
@@ -217,31 +217,39 @@ class RecGoalFragment : Fragment() {
         // =========================================================
 
         // 서버에서 응답 받아서 뷰모델에 저장
-        RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
+        RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<RecommendationResponse> {
+
             override fun onResponse(
-                call: Call<BaseResponse<RecommendationResponse>>,
-                response: Response<BaseResponse<RecommendationResponse>>
+                call: Call<RecommendationResponse>,
+                response: Response<RecommendationResponse>
             ) {
                 if (response.isSuccessful) {
-                    val resultData = response.body()?.data
+                    val resultData = response.body()
 
                     if (resultData != null) {
-                        // 서버에서 받은 플레이리스트를 뷰모델에 저장
+                        Log.d(TAG, "RecGoal - 통신 성공! 제목: ${resultData.playlistName}")
+                        Log.d(TAG, "플리 url: ${resultData.playlistUrl}")
+                        Log.d(TAG, "첫 번째 곡 제목: ${resultData.songs[0].title}")
+
+                        RecommendationRepository.place = viewModel.place
+                        RecommendationRepository.goal = viewModel.goal
+                        RecommendationRepository.cachedPlaylist = resultData
+
                         viewModel.currentPlaylist.value = resultData
-                        // 다음 화면으로 넘어가기
+
                         moveToResultFragment()
                     } else {
-                        Toast.makeText(context, "추천 결과가 비어있습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "서버 응답이 비어있습니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.e(TAG, "코드: ${response.code()}")
+                    Log.e(TAG, "서버 에러 코드: ${response.code()}")
                     Toast.makeText(context, "서버 에러 발생", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<BaseResponse<RecommendationResponse>>, t: Throwable) {
+            override fun onFailure(call: Call<RecommendationResponse>, t: Throwable) {
                 Log.e(TAG, "통신 실패: ${t.message}")
-                Toast.makeText(context, "네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
             }
         })
     }

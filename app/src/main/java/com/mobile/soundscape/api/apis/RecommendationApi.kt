@@ -14,7 +14,7 @@ interface RecommendationApi {
     @POST("api/v1/playlists")
     fun sendRecommendations(
         @Body request: RecommendationRequest
-    ): Call<BaseResponse<RecommendationResponse>>
+    ): Call<RecommendationResponse>
 
     // 플레이리스트 이름 수정 요청
     @PATCH("api/mypage/name")

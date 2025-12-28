@@ -1,12 +1,8 @@
 package com.mobile.soundscape.result
 
-import android.R.attr.visible
-import android.R.id.message
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,20 +19,17 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentListBinding
 import com.mobile.soundscape.playlist.GalleryFragment
-import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.RecommendationResponse
 import com.mobile.soundscape.api.dto.UpdatePlaylistNameRequest
-import com.mobile.soundscape.recommendation.RecommendationViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
-import android.view.animation.AlphaAnimation
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.mobile.soundscape.MainActivity
+import com.mobile.soundscape.data.RecommendationRepository
 
 
 class ListFragment : Fragment() {
@@ -44,8 +37,6 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     // 프래그먼트에서 바인딩은 get()을 통해 접근하는 것이 안전합니다.
     private val binding get() = _binding!!
-
-    private val viewModel: RecommendationViewModel by activityViewModels()
 
     private val TAG = "PlayTest"
     private lateinit var adapter: PlaylistResultAdapter
@@ -72,24 +63,35 @@ class ListFragment : Fragment() {
         // 3. 상단 헤더 이미지 설정 (자동으로 dummyList의 앞 4개를 가져옴)
         setupHeaderImages(dummyList)
 */
-        setupButtons()
+        // 싱글톤 창고에서 꺼내기
+        val data = RecommendationRepository.cachedPlaylist
+        val place = RecommendationRepository.place
+        val goal = RecommendationRepository.goal
 
-        // 뷰모델에서 데이터 관찰 (RecGoalFragment에서 저장한 데이터 사용)
-        viewModel.currentPlaylist.observe(viewLifecycleOwner) { data ->
-            if(data != null) {
-                updateUIWithRealData(data)
-            }
+        Log.d(TAG, "ListFragment: 뷰모델 관찰 시작")
+
+        if (data != null) {
+            setupButtons(data)
+            // UI 업데이트
+            updateUIWithRealData(data, place, goal)
+        } else {
+            Log.e(TAG, "창고가 비어있습니다! (데이터 전달 실패)")
+            Toast.makeText(context, "데이터를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     // --- 받아온 데이터로 화면 채우기 ---
-    private fun updateUIWithRealData(data: RecommendationResponse) {
+    private fun updateUIWithRealData(data: RecommendationResponse, place: String, goal: String) {
+
+        Log.d(TAG, "ListFragment: UI 업데이트 함수 진입")
+        binding.tvSubtitle.text = "$place · $goal"
 
         // 플레이리스트 기본 정보 설정
         binding.tvPlaylistName.text = data.playlistName
 
-        // 뷰모델에 있는 데이터로 서브타이틀 구성 (예: "카페 · 집중")
-        binding.tvSubtitle.text = "${viewModel.place} · ${viewModel.goal}"
+        val songs = data.songs ?: emptyList() // null이면 빈 리스트로 처리
+        Log.d(TAG, "ListFragment: 리사이클러뷰에 넣을 곡 개수: ${songs.size}")
 
         // DTO(Song) -> MusicModel(UI용) 변환
         // imageUrl이 String으로 바뀌어서 처리가 훨씬 쉬워짐!
@@ -109,7 +111,7 @@ class ListFragment : Fragment() {
         // val playlistUrl = data.playlistUrl
     }
 
-    private fun setupButtons() {
+    private fun setupButtons(data: RecommendationResponse) {
         // 플리 다시 만들기 (바텀시트)
 //        binding.regenerateBtn.setOnClickListener {
 //            showRegenerateBottomSheet()
@@ -134,7 +136,7 @@ class ListFragment : Fragment() {
 
         // spotify deep link로 연결
         binding.btnDeepLinkSpotify.setOnClickListener {
-            val spotifyUrl = viewModel.currentPlaylist.value?.playlistUrl
+            val spotifyUrl = data.playlistUrl
 
             if (!spotifyUrl.isNullOrEmpty()) {
                 try {

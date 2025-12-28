@@ -35,6 +35,9 @@ import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.RecommendationResponse
 import com.mobile.soundscape.api.dto.UpdatePlaylistNameRequest
+import com.mobile.soundscape.data.RecommendationRepository
+import com.mobile.soundscape.data.RecommendationRepository.goal
+import com.mobile.soundscape.data.RecommendationRepository.place
 import com.mobile.soundscape.result.MusicModel
 import kotlin.getValue
 
@@ -44,9 +47,7 @@ class GalleryFragment : Fragment() {
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
 
-    private val TAG = "API_CHECK"
-
-    private val viewModel: RecommendationViewModel by activityViewModels()
+    private val TAG = "PlayTest"
 
 
     override fun onCreateView(
@@ -63,26 +64,34 @@ class GalleryFragment : Fragment() {
         // 화면 세팅
         setupViewPagerSettings()
 
-        viewModel.currentPlaylist.observe(viewLifecycleOwner) { data ->
-            if(data != null) updateUIWithSharedData(data)
-        }
+        // data 창고에서 가져오기
+        val data = RecommendationRepository.cachedPlaylist
+        val place = RecommendationRepository.place
+        val goal = RecommendationRepository.goal
 
-        // spotify deep link로 연결
-        binding.btnDeepLinkSpotify.setOnClickListener {
-            val spotifyUrl = viewModel.currentPlaylist.value?.playlistUrl
 
-            if (!spotifyUrl.isNullOrEmpty()) {
-                try {
-                    // 인텐트 생성 (ACTION_VIEW: 보여달라)
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(spotifyUrl))
-                    // 실행 (스포티파이 앱이 있으면 앱으로, 없으면 브라우저로 켜짐)
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    // 만약 링크를 열 수 있는 앱(브라우저 등)이 아예 없을 때 죽는 것 방지
-                    Toast.makeText(requireContext(), "링크를 열 수 없습니다.", Toast.LENGTH_SHORT).show()
+        binding.tvPlaylistInfo.text = "$place · $goal"
+
+        if (data != null) {
+            // 화면 업데이트
+            updateUIWithSharedData(data)
+            // spotify deep link로 연결
+            binding.btnDeepLinkSpotify.setOnClickListener {
+                val spotifyUrl = data.playlistUrl
+
+                if (!spotifyUrl.isNullOrEmpty()) {
+                    try {
+                        // 인텐트 생성 (ACTION_VIEW: 보여달라)
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(spotifyUrl))
+                        // 실행 (스포티파이 앱이 있으면 앱으로, 없으면 브라우저로 켜짐)
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        // 만약 링크를 열 수 있는 앱(브라우저 등)이 아예 없을 때 죽는 것 방지
+                        Toast.makeText(requireContext(), "링크를 열 수 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "스포티파이 링크 정보가 없습니다.", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(requireContext(), "스포티파이 링크 정보가 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
 
