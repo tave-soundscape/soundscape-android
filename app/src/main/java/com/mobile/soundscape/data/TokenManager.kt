@@ -11,19 +11,18 @@ import android.content.SharedPreferences
 object TokenManager {
 
     private const val PREFS_NAME = "soundscape_prefs" // 저장소 이름
-    private const val KEY_ACCESS_TOKEN = "access_token"
+    private const val KEY_ACCESS_TOKEN = "access_token" // JWT (백엔드 토큰)
     private const val KEY_REFRESH_TOKEN = "refresh_token"
     private const val KEY_TOKEN_SAVE_TIME = "token_save_time" // 저장된 시간
     private const val TOKEN_VALIDITY_MS = 55 * 60 * 1000L
+    private const val KEY_SPOTIFY_TOKEN = "spotify_token" // 스포티파이 직접 연동 - 전용 토큰
 
     // 내부 저장소(SharedPreferences) 객체를 가져오는 함수
     private fun getPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    /**
-     * 토큰 저장하기 (로그인 성공 시 호출)
-     */
+    // 토큰 저장 관리 함수
     fun saveToken(context: Context, accessToken: String, refreshToken: String?) {
         val editor = getPreferences(context).edit()
         val currentTime = System.currentTimeMillis() // 현재 시간 (ms)
@@ -78,5 +77,17 @@ object TokenManager {
         val editor = getPreferences(context).edit()
         editor.clear()
         editor.apply()
+    }
+
+    // 스포티파이 토큰 저장 (Splash에서 호출)
+    fun saveSpotifyToken(context: Context, token: String) {
+        val editor = getPreferences(context).edit()
+        editor.putString(KEY_SPOTIFY_TOKEN, token)
+        editor.apply()
+    }
+
+    // 스포티파이 토큰 꺼내기 (아티스트 검색할 때 호출)
+    fun getSpotifyToken(context: Context): String? {
+        return getPreferences(context).getString(KEY_SPOTIFY_TOKEN, null)
     }
 }

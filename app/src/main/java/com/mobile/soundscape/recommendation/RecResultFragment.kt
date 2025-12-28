@@ -46,7 +46,6 @@ class RecResultFragment : Fragment() {
         binding.nextButton.setOnClickListener {
             val intent = android.content.Intent(requireContext(), PlaylistResultActivity::class.java)
             startActivity(intent)
-            requireActivity().finish()
         }
     }
 

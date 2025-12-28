@@ -83,5 +83,6 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.6.2") // 이거랑 버전 비슷하면 됨
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
 
-
+    // 카카오 로그인 모듈
+    implementation("com.kakao.sdk:v2-user:2.15.0")
 }

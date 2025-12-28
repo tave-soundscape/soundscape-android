@@ -262,7 +262,7 @@ class ArtistFragment : Fragment() {
 
     /* --- Spotify API 호출 함수 --- */
     private fun searchSpotifyArtists(query: String, limit: Int = 20) {
-        val accessToken = TokenManager.getAccessToken(requireContext())
+        val accessToken = TokenManager.getSpotifyToken(requireContext())
         if (accessToken.isNullOrEmpty()) {
             return
         }

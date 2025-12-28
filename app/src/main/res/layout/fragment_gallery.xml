@@ -168,8 +168,18 @@
             android:id="@+id/addLibrary"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
+            android:visibility="visible"
             android:src="@drawable/gallery_add_library"
             android:layout_weight="1"/>
+
+        <ImageView
+            android:id="@+id/movtToLibrary"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:visibility="gone"
+            android:src="@drawable/gallery_moveto_library"
+            android:layout_weight="1"/>
+
     </LinearLayout>
 
 

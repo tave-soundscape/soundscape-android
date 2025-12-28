@@ -36,7 +36,7 @@ class PlaylistResultActivity : AppCompatActivity() {
 
             supportFragmentManager.beginTransaction()
                 .replace(R.id.playlist_fragment_container, fragment)
-                .commit() // ★ 첫 화면은 addToBackStack 하지 않음!
+                .commit()
         }
     }
 
