@@ -11,13 +11,17 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         val requestUrl = originalRequest.url.toString()
 
         // 로그인/회원가입 요청은 토큰이 필요 없음 (오히려 있으면 에러 남!)
-        // URL에 "accesstoken" 이나 "login" 같은 단어가 포함되어 있으면 그냥 통과시킵니다.
+        // URL에 "accesstoken" 이나 "login" 같은 단어가 포함되어 있으면 그냥 통과시킴
         if (requestUrl.contains("accesstoken") || requestUrl.contains("login")) {
             return chain.proceed(originalRequest)
         }
 
         // 토큰 매니저에서 JWT 토큰(백엔드용) 꺼내기
-        val token = TokenManager.getAccessToken(context)
+        // 내 스포티파이 토큰
+        // val token = TokenManager.getAccessToken(context)
+
+        // JWT 임시 토큰
+        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY2ODg3ODcyLCJleHAiOjE3OTg0MjM4NzJ9.SMEJfY6YTcfk3bYbnEoa3JHGlSj2Nm49BvZMWbCqoq-0kGN_5az_3GhuYOeP4-d6"
 
         // 토큰이 없으면 그냥 보냄
         if (token.isNullOrEmpty()){

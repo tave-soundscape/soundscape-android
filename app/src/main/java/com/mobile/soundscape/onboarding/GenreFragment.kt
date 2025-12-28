@@ -2,24 +2,15 @@ package com.mobile.soundscape.onboarding
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.mobile.soundscape.api.dto.BaseResponse
-import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.databinding.FragmentGenreBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.MainActivity
-import com.mobile.soundscape.api.dto.OnboardingSelectedRequest
 import com.mobile.soundscape.data.GenreDataFix
 import kotlin.jvm.java
 
@@ -32,11 +23,11 @@ class GenreFragment : Fragment() {
     private val viewModel: OnboardingViewModel by activityViewModels()
 
     // 어댑터
-    private lateinit var adapter: ArtistAdapter
+    private lateinit var adapter: GenreAdapter
     // 선택된 장르를 기억하는 전역 저장소 (이름을 키로 사용)
-    private val selectedGenresMap = mutableMapOf<String, ArtistData>()
+    private val selectedGenresMap = mutableMapOf<String, GenreData>()
     // 전체 장르 원본 데이터 (GenreDataFix에서 불러옴)
-    private lateinit var originalGenreList: List<ArtistData>
+    private lateinit var originalGenreList: List<GenreData>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,26 +52,23 @@ class GenreFragment : Fragment() {
         // 3. 버튼 리스너 설정
         setupButtons()
 
-        // 4. 검색 기능 설정
-        setupSearchListener()
-
         observeViewModel()
     }
 
     private fun setupRecyclerView() {
-        // 어댑터 생성 (클릭 로직 연결)
-        adapter = ArtistAdapter(originalGenreList) { genre, position ->
+        adapter = GenreAdapter(originalGenreList) { genre, position ->
             handleGenreClick(genre, position)
         }
 
         binding.rvGenreList.apply {
             this.adapter = this@GenreFragment.adapter
+            // 3열 그리드 (동그라미 카드가 3개씩 나열됨)
             layoutManager = GridLayoutManager(requireContext(), 3)
         }
     }
 
-    // [핵심] 클릭 처리 로직 (Map 사용)
-    private fun handleGenreClick(genre: ArtistData, position: Int) {
+    // 클릭 처리 로직 (Map 사용)
+    private fun handleGenreClick(genre: GenreData, position: Int) {
         if (genre.isSelected) {
             // 이미 선택됨 -> 해제
             genre.isSelected = false
@@ -92,61 +80,27 @@ class GenreFragment : Fragment() {
                 selectedGenresMap[genre.name] = genre
             } else {
                 Toast.makeText(context, "최대 3개까지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
+                // Adapter 갱신 없이 리턴 (UI 변화 없음)
                 return
             }
         }
 
-        // 어댑터 갱신 & 버튼 업데이트
+        // 어댑터에게 해당 아이템이 변경되었음을 알림 (테두리 갱신)
         adapter.notifyItemChanged(position)
+
+        // 버튼 상태 업데이트
         updateButtonVisibility()
-    }
-
-    // [핵심] 리스트 동기화 함수 (검색 시 선택 상태 유지용)
-    private fun syncSelectionState(list: List<ArtistData>): List<ArtistData> {
-        return list.map { genre ->
-            if (selectedGenresMap.containsKey(genre.name)) {
-                genre.isSelected = true
-            } else {
-                genre.isSelected = false
-            }
-            genre
-        }
-    }
-
-    private fun setupSearchListener() {
-        binding.searchGenre.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                val query = s.toString().trim()
-                filterList(query)
-            }
-        })
-    }
-
-    private fun filterList(query: String) {
-        val filteredList = if (query.isEmpty()) {
-            originalGenreList
-        } else {
-            originalGenreList.filter { genre ->
-                genre.name.contains(query, ignoreCase = true)
-            }
-        }
-
-        // 화면에 보여주기 전에 선택 상태 동기화(Sync)
-        val syncedList = syncSelectionState(filteredList)
-        adapter.updateList(syncedList)
     }
 
     private fun setupButtons() {
         // 온보딩 완료 버튼 
         binding.nextButton.setOnClickListener {
             if(selectedGenresMap.size == 3) {
-                // 선택한 장르 뷰모델에 저장
-                val genreList = selectedGenresMap.keys.toMutableList()
-                viewModel.selectedGenres = genreList
+                // 선택한 장르 이름들만 추출하여 뷰모델에 저장
+                val genreNameList = selectedGenresMap.keys.toMutableList()
+                viewModel.selectedGenres = genreNameList
 
+                // 서버 전송 요청
                 viewModel.submitOnboarding()
             } else {
                 Toast.makeText(context, "3가지를 선택해주세요.", Toast.LENGTH_SHORT).show()
@@ -177,7 +131,7 @@ class GenreFragment : Fragment() {
     private fun moveToNextActivity() {
         // 온보딩 끝나면 메인 액티비티(또는 PlaytestActivity)로 이동 및 스택 초기화
         // flag를 써서 뒤로가기 눌러도 온보딩으로 못 돌아오게 막음
-        val intent = Intent(requireContext(), MainActivity::class.java) // 또는 MainActivity
+        val intent = Intent(requireContext(), MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
