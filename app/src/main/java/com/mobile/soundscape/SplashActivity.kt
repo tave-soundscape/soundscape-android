@@ -11,15 +11,12 @@ import com.mobile.soundscape.login.LoginActivity
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
+import com.spotify.sdk.android.auth.LoginActivity.REQUEST_CODE
 import kotlin.jvm.java
 
 class SplashActivity : AppCompatActivity() {
 
     private val TAG = "PlayTest"
-    private val CLIENT_ID = "2caa74d47f2b40449441b09fbaec95ed"  // 희구님
-    private val REDIRECT_URI = "com.mobile.soundscape://callback"
-    private val REQUEST_CODE = 1337  // 임시 코드
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,13 +25,19 @@ class SplashActivity : AppCompatActivity() {
         Log.d(TAG, "Splash 시작 ")
 
         Handler(Looper.getMainLooper()).postDelayed({
-            authenticateSpotify()
+            moveToLoginActivity()
         }, 1500)
 
         // 바로 스포티파이 로그인 시작
 
     }
 
+    private fun moveToLoginActivity() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+/*
     private fun authenticateSpotify() {
         Log.d(TAG, "SplashActivity: 스포티파이 인증 요청 시작")
 
@@ -112,4 +115,6 @@ class SplashActivity : AppCompatActivity() {
         // 스플래시 화면 종료 (뒤로가기 방지)
         finish()
     }
+
+ */
 }

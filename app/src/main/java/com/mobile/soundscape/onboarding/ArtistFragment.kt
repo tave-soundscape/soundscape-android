@@ -27,6 +27,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.data.SpotifyAuthRepository
+import kotlin.collections.map
 
 class ArtistFragment : Fragment() {
 
@@ -41,6 +43,9 @@ class ArtistFragment : Fragment() {
     // 검색 딜레이 핸들러
     private val searchHandler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
+    private var searchToken: String? = null // 검색에 사용할 토큰 저장
+
+    private val TAG = "SpotifyAuth"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,11 +58,29 @@ class ArtistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // UI 초기화 (리사이클러뷰, 버튼, 검색창_
         setupRecyclerView()
-        updateButtonVisibility()
-        fetchInitialArtists()
         setupButtons()
         setupSearchListener() // 검색 및 디자인 로직 포함
+        updateButtonVisibility()
+
+        // 토큰 발급 후 초기 데이터 로드
+        initTokenAndLoadData()
+    }
+
+    // 초기화 및 토큰 발급
+    private fun initTokenAndLoadData() {
+        SpotifyAuthRepository.getSearchToken(
+            onSuccess = { token ->
+                searchToken = token
+                Log.d(TAG, "검색 토큰 획득 완료")
+                // 토큰을 받은 직후 초기 데이터(2024년 인기 아티스트) 로드
+                searchSpotifyArtists("year:2025", limit = 50)
+            },
+            onFailure = {
+                Toast.makeText(context, "서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     /* --- 리사이클러뷰 설정 --- */
@@ -67,13 +90,6 @@ class ArtistFragment : Fragment() {
         }
         binding.rvArtistList.adapter = adapter
         binding.rvArtistList.layoutManager = GridLayoutManager(requireContext(), 3)
-        // 깜빡임 방지 (선택 시 재정렬 애니메이션 제거하려면 아래 주석 해제)
-        // (binding.rvArtistList.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
-    }
-
-    /* --- 초기 아티스트 데이터 로드 --- */
-    private fun fetchInitialArtists() {
-        searchSpotifyArtists("year:2024", limit = 50)
     }
 
     /* --- [핵심] 클릭 및 재정렬 로직 --- */
@@ -152,7 +168,7 @@ class ArtistFragment : Fragment() {
         }
     }
 
-    /* --- [핵심] 검색 및 디자인 로직 수정 --- */
+    /* --- 검색 및 디자인 로직 수정 --- */
     private fun setupSearchListener() {
 
         // 1. 키보드 엔터키(검색) 눌렀을 때 텍스트 사라짐 방지 및 키보드 내리기
@@ -218,8 +234,7 @@ class ArtistFragment : Fragment() {
                         searchSpotifyArtists(query)
                     } else {
                         // 검색어 다 지우면 초기화
-                        fetchInitialArtists()
-                    }
+                        searchSpotifyArtists("year:2024", limit = 50)                    }
                 }
                 searchHandler.postDelayed(searchRunnable!!, 500)
             }
@@ -228,14 +243,17 @@ class ArtistFragment : Fragment() {
 
     /* --- 버튼 클릭 리스너 --- */
     private fun setupButtons() {
-        // [다음 버튼]
+        // 다음 버튼
         binding.nextButton.setOnClickListener {
             if (selectedArtistsMap.size == 3) {
                 // 뷰모델에 데이터 저장
                 val artistNames = selectedArtistsMap.keys.toMutableList()
                 viewModel.selectedArtists = artistNames
-
-                moveToGenreFragment()
+                // 장르 프래그먼트로 이동
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.onboarding_fragment_container, GenreFragment())
+                    .addToBackStack(null)
+                    .commit()
             }
         }
 
@@ -254,23 +272,24 @@ class ArtistFragment : Fragment() {
             binding.searchArtist.text.clear()
             // 핸들러 콜백 제거 (이전 검색 요청 취소) -> 유령 텍스트 방지
             searchRunnable?.let { searchHandler.removeCallbacks(it) }
-            // 즉시 초기 데이터 로드
-            fetchInitialArtists()
+            // 검색어 지우면 다시 초기 목록 보여주기
+            searchSpotifyArtists("year:2024", limit = 50)
         }
     }
 
 
     /* --- Spotify API 호출 함수 --- */
     private fun searchSpotifyArtists(query: String, limit: Int = 20) {
-        val accessToken = TokenManager.getSpotifyToken(requireContext())
-        if (accessToken.isNullOrEmpty()) {
+        val token = searchToken
+        if(token.isNullOrEmpty()) {
+            Log.e(TAG, "토큰이 아직 없습니다")
             return
         }
 
         SpotifyClient.api.searchArtists(
             query = query,
             limit = limit,
-            token = "Bearer $accessToken"
+            token = "Bearer $token"
         ).enqueue(object : Callback<ArtistSearchResponse> {
             override fun onResponse(
                 call: Call<ArtistSearchResponse>,
@@ -279,52 +298,53 @@ class ArtistFragment : Fragment() {
                 if (response.isSuccessful) {
                     val items = response.body()?.artists?.items ?: emptyList()
 
-                    // 1. API에서 받아온 결과를 데이터 클래스로 변환
-                    val apiResultList = items.map { item ->
-                        ArtistData(
-                            name = item.name,
-                            imageResId = item.images.firstOrNull()?.url ?: "",
-                            isSelected = false
-                        )
-                    }
-
-                    // 2. [핵심 로직] 현재 선택된 아티스트 목록 가져오기
-                    val mySelectedList = selectedArtistsMap.values.toList()
-
-                    // 3. [병합] (내 선택 목록) + (API 검색 결과) 합치기
-                    // distinctBy { it.name } : 이름이 똑같은게 있으면 앞의 것(내 선택)을 남기고 뒤의 것(API 결과)을 버림
-                    val combinedList = (mySelectedList + apiResultList).distinctBy { it.name }
-
-                    // 4. 선택 상태 동기화 (병합 과정에서 안전하게 한 번 더 체크)
-                    val syncedList = syncSelectionState(combinedList)
-
-                    // 5. 선택된 것이 맨 위로 오도록 정렬
-                    val sortedList = syncedList.sortedByDescending { it.isSelected }
-
-                    // 6. 어댑터 업데이트 및 스크롤 초기화
-                    adapter.updateList(sortedList)
-                    binding.rvArtistList.scrollToPosition(0)
-
+                    // 데이터 가공 및 병합
+                    processSearchResults(items)
                 } else {
-                    Log.e("SpotifyAPI", "Error: ${response.code()}")
+                    Log.e(TAG, "API Error: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<ArtistSearchResponse>, t: Throwable) {
-                Log.e("SpotifyAPI", "Fail: ${t.message}")
+                Log.e(TAG, "API Fail: ${t.message}")
             }
         })
     }
 
+    // 검색 결과 처리 (내 선택 목록과 합치기 + 정렬)
+    private fun processSearchResults(apiItems: List<com.mobile.soundscape.api.dto.ArtistSearchItem>) {
 
-    /* --- 화면 이동 --- */
-    private fun moveToGenreFragment() {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.onboarding_fragment_container, GenreFragment())
-            .addToBackStack(null)
-            .commit()
+        // API 결과(DTO) -> 화면용 데이터(ArtistData)로 변환
+        val apiResultList = apiItems.map { item ->
+            ArtistData(
+                name = item.name,
+                imageResId = item.images.firstOrNull()?.url ?: "",  // 이미지 없으면 빈문자열 처리
+                isSelected = false
+            )
+        }
+
+        // 내가 선택한 목록 가져오기
+        val mySelectedList = selectedArtistsMap.values.toList()
+
+        // [병합] (내 선택 목록) + (API 검색 결과)
+        // distinctBy { it.name } : 이름이 같으면 앞에 있는(내 선택 목록) 데이터를 남김
+        val combinedList = (mySelectedList + apiResultList).distinctBy { it.name }
+
+        // [동기화] 합쳐진 리스트에서 선택 상태(isSelected)를 다시 확인
+        // (API 결과에는 isSelected가 다 false로 되어있으므로, 내 맵을 보고 true로 바꿔줌)
+        combinedList.forEach {
+            if (selectedArtistsMap.containsKey(it.name)) {
+                it.isSelected = true
+            }
+        }
+
+        // 선택된 아이템이 리스트의 맨 위로 오도록 정렬
+        val sortedList = combinedList.sortedByDescending { it.isSelected }
+
+        // 어댑터에 데이터 넣고 스크롤 맨 위로
+        adapter.updateList(sortedList)
+        binding.rvArtistList.scrollToPosition(0)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
