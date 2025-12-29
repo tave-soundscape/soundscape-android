@@ -9,6 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.jvm.java
 import android.annotation.SuppressLint
 import android.content.Context
+import com.mobile.soundscape.api.apis.MypageApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -16,7 +17,7 @@ object RetrofitClient {
 
     // 로컬에서 실행하기 전에 adb reverse tcp:8080 tcp:8080 터미널에 써서 실행해야함
     // private const val BASE_URL = "http://localhost:8080/"
-    private const val BASE_URL = "http://3.37.62.220:8080/"
+    private const val BASE_URL = "https://soundscape.higu.kr/"
 
     // Context를 저장할 변수
     private lateinit var appContext: Context
@@ -67,5 +68,10 @@ object RetrofitClient {
     // 리스트 평가 api
     val evaluationApi: EvaluationApi by lazy {
         retrofit.create(EvaluationApi::class.java)
+    }
+
+    // 수정용 api
+    val mypageApi: MypageApi by lazy {
+        retrofit.create(MypageApi::class.java)
     }
 }

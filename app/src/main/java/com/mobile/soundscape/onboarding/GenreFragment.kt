@@ -13,8 +13,14 @@ import com.mobile.soundscape.databinding.FragmentGenreBinding
 import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.R
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.MypageGenreRequest
 import com.mobile.soundscape.data.GenreDataFix
 import com.mobile.soundscape.data.OnboardingManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import kotlin.jvm.java
 
 class GenreFragment : Fragment() {
@@ -120,9 +126,7 @@ class GenreFragment : Fragment() {
 
                 // 분기 처리
                 if (isEditMode) {
-                    // 수정 모드 -> 마이페이지(뒤)로 돌아가기
-                    parentFragmentManager.popBackStack()
-                    Toast.makeText(context, "장르 취향이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                    updateGenreToServer(finalGenre)
                 } else {
                     // 온보딩 모드
                     // 선택한 장르 이름들만 추출하여 뷰모델에 저장 & OnboardingManager에 저장
@@ -213,6 +217,33 @@ class GenreFragment : Fragment() {
             }
         }
     }
+
+    fun updateGenreToServer(genreList : List<String>) {
+        val request = MypageGenreRequest(genres = genreList)
+
+        RetrofitClient.mypageApi.updateGenres(request).enqueue(object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if (response.isSuccessful) {
+                    viewModel.updateGenres(requireContext(), genreList)
+                    Toast.makeText(context, "장르 취향이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+                } else {
+                    Log.e("mypage", "code: ${response.code()}, msg: ${response.errorBody()?.string()}")
+                    Toast.makeText(context, "저장에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                // [실패 2] 통신 에러 (인터넷 끊김 등)
+                Log.e("API_FAIL", "통신 에러: ${t.message}")
+                Toast.makeText(context, "서버와 연결할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

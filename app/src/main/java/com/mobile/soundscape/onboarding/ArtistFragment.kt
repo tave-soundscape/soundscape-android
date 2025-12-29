@@ -26,7 +26,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.MypageArtistRequest
 import com.mobile.soundscape.data.SpotifyAuthRepository
+import retrofit2.Retrofit
 import kotlin.collections.map
 
 class ArtistFragment : Fragment() {
@@ -252,13 +256,11 @@ class ArtistFragment : Fragment() {
             if (selectedArtistsMap.size == 3) {
                 // ViewModel에 데이터 저장
                 val finalList = selectedArtistsMap.keys.toMutableList()
-                viewModel.updateArtists(requireContext(),finalList) // ViewModel 업데이트
+                viewModel.updateArtists(requireContext(), finalList)
 
                 // 2. 분기 처리
                 if (isEditMode) {
-                    // 수정 모드 -> 마이페이지(뒤)로 돌아가기
-                    parentFragmentManager.popBackStack()
-                    Toast.makeText(context, "아티스트 취향이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                    updateArtistToServer(finalList)
                 } else {
                     // 온보딩 모드
                     parentFragmentManager.beginTransaction()
@@ -388,5 +390,32 @@ class ArtistFragment : Fragment() {
                 }
             }
         }
+    }
+
+    // 수정모드에서 변경된 아티스트를 서버로 보내는 함수
+    fun updateArtistToServer(artistList : List<String>){
+        val request = MypageArtistRequest(artists = artistList)
+
+        RetrofitClient.mypageApi.updateArtists(request).enqueue(object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if(response.isSuccessful) {
+                    viewModel.updateArtists(requireContext(), artistList)
+                    Toast.makeText(context, "아티스트 취향이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+                }
+                else {
+                    Log.e("mypage", "code: ${response.code()}, msg: ${response.errorBody()?.string()}")
+                    Toast.makeText(context, "저장에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                // [실패 2] 통신 에러 (인터넷 끊김 등)
+                Log.e("API_FAIL", "통신 에러: ${t.message}")
+                Toast.makeText(context, "서버와 연결할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
