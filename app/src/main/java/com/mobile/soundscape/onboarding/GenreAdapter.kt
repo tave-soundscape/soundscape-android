@@ -17,7 +17,6 @@ class GenreAdapter(
         // XML에 정의된 뷰들과 연결
         private val backgroundImageView: ImageView = itemView.findViewById(R.id.iv_genre_card)
         private val nameTextView: TextView = itemView.findViewById(R.id.tv_genre_name)
-        private val checkIcon: ImageView = itemView.findViewById(R.id.isSelected_check)
 
         fun bind(genre: GenreData) {
             // 장르 이름 설정
@@ -27,11 +26,9 @@ class GenreAdapter(
             if (genre.isSelected) {
                 // 선택되었을 때: 배경을 어둡게(투명하게) 하고 체크 아이콘 표시
                 backgroundImageView.alpha = 0.5f
-                checkIcon.visibility = View.VISIBLE
             } else {
                 // 선택 안 되었을 때: 배경 원상복구, 체크 아이콘 숨김
                 backgroundImageView.alpha = 1.0f
-                checkIcon.visibility = View.GONE
             }
 
             // 클릭 이벤트 처리

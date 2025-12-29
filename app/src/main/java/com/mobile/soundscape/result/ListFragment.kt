@@ -29,7 +29,7 @@ import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
 import com.mobile.soundscape.MainActivity
-import com.mobile.soundscape.data.RecommendationRepository
+import com.mobile.soundscape.data.RecommendationManager
 
 
 class ListFragment : Fragment() {
@@ -64,9 +64,9 @@ class ListFragment : Fragment() {
         setupHeaderImages(dummyList)
 */
         // 싱글톤 창고에서 꺼내기
-        val data = RecommendationRepository.cachedPlaylist
-        val place = RecommendationRepository.place
-        val goal = RecommendationRepository.goal
+        val data = RecommendationManager.cachedPlaylist
+        val place = RecommendationManager.place
+        val goal = RecommendationManager.goal
 
         Log.d(TAG, "ListFragment: 뷰모델 관찰 시작")
 

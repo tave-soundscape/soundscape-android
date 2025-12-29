@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.client.SpotifyClient
 import com.mobile.soundscape.api.dto.ArtistSearchResponse
-import com.mobile.soundscape.data.TokenManager
 import com.mobile.soundscape.databinding.FragmentArtistBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,7 +33,7 @@ class ArtistFragment : Fragment() {
 
     private var _binding: FragmentArtistBinding? = null
     private val binding get() = _binding!!
-
+    private var isEditMode = false // 수정모드인지 확인
     private val viewModel: OnboardingViewModel by activityViewModels()
 
     private lateinit var adapter: ArtistAdapter
@@ -57,6 +56,11 @@ class ArtistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val mode = arguments?.getString("mode")
+        if (mode == "edit") {
+            isEditMode = true
+            setupEditMode() // 수정 모드 전용 설정
+        }
 
         // UI 초기화 (리사이클러뷰, 버튼, 검색창_
         setupRecyclerView()
@@ -246,14 +250,24 @@ class ArtistFragment : Fragment() {
         // 다음 버튼
         binding.nextButton.setOnClickListener {
             if (selectedArtistsMap.size == 3) {
-                // 뷰모델에 데이터 저장
-                val artistNames = selectedArtistsMap.keys.toMutableList()
-                viewModel.selectedArtists = artistNames
-                // 장르 프래그먼트로 이동
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.onboarding_fragment_container, GenreFragment())
-                    .addToBackStack(null)
-                    .commit()
+                // ViewModel에 데이터 저장
+                val finalList = selectedArtistsMap.keys.toMutableList()
+                viewModel.updateArtists(requireContext(),finalList) // ViewModel 업데이트
+
+                // 2. 분기 처리
+                if (isEditMode) {
+                    // 수정 모드 -> 마이페이지(뒤)로 돌아가기
+                    parentFragmentManager.popBackStack()
+                    Toast.makeText(context, "아티스트 취향이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    // 온보딩 모드
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.onboarding_fragment_container, GenreFragment())
+                        .addToBackStack(null)
+                        .commit()
+                }
+            } else {
+                Toast.makeText(context, "3명을 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -350,5 +364,29 @@ class ArtistFragment : Fragment() {
         super.onDestroyView()
         searchRunnable?.let { searchHandler.removeCallbacks(it) }
         _binding = null
+    }
+
+
+    // ★ 수정 모드일 때 실행되는 설정 함수
+    private fun setupEditMode() {
+        Log.d(TAG, "수정 모드로 진입했습니다.")
+
+
+        // 3. 버튼 텍스트 변경 ("다음" -> "저장")
+        binding.nextButton.text = "취향 변경하기"
+        // 수정 모드에서는 처음부터 버튼이 보여야 함 (이미 3개가 선택되어 있을 테니)
+        if (selectedArtistsMap.size == 3) {
+            if (binding.nextButton.visibility != View.VISIBLE) {
+                binding.run {
+                    nextButton.visibility = View.VISIBLE
+                    nextEllipse.visibility = View.VISIBLE
+                    initButton.visibility = View.VISIBLE
+
+                    nextButton.alpha = 0f; nextButton.animate().alpha(1f).duration = 300
+                    nextEllipse.alpha = 0f; nextEllipse.animate().alpha(1f).duration = 300
+                    initButton.alpha = 0f; initButton.animate().alpha(1f).duration = 300
+                }
+            }
+        }
     }
 }

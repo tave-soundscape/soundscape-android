@@ -8,7 +8,7 @@
 
     <ImageView
         android:id="@+id/iv_genre_card"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="100dp"
         app:strokeWidth="0dp"
         app:strokeColor="@color/white"
@@ -18,26 +18,13 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <ImageView
-        android:id="@+id/isSelected_check"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:tint="@color/white"
-        android:visibility="gone"
-        android:src="@drawable/onboarding_check"
-        app:layout_constraintStart_toStartOf="@id/iv_genre_card"
-        app:layout_constraintBottom_toBottomOf="@id/iv_genre_card"
-        app:layout_constraintEnd_toEndOf="@id/iv_genre_card"
-        app:layout_constraintTop_toTopOf="@id/iv_genre_card" />
-
     <TextView
         android:id="@+id/tv_genre_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Artist Name"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:gravity="center"
         app:layout_constraintStart_toStartOf="@id/iv_genre_card"

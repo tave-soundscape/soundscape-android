@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_homeFragment_to_libraryFragment"
             app:destination="@id/libraryFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
     </fragment>
     <fragment
         android:id="@+id/recPlaceFragment"
@@ -73,12 +76,35 @@
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
-        android:id="@+id/listFragment2"
-        android:name="com.mobile.soundscape.result.ListFragment"
-        android:label="ListFragment" >
+        android:id="@+id/mypageFragment"
+        android:name="com.mobile.soundscape.home.MypageFragment"
+        android:label="fragment_mypage"
+        tools:layout="@layout/fragment_mypage" >
         <action
-            android:id="@+id/action_listFragment2_to_homeFragment"
+            android:id="@+id/action_mypageFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_mypageFragment_to_artistFragment2"
+            app:destination="@id/artistFragment2" />
+        <action
+            android:id="@+id/action_mypageFragment_to_genreFragment2"
+            app:destination="@id/genreFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/artistFragment2"
+        android:name="com.mobile.soundscape.onboarding.ArtistFragment"
+        android:label="ArtistFragment" >
+        <action
+            android:id="@+id/action_artistFragment2_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/genreFragment2"
+        android:name="com.mobile.soundscape.onboarding.GenreFragment"
+        android:label="GenreFragment" >
+        <action
+            android:id="@+id/action_genreFragment2_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
     </fragment>
 
 </navigation>

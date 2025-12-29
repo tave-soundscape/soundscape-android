@@ -24,8 +24,7 @@ import com.mobile.soundscape.api.dto.RecommendationResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import androidx.fragment.app.activityViewModels
-import com.mobile.soundscape.data.RecommendationRepository
+import com.mobile.soundscape.data.RecommendationManager
 
 data class Goal(
     val id: String,
@@ -231,9 +230,9 @@ class RecGoalFragment : Fragment() {
                         Log.d(TAG, "플리 url: ${resultData.playlistUrl}")
                         Log.d(TAG, "첫 번째 곡 제목: ${resultData.songs[0].title}")
 
-                        RecommendationRepository.place = viewModel.place
-                        RecommendationRepository.goal = viewModel.goal
-                        RecommendationRepository.cachedPlaylist = resultData
+                        RecommendationManager.place = viewModel.place
+                        RecommendationManager.goal = viewModel.goal
+                        RecommendationManager.cachedPlaylist = resultData
 
                         viewModel.currentPlaylist.value = resultData
 

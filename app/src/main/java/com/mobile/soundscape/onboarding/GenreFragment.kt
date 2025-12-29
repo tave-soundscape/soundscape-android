@@ -2,6 +2,7 @@ package com.mobile.soundscape.onboarding
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.mobile.soundscape.databinding.FragmentGenreBinding
 import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.MainActivity
+import com.mobile.soundscape.R
 import com.mobile.soundscape.data.GenreDataFix
+import com.mobile.soundscape.data.OnboardingManager
 import kotlin.jvm.java
 
 class GenreFragment : Fragment() {
@@ -29,6 +32,8 @@ class GenreFragment : Fragment() {
     // 전체 장르 원본 데이터 (GenreDataFix에서 불러옴)
     private lateinit var originalGenreList: List<GenreData>
 
+    private var isEditMode = false // 수정모드인지 확인
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +44,12 @@ class GenreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val mode = arguments?.getString("mode")
+        if (mode == "edit") {
+            isEditMode = true
+            setupEditMode() // 수정 모드 전용 설정
+        }
 
         // 0. 데이터 로드
         originalGenreList = GenreDataFix.getGenreList()
@@ -63,7 +74,7 @@ class GenreFragment : Fragment() {
         binding.rvGenreList.apply {
             this.adapter = this@GenreFragment.adapter
             // 3열 그리드 (동그라미 카드가 3개씩 나열됨)
-            layoutManager = GridLayoutManager(requireContext(), 3)
+            layoutManager = GridLayoutManager(requireContext(), 2)
         }
     }
 
@@ -96,12 +107,34 @@ class GenreFragment : Fragment() {
         // 온보딩 완료 버튼 
         binding.nextButton.setOnClickListener {
             if(selectedGenresMap.size == 3) {
-                // 선택한 장르 이름들만 추출하여 뷰모델에 저장
-                val genreNameList = selectedGenresMap.keys.toMutableList()
-                viewModel.selectedGenres = genreNameList
+                // nickname: 내부 저장소에 저장
+                val finalNickname  = viewModel.nickname
+                OnboardingManager.saveNickname(requireContext(), finalNickname)
 
-                // 서버 전송 요청
-                viewModel.submitOnboarding()
+                // Artist: OnboardingManager(내부저장소)에 저장 -> 마이페이지에서 사용
+                val finalAritst = viewModel.selectedArtists
+                OnboardingManager.saveArtistList(requireContext(), finalAritst)
+
+                val finalGenre = selectedGenresMap.keys.toMutableList()
+                viewModel.updateGenres(requireContext(), finalGenre)
+
+                // 분기 처리
+                if (isEditMode) {
+                    // 수정 모드 -> 마이페이지(뒤)로 돌아가기
+                    parentFragmentManager.popBackStack()
+                    Toast.makeText(context, "장르 취향이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    // 온보딩 모드
+                    // 선택한 장르 이름들만 추출하여 뷰모델에 저장 & OnboardingManager에 저장
+                    val genreNameList = selectedGenresMap.keys.toMutableList()
+                    viewModel.selectedGenres = genreNameList
+                    val finalGenre = viewModel.selectedGenres
+                    OnboardingManager.saveGenreList(requireContext(), finalGenre)
+
+                    // 서버 전송 요청
+                    viewModel.submitOnboarding()
+
+                }
             } else {
                 Toast.makeText(context, "3가지를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
@@ -156,6 +189,27 @@ class GenreFragment : Fragment() {
                 nextButton.visibility = View.GONE
                 nextEllipse.visibility = View.GONE
                 initButton.visibility = View.GONE
+            }
+        }
+    }
+    private fun setupEditMode() {
+        Log.d("GerneFragment", "수정 모드로 진입했습니다.")
+
+
+        // 3. 버튼 텍스트 변경 ("다음" -> "저장")
+        binding.nextButton.text = "취향 변경하기"
+        // 수정 모드에서는 처음부터 버튼이 보여야 함 (이미 3개가 선택되어 있을 테니)
+        if (selectedGenresMap.size == 3) {
+            if (binding.nextButton.visibility != View.VISIBLE) {
+                binding.run {
+                    nextButton.visibility = View.VISIBLE
+                    nextEllipse.visibility = View.VISIBLE
+                    initButton.visibility = View.VISIBLE
+
+                    nextButton.alpha = 0f; nextButton.animate().alpha(1f).duration = 300
+                    nextEllipse.alpha = 0f; nextEllipse.animate().alpha(1f).duration = 300
+                    initButton.alpha = 0f; initButton.animate().alpha(1f).duration = 300
+                }
             }
         }
     }

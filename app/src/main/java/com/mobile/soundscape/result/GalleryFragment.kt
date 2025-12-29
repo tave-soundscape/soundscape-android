@@ -20,27 +20,21 @@ import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentGalleryBinding
 import com.mobile.soundscape.result.GalleryAdapter
 import com.mobile.soundscape.result.ListFragment
-import com.mobile.soundscape.result.MusicDataProvider
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlin.math.abs
-import com.mobile.soundscape.recommendation.RecommendationViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.RecommendationResponse
 import com.mobile.soundscape.api.dto.UpdatePlaylistNameRequest
-import com.mobile.soundscape.data.RecommendationRepository
-import com.mobile.soundscape.data.RecommendationRepository.goal
-import com.mobile.soundscape.data.RecommendationRepository.place
+import com.mobile.soundscape.data.RecommendationManager
 import com.mobile.soundscape.result.MusicModel
-import kotlin.getValue
 
 class GalleryFragment : Fragment() {
 
@@ -66,9 +60,9 @@ class GalleryFragment : Fragment() {
         setupViewPagerSettings()
 
         // data 창고에서 가져오기
-        val data = RecommendationRepository.cachedPlaylist
-        val place = RecommendationRepository.place
-        val goal = RecommendationRepository.goal
+        val data = RecommendationManager.cachedPlaylist
+        val place = RecommendationManager.place
+        val goal = RecommendationManager.goal
 
 
         binding.tvPlaylistInfo.text = "$place · $goal"

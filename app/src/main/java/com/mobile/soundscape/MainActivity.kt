@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.homeFragment,
                 R.id.exploreFragment,
                 R.id.libraryFragment, // (나중에 추가될 프래그먼트)
-                // R.id.mypageFragment   // (나중에 추가될 프래그먼트)
+                R.id.mypageFragment   // (나중에 추가될 프래그먼트)
             )
 
             // 2. 현재 화면이 리스트에 있는지 확인
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                     R.id.homeFragment -> R.id.layout_nav_home
                     // R.id.exploreFragment -> R.id.layout_nav_explore
                     R.id.libraryFragment -> R.id.layout_nav_library
-                    // R.id.mypageFragment -> R.id.layout_nav_mypage
+                    R.id.mypageFragment -> R.id.layout_nav_mypage
                     else -> R.id.layout_nav_home
                 }
                 updateBottomNavUI(selectedLayoutId)
@@ -96,9 +96,13 @@ class MainActivity : AppCompatActivity() {
 //        binding.bottomNavBar.layoutNavExplore.setOnClickListener {
 //            navController.navigate(R.id.exploreFragment, null, getNavOptions())
 //        }
-        //나머지 라이브러리, 마이페이지는 아직 구현 X
+        // 라이브러리 눌렀을 때
         binding.bottomNavBar.layoutNavLibrary.setOnClickListener {
             navController.navigate(R.id.libraryFragment, null, getNavOptions())
+        }
+        // 마이페이지 눌렀을 때
+        binding.bottomNavBar.layoutNavMypage.setOnClickListener {
+            navController.navigate(R.id.mypageFragment, null, getNavOptions())
         }
     }
 
