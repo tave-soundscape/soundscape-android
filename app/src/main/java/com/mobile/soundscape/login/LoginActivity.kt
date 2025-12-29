@@ -9,37 +9,27 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
+import com.kakao.sdk.auth.model.OAuthToken
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.R
-import com.mobile.soundscape.api.dto.BaseResponse
-import com.mobile.soundscape.api.dto.LoginRequest
-import com.mobile.soundscape.api.dto.LoginResponse
-import com.mobile.soundscape.api.client.RetrofitClient
-import com.mobile.soundscape.data.TokenManager
 import com.mobile.soundscape.databinding.ActivityLoginBinding
 import com.mobile.soundscape.evaluation.EvaluationActivity
 import com.mobile.soundscape.onboarding.SetnameFragment
-import com.mobile.soundscape.result.PlaylistResultActivity
-import com.spotify.sdk.android.auth.AuthorizationClient
-import com.spotify.sdk.android.auth.AuthorizationRequest
-import com.spotify.sdk.android.auth.AuthorizationResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import kotlin.jvm.java
-
+import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.common.util.Utility
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.LoginRequest
+import com.mobile.soundscape.api.dto.LoginResponse
+import com.mobile.soundscape.data.TokenManager
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-
-    companion object {
-        private const val CLIENT_ID = "2caa74d47f2b40449441b09fbaec95ed"  // 희구님
-        private const val REDIRECT_URI = "com.mobile.soundscape://callback"
-        private const val REQUEST_CODE = 1337  // 임시 코드
-        private const val TAG = "PlayTest"
-    }
+    private val TAG = "PlayTest"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,9 +46,13 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.spotifyLoginBtn.setOnClickListener {
-            startSpotifyLogin()
+        // TODO: 카카오 oauth 구현하기
+        binding.btnKakaoOauth.setOnClickListener {
+            startKakaoLogin()
+
         }
+        val keyHash = Utility.getKeyHash(this)
+        Log.d(TAG, "Current KeyHash: $keyHash")
 
         binding.moveOnboardingButton.setOnClickListener {
             val fragment = SetnameFragment()
@@ -69,60 +63,52 @@ class LoginActivity : AppCompatActivity() {
         }
 
     }
+    
 
-    /* --- 스포티파이 로그인 실행 --- */
-    private fun startSpotifyLogin() {
-        val builder = AuthorizationRequest.Builder(
-            CLIENT_ID,
-            AuthorizationResponse.Type.CODE, // 인증 코드 방식
-            REDIRECT_URI
-        )
+    /* 로그인 성공 후 분기 처리 */
+    // 카카오 로그인하고 온보딩 한 이력있으면 홈으로
+    private fun startKakaoLogin() {
+        // 카카오계정 로그인 콜백 (결과 처리기)
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            if (error != null) {
+                Log.e(TAG, "카카오계정으로 로그인 실패", error)
+            } else if (token != null) {
+                Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
 
-        builder.setScopes(arrayOf(
-            "user-read-email",
-            "user-read-private",
-            "user-modify-playback-state", // 재생 명령용
-            "user-read-playback-state"    // 현재 상태 확인용
-        ))
-
-
-        val request = builder.build()
-        AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
-    }
-
-
-    // 결과 처리
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-
-        if (requestCode == REQUEST_CODE) {
-            val response = AuthorizationClient.getResponse(resultCode, intent)
-
-            when (response.type) {
-                AuthorizationResponse.Type.CODE -> {
-                    val authCode = response.code
-                    Log.d(TAG, "1단계 성공 - Auth Code 받음: $authCode")
-
-                    // 받은 코드를 백엔드로 전송하는 함수 호출
-                    sendCodeToBackend(authCode)
-                }
-
-                AuthorizationResponse.Type.ERROR -> {
-                    Log.e(TAG, "로그인 에러: ${response.error}")
-                    Toast.makeText(this, "로그인 에러", Toast.LENGTH_SHORT).show()
-                }
-
-                else -> Log.w(TAG, "로그인 취소됨")
+                // ★ 여기서 백엔드로 토큰 전송!
+                // sendCodeToBackend(token.accessToken)
             }
+        }
+
+        // 카카오톡 앱이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인 (자동 스위치)
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+            UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
+                if (error != null) {
+                    Log.e(TAG, "카카오톡으로 로그인 실패", error)
+
+                    // 사용자가 카카오톡 설치 후 '취소'를 누른 경우, 대기하지 않고 웹 로그인을 시도하면 안됨
+                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        return@loginWithKakaoTalk
+                    }
+
+                    // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
+                    UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+                } else if (token != null) {
+                    Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
+
+                    // ★ 여기서 백엔드로 토큰 전송!
+                    // sendCodeToBackend(token.accessToken)
+                }
+            }
+        } else {
+            // 카카오톡이 설치되어 있지 않은 경우 웹으로 로그인 시도
+            UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
         }
     }
 
-    /**
-     * Retrofit을 사용하여 백엔드 서버로 엑세스 토큰 보내는 코드
-     */
-    /* 3. 백엔드로 Auth Code 전송 및 토큰 발급 */
+    /*
     private fun sendCodeToBackend(authCode: String) {
-        RetrofitClient.loginApi.loginSpotify(LoginRequest(code = authCode))
+        RetrofitClient.loginApi.loginKakao(LoginRequest(code = authCode))
             .enqueue(object : Callback<BaseResponse<LoginResponse>> {
 
                 override fun onResponse(
@@ -211,8 +197,5 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    // 간단한 토스트 메시지 헬퍼
-    private fun showToast(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-    }
+     */
 }

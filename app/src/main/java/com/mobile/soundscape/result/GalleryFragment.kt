@@ -31,6 +31,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.RecommendationResponse
@@ -110,6 +111,16 @@ class GalleryFragment : Fragment() {
         binding.addLibrary.setOnClickListener {
             val currentName = binding.tvPlaylistTitle.text.toString()
             showAddLibraryBottomSheet(currentName)
+        }
+
+        binding.movtToLibrary.setOnClickListener {
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            // 메인 액티비티를 다시 띄우면서 기존 스택 정리
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            // 메인에서 라이브러리 탭을 열도록 신호 전달
+            intent.putExtra("NAVIGATE_TO", "LIBRARY")
+            startActivity(intent)
+            requireActivity().finish()
         }
     }
 
@@ -224,6 +235,11 @@ class GalleryFragment : Fragment() {
             binding.tvPlaylistTitle.text = newName
             showCustomToast("이름이 수정되었습니다.")
             bottomSheetDialog.dismiss()
+
+            // 라이브러리로 이동하는 버튼으로 교체
+            binding.movtToLibrary.visibility = View.VISIBLE
+            binding.addLibrary.visibility = View.GONE
+
 
             // 백엔드로 수정된 플리이름 보내는 함수
             updatePlaylistNameOnServer(newName)

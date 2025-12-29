@@ -53,7 +53,7 @@
         android:layout_marginBottom="250dp"
         android:backgroundTint="#DA8D8D"
         android:text="(임시)홈 페이지로 가기"
-        app:layout_constraintBottom_toBottomOf="@+id/spotifyLoginBtn"
+        app:layout_constraintBottom_toBottomOf="@+id/btnKakaoOauth"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -64,7 +64,7 @@
         android:layout_marginBottom="170dp"
         android:backgroundTint="#60AB9C"
         android:text="(임시)평가 페이지로 가기"
-        app:layout_constraintBottom_toBottomOf="@id/spotifyLoginBtn"
+        app:layout_constraintBottom_toBottomOf="@id/btnKakaoOauth"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -75,20 +75,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:text="(임시)온보딩 페이지로 가기"
-        app:layout_constraintBottom_toBottomOf="@id/spotifyLoginBtn"
+        app:layout_constraintBottom_toBottomOf="@id/btnKakaoOauth"
         android:layout_marginBottom="100dp"/>
 
     <Button
-        android:id="@+id/spotifyLoginBtn"
+        android:id="@+id/btnKakaoOauth"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_marginHorizontal="20dp"
-        android:backgroundTint="#1ED760"
-        android:text="Spotify 연동하기"
+        android:backgroundTint="#FFE90A"
+        android:text="kakao로 시작하기"
         android:textColor="@color/black"
         android:textSize="17sp"
         android:textStyle="bold"
-        app:icon="@drawable/spotify_logo"
+        app:icon="@drawable/kakao_logo"
         app:iconGravity="textStart"
         app:iconPadding="7dp"
         app:iconSize="25dp"

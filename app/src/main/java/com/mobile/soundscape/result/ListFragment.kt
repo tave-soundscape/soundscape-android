@@ -79,6 +79,16 @@ class ListFragment : Fragment() {
             Toast.makeText(context, "데이터를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
 
+
+        binding.btnMoveToLibrary.setOnClickListener {
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            // 메인 액티비티를 다시 띄우면서 기존 스택 정리
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            // 메인에서 라이브러리 탭을 열도록 신호 전달
+            intent.putExtra("NAVIGATE_TO", "LIBRARY")
+            startActivity(intent)
+            requireActivity().finish()
+        }
     }
 
     // --- 받아온 데이터로 화면 채우기 ---
@@ -293,16 +303,6 @@ class ListFragment : Fragment() {
 
             // *** 백엔드로 수정된 플리이름 보내는 함수 ***
             updatePlaylistNameOnServer(newName)
-        }
-
-        binding.btnMoveToLibrary.setOnClickListener {
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            // 메인 액티비티를 다시 띄우면서 기존 스택 정리
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            // 메인에서 라이브러리 탭을 열도록 신호 전달
-            intent.putExtra("NAVIGATE_TO", "LIBRARY")
-            startActivity(intent)
-            requireActivity().finish()
         }
         bottomSheetDialog.show()
     }

@@ -12,7 +12,7 @@ interface LoginApi {
 
     // 백엔드로 code 보내서 -> 액세스 토큰 발급받기
     @POST("api/v1/auth/login")
-    fun loginSpotify(
+    fun loginKakao(
         @Body request: LoginRequest
     ): Call<BaseResponse<LoginResponse>>
 
