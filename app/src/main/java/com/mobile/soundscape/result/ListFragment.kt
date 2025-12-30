@@ -136,7 +136,7 @@ class ListFragment : Fragment() {
 //        }
 
         // 라이브러리 저장 (이름 수정 바텀시트)
-        binding.addLibrary.setOnClickListener {
+        binding.btnAddLibrary.setOnClickListener {
             showAddLibraryBottomSheet(binding.tvPlaylistName.text.toString())
         }
 
@@ -318,7 +318,7 @@ class ListFragment : Fragment() {
             showCustomToast("이름 수정 및 라이브러리 저장이 완료되었습니다.")
             bottomSheetDialog.dismiss()
 
-            binding.addLibrary.visibility = View.GONE
+            binding.btnAddLibrary.visibility = View.GONE
             binding.btnMoveToLibrary.visibility = View.VISIBLE
         }
         bottomSheetDialog.show()

@@ -80,28 +80,72 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvPlaylistName" />
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/btnDeepLinkSpotify"
+        android:layout_width="178dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_result_rounded"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvPlaylistInfo">
+
+        <ImageView
+            android:id="@+id/ivSpotifyIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="23dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/playlist_reuslt_spotify"
+
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvSpotifyText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="8dp" />
+        <TextView
+            android:id="@+id/tvSpotifyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="전체 듣기"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivSpotifyIcon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vpGallery"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:paddingStart="80dp"
         android:paddingEnd="80dp"
         android:clipToPadding="false"
         android:clipChildren="false"
-        app:layout_constraintTop_toBottomOf="@id/tvPlaylistInfo"
+        app:layout_constraintTop_toBottomOf="@id/btnDeepLinkSpotify"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
         android:id="@+id/blue_icon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
         android:src="@drawable/gallery_blue_icon"
         app:layout_constraintTop_toBottomOf="@id/vpGallery"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="5dp" />
 
 
     <TextView
@@ -144,43 +188,45 @@
         android:layout_marginLeft="19dp"
         />
 
-    <LinearLayout
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddLibrary"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginLeft="18dp"
-        android:layout_marginRight="18dp"
-        android:layout_marginBottom="55dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="55dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/bg_input_rounded"
+        app:backgroundTint="@color/black"
+        android:text="라이브러리에 저장하기"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:icon="@drawable/playlist_result_plus"
+        app:iconGravity="textEnd"
+        app:iconPadding="15dp"
+        app:iconSize="14dp"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:gravity="center">
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-        <ImageView
-            android:id="@+id/btnDeepLinkSpotify"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:src="@drawable/gallery_deeplink_spotify"
-            android:layout_weight="1"
-            android:layout_marginRight="8dp"/>
-
-        <ImageView
-            android:id="@+id/addLibrary"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:visibility="visible"
-            android:src="@drawable/gallery_add_library"
-            android:layout_weight="1"/>
-
-        <ImageView
-            android:id="@+id/movtToLibrary"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:visibility="gone"
-            android:src="@drawable/gallery_moveto_library"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnMoveToLibrary"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:visibility="gone"
+        android:background="@drawable/bg_input_rounded"
+        app:backgroundTint="@color/black"
+        android:text="라이브러리로 가기"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:iconGravity="textEnd"
+        app:iconPadding="15dp"
+        app:iconSize="14dp"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

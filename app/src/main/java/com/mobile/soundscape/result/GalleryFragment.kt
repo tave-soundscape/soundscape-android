@@ -111,12 +111,12 @@ class GalleryFragment : Fragment() {
         }
         
         // 라이브러리에 추가 버튼
-        binding.addLibrary.setOnClickListener {
+        binding.btnAddLibrary.setOnClickListener {
             val currentName = binding.tvPlaylistName.text.toString()
             showAddLibraryBottomSheet(currentName)
         }
 
-        binding.movtToLibrary.setOnClickListener {
+        binding.btnMoveToLibrary.setOnClickListener {
             val intent = Intent(requireContext(), MainActivity::class.java)
             // 메인 액티비티를 다시 띄우면서 기존 스택 정리
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -248,8 +248,8 @@ class GalleryFragment : Fragment() {
             bottomSheetDialog.dismiss()
 
             // 라이브러리로 이동하는 버튼으로 교체
-            binding.movtToLibrary.visibility = View.VISIBLE
-            binding.addLibrary.visibility = View.GONE
+            binding.btnMoveToLibrary.visibility = View.VISIBLE
+            binding.btnAddLibrary.visibility = View.GONE
         }
         bottomSheetDialog.show()
     }
