@@ -2,7 +2,6 @@ package com.mobile.soundscape.api.apis
 
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LoginRequest
-import com.mobile.soundscape.api.dto.LoginResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.Call
@@ -14,6 +13,6 @@ interface LoginApi {
     @POST("api/v1/auth/login")
     fun loginKakao(
         @Body request: LoginRequest
-    ): Call<BaseResponse<LoginResponse>>
+    ): Call<BaseResponse<String>>
 
 }

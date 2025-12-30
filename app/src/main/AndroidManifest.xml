@@ -35,9 +35,6 @@
             android:name=".result.PlaylistResultActivity"
             android:exported="true" />
         <activity
-            android:name=".onboarding.PlaytestActivity"
-            android:exported="true" />
-        <activity
             android:name=".MainActivity"
             android:exported="true" />
         <activity

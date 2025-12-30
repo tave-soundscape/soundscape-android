@@ -3,10 +3,6 @@ package com.mobile.soundscape.login
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.sdk.auth.model.OAuthToken
@@ -23,13 +19,14 @@ import com.kakao.sdk.common.util.Utility
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LoginRequest
-import com.mobile.soundscape.api.dto.LoginResponse
-import com.mobile.soundscape.data.TokenManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private val TAG = "PlayTest"
+    private val TAG = "KakaoLogin"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +48,6 @@ class LoginActivity : AppCompatActivity() {
             startKakaoLogin()
 
         }
-        val keyHash = Utility.getKeyHash(this)
-        Log.d(TAG, "Current KeyHash: $keyHash")
 
         binding.moveOnboardingButton.setOnClickListener {
             val fragment = SetnameFragment()
@@ -63,118 +58,115 @@ class LoginActivity : AppCompatActivity() {
         }
 
     }
-    
+
 
     /* 로그인 성공 후 분기 처리 */
     // 카카오 로그인하고 온보딩 한 이력있으면 홈으로
     private fun startKakaoLogin() {
-        // 카카오계정 로그인 콜백 (결과 처리기)
+        // 로그인 공통 콜백 (카카오톡으로 하든, 웹으로 하든 결과는 여기로 옴)
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e(TAG, "카카오계정으로 로그인 실패", error)
+                Toast.makeText(this, "카카오 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
             } else if (token != null) {
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
 
-                // ★ 여기서 백엔드로 토큰 전송!
-                // sendCodeToBackend(token.accessToken)
+                // ★ 카카오에서 받은 토큰을 백엔드로 전송!
+                sendKakaoTokenToBackend(token.accessToken)
             }
         }
 
-        // 카카오톡 앱이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인 (자동 스위치)
+        // 카카오톡 앱이 설치되어 있으면 카카오톡으로 로그인
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
             UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
                 if (error != null) {
                     Log.e(TAG, "카카오톡으로 로그인 실패", error)
 
-                    // 사용자가 카카오톡 설치 후 '취소'를 누른 경우, 대기하지 않고 웹 로그인을 시도하면 안됨
+                    // 사용자가 '취소'를 누른 경우엔 웹 로그인을 시도하지 않고 종료
                     if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
                         return@loginWithKakaoTalk
                     }
 
-                    // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
+                    // 카카오톡 로그인 실패 시(설치 안 됨 등), 웹(계정)으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
                 } else if (token != null) {
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
 
-                    // ★ 여기서 백엔드로 토큰 전송!
-                    // sendCodeToBackend(token.accessToken)
+                    // ★ 카카오에서 받은 토큰을 백엔드로 전송!
+                    sendKakaoTokenToBackend(token.accessToken)
                 }
             }
         } else {
-            // 카카오톡이 설치되어 있지 않은 경우 웹으로 로그인 시도
+            // 카카오톡 없으면 바로 웹으로 로그인 시도
             UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
         }
     }
 
-    /*
-    private fun sendCodeToBackend(authCode: String) {
-        RetrofitClient.loginApi.loginKakao(LoginRequest(code = authCode))
-            .enqueue(object : Callback<BaseResponse<LoginResponse>> {
 
-                override fun onResponse(
-                    call: Call<BaseResponse<LoginResponse>>,
-                    response: Response<BaseResponse<LoginResponse>>
-                ) {
-                    // 1. HTTP 통신 자체는 성공했는지 (200 OK)
-                    if (response.isSuccessful) {
-                        val body = response.body()
+    private fun sendKakaoTokenToBackend(kakaoAccessToken: String) {
+        // 이전 질문에서 정의한 LoginRequest(accessToken = ...) 사용
+        val request = LoginRequest(code = kakaoAccessToken)
 
-                        // 2. 비즈니스 로직도 성공했는지 (result == "SUCCESS")
-                        // 백엔드가 result 필드를 주기로 했으므로 이걸 믿어야 합니다.
-                        if (body != null && body.result == "SUCCESS") {
-                            val loginResponse = body.data
+        RetrofitClient.loginApi.loginKakao(request).enqueue(object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if (response.isSuccessful) {
+                    val body = response.body()
 
-                            if (loginResponse != null) {
-                                // ★ 진짜 로그인 성공!
-                                TokenManager.saveToken(
-                                    context = applicationContext,
-                                    accessToken = loginResponse.accessToken,
-                                    refreshToken = loginResponse.refreshToken
-                                )
-                                handleLoginSuccess(loginResponse.isOnboarded)
-                            }
-                        } else {
-                            // 3. 통신은 됐지만 실패한 경우 (지금 상황)
-                            // 서버가 보낸 에러 메시지를 띄워줍니다.
-                            val errorMsg = body?.message ?: "알 수 없는 오류"
-                            Log.e(TAG, "서버 실패: ${body?.errorCode}")
-                            showCustomToast("로그인 실패: $errorMsg")
+                    // 백엔드 로직 성공 (SUCCESS)
+                    if (body != null && body.result == "SUCCESS") {
+                        val loginData = body.data
+
+                        if (loginData != null) {
+                            Log.d(TAG, "백엔드 로그인 성공! 토큰 저장 중...")
                         }
                     } else {
-                        // 404, 500 등의 에러
-                        Log.e(TAG, "HTTP 에러: ${response.code()}")
-                        showCustomToast("서버 통신 오류")
+                        // 통신은 됐지만 비즈니스 로직 실패
+                        val errorMsg = body?.message ?: "알 수 없는 서버 오류"
+                        Log.e(TAG, "서버 에러: $errorMsg")
+                        Toast.makeText(this@LoginActivity, "로그인 실패: $errorMsg", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    // HTTP 400~500 에러
+                    val errorBody = response.errorBody()?.string() // ★ 서버가 보낸 에러 메시지 읽기
+                    Log.e(TAG, "서버 에러 코드: ${response.code()}")
+                    Log.e(TAG, "서버 에러 내용: $errorBody")
                 }
+            }
 
-                override fun onFailure(call: Call<BaseResponse<LoginResponse>>, t: Throwable) {
-                    Log.e(TAG, "네트워크 오류: ${t.message}")
-                    showCustomToast("네트워크 연결을 확인해주세요.")
-                }
-            })
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                Log.e(TAG, "네트워크 통신 실패: ${t.message}")
+                Toast.makeText(this@LoginActivity, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
+    /**
+     * 3. 로그인 성공 후 화면 이동 처리
+     */
+    private fun handleLoginSuccess(isOnboarded: Boolean) {
+        if (isOnboarded) {
+            // [CASE A] 이미 가입하고 온보딩도 한 유저 -> 메인 화면으로
+            val intent = Intent(this, MainActivity::class.java)
+            // 뒤로가기 누르면 로그인 화면 안 나오게 스택 정리
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        } else {
+            // [CASE B] 처음 가입한 유저 (온보딩 필요) -> 온보딩 프래그먼트 표시
+            // (LoginActivity 내에 fragment_container가 있다고 가정)
+            val fragment = SetnameFragment()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.onboarding_fragment_container, fragment) // ID 확인 필요
+                .commit()
 
-    fun showCustomToast(message: String, iconResId: Int? = null) {
-        val layout = layoutInflater.inflate(R.layout.toast_custom, null)
-
-        val textView = layout.findViewById<TextView>(R.id.tv_toast_message)
-        textView.text = message
-
-        val iconView = layout.findViewById<ImageView>(R.id.iv_toast_icon)
-        iconView?.visibility = View.GONE // 아이콘이 있으면 GONE 처리
-
-
-        val toast = Toast(this)
-        toast.duration = Toast.LENGTH_SHORT
-        toast.view = layout // 내가 만든 레이아웃을 끼워넣음
-
-        // 위치 조정 (선택사항: 화면 중앙 하단 등)
-        toast.setGravity(Gravity.BOTTOM, 0, 300)
-
-        toast.show()
+            // 혹은 온보딩 액티비티가 따로 있다면 startActivity로 이동
+        }
     }
 
+    /*
     /* 로그인 성공 후 분기 처리 */
     private fun handleLoginSuccess(isOnboarded: Boolean) {
         if (isOnboarded) {
@@ -197,5 +189,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-     */
+    */
 }
+
