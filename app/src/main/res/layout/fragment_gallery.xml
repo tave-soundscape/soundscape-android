@@ -56,7 +56,7 @@
 
 
     <TextView
-        android:id="@+id/tvPlaylistTitle"
+        android:id="@+id/tvPlaylistName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="플레이리스트 이름"
@@ -78,7 +78,7 @@
         android:layout_marginTop="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvPlaylistTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvPlaylistName" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vpGallery"

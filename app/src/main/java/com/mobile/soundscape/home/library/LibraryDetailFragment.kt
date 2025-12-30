@@ -21,12 +21,12 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
 
         // 2. Bundle에서 전달받은 데이터 꺼내기 (title, date, songs)
         val title = arguments?.getString("title") ?: "알 수 없는 플레이리스트"
-        val date = arguments?.getString("date") ?: ""
+        // val date = arguments?.getString("date") ?: ""
         val songs = arguments?.getSerializable("songs") as? ArrayList<MusicModel> ?: arrayListOf()
 
         // 3. UI 데이터 연결
         binding.tvDetailPlaylistName.text = title
-        binding.tvDetailDescription.text = "${date}에 생성된 플레이리스트"
+        // binding.tvDetailDescription.text = "${date}에 생성된 플레이리스트"
         binding.tvDetailCount.text = "곡 ${songs.size}개"
 
         // 4. 투명 배경 어댑터 연결 (LibraryDetailAdapter 사용)
@@ -54,7 +54,7 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
             val fragment = LibraryDetailFragment()
             val args = Bundle()
             args.putString("title", title)
-            args.putString("date", date) // 날짜 추가
+            // args.putString("date", date) // 날짜 추가
             args.putSerializable("songs", ArrayList(songs))
             fragment.arguments = args
             return fragment

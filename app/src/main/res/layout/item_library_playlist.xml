@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="곡 33개 • 25.05.15"
+                android:text="곡 10개"
                 android:textColor="#8E8E8E"
                 android:textSize="13sp" />
         </LinearLayout>

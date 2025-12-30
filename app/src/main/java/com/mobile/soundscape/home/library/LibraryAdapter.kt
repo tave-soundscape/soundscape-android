@@ -29,7 +29,7 @@ class LibraryAdapter(
 
         fun bind(item: LibraryPlaylistModel) {
             binding.tvPlaylistTitle.text = item.title
-            binding.tvPlaylistInfo.text = "곡 ${item.songs.size}개 • ${item.date}"
+            // binding.tvPlaylistInfo.text = "곡 ${item.songs.size}개 • ${item.date}"
 
             // 아이템 클릭 리스너
             binding.root.setOnClickListener { onItemClick(item) }

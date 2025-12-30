@@ -30,6 +30,7 @@ import android.content.Intent
 import android.net.Uri
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.data.RecommendationManager
+import com.mobile.soundscape.data.RecommendationManager.getPlaylistName
 
 
 class ListFragment : Fragment() {
@@ -63,7 +64,7 @@ class ListFragment : Fragment() {
         // 3. 상단 헤더 이미지 설정 (자동으로 dummyList의 앞 4개를 가져옴)
         setupHeaderImages(dummyList)
 */
-        // 싱글톤 창고에서 꺼내기
+        // 내부 저장소 창고에서 꺼내기
         val data = RecommendationManager.cachedPlaylist
         val place = RecommendationManager.place
         val goal = RecommendationManager.goal
@@ -98,7 +99,14 @@ class ListFragment : Fragment() {
         binding.tvSubtitle.text = "$place · $goal"
 
         // 플레이리스트 기본 정보 설정
-        binding.tvPlaylistName.text = data.playlistName
+        val savedPlaylistName = context?.let { ctx ->
+            RecommendationManager.getPlaylistName(ctx)
+        } ?: ""
+        if (savedPlaylistName.isNotEmpty()) {
+            binding.tvPlaylistName.text = savedPlaylistName
+        } else {
+            binding.tvPlaylistName.text = data?.playlistName ?: "플레이리스트 이름"
+        }
 
         val songs = data.songs ?: emptyList() // null이면 빈 리스트로 처리
         Log.d(TAG, "ListFragment: 리사이클러뷰에 넣을 곡 개수: ${songs.size}")
@@ -295,35 +303,49 @@ class ListFragment : Fragment() {
             val iconView = layout.findViewById<ImageView>(R.id.iv_toast_icon)
             iconView?.visibility = View.VISIBLE // 아이콘이 있으면 GONE 처리
 
-            showCustomToast("이름이 수정되었습니다.")
+            // 수정한 이름 내부 저장소에 저장
+            context?.let { ctx ->
+                RecommendationManager.savePlaylistName(ctx, newName)
+            }
+            // 저장한 id 백엔드로 보내기
+            val savedPlaylistId = context?.let { ctx ->
+                RecommendationManager.getPlaylistId(ctx)
+            } ?: ""
+            Log.e(TAG, "저장된 id 확인용로그: $savedPlaylistId")
+            // *** 백엔드로 수정된 플리이름 보내는 함수 ***
+            updatePlaylistNameOnServer(savedPlaylistId,newName)
+
+            showCustomToast("이름 수정 및 라이브러리 저장이 완료되었습니다.")
             bottomSheetDialog.dismiss()
 
             binding.addLibrary.visibility = View.GONE
             binding.btnMoveToLibrary.visibility = View.VISIBLE
-
-            // *** 백엔드로 수정된 플리이름 보내는 함수 ***
-            updatePlaylistNameOnServer(newName)
         }
         bottomSheetDialog.show()
     }
 
     // --- 백엔드에 이름 수정 요청 보내기 ---
-    private fun updatePlaylistNameOnServer(newName: String) {
+    private fun updatePlaylistNameOnServer(playlistId: String, newName: String) {
         val requestBody = UpdatePlaylistNameRequest(newPlaylistName = newName)
 
-        // 2. API 호출
-        RetrofitClient.recommendationApi.updatePlaylistName(requestBody).enqueue(object : Callback<BaseResponse<String>> {
+
+        // API 호출
+        RetrofitClient.recommendationApi.updatePlaylistName(playlistId, requestBody).enqueue(object : Callback<BaseResponse<String>> {
             override fun onResponse(
                 call: Call<BaseResponse<String>>,
                 response: Response<BaseResponse<String>>
             ) {
                 if (response.isSuccessful) {
                     // 성공 로그
-                    Log.d("API_UPDATE", "이름 수정 성공: $newName")
+                    Log.d(TAG, "이름 수정 성공: $newName")
                 } else {
                     // 실패 로그 (하지만 이미 화면은 바꿨으니 조용히 로그만 남김)
-                    Log.e("API_UPDATE", "수정 실패 Code: ${response.code()}")
-                    // 필요하다면 다시 원래 이름으로 되돌리거나 토스트 띄우기
+                    val errorBody = response.errorBody()?.string()
+                    Log.e(TAG, "수정 실패 Code: ${response.code()}")
+                    Log.e(TAG, "수정 실패 Code: ${response.code()}")
+                    Log.e(TAG, "서버가 보낸 에러 메시지: $errorBody")
+
+                    Toast.makeText(context, "서버 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
 

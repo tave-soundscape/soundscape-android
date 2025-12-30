@@ -9,6 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.jvm.java
 import android.annotation.SuppressLint
 import android.content.Context
+import com.mobile.soundscape.api.apis.LibraryApi
 import com.mobile.soundscape.api.apis.MypageApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -73,5 +74,10 @@ object RetrofitClient {
     // 수정용 api
     val mypageApi: MypageApi by lazy {
         retrofit.create(MypageApi::class.java)
+    }
+
+    // 라이브러리에서 사용자가 저장한 플리 가져오는 api
+     val libraryApi: LibraryApi by lazy {
+         retrofit.create(LibraryApi::class.java)
     }
 }

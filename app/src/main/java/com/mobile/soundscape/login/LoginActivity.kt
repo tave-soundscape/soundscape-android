@@ -15,10 +15,11 @@ import kotlin.jvm.java
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.common.util.Utility
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LoginRequest
+import com.mobile.soundscape.api.dto.LoginResponse
+import com.mobile.soundscape.data.TokenManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -105,12 +106,12 @@ class LoginActivity : AppCompatActivity() {
     // 백엔드 서버에 토큰 전송
     private fun sendKakaoTokenToBackend(kakaoAccessToken: String) {
         // 이전 질문에서 정의한 LoginRequest(accessToken = ...) 사용
-        val request = LoginRequest(code = kakaoAccessToken)
+        val request = LoginRequest(kakaoAccessToken = kakaoAccessToken)
 
-        RetrofitClient.loginApi.loginKakao(request).enqueue(object : Callback<BaseResponse<String>> {
+        RetrofitClient.loginApi.loginKakao(request).enqueue(object : Callback<BaseResponse<LoginResponse>> {
             override fun onResponse(
-                call: Call<BaseResponse<String>>,
-                response: Response<BaseResponse<String>>
+                call: Call<BaseResponse<LoginResponse>>,
+                response: Response<BaseResponse<LoginResponse>>
             ) {
                 if (response.isSuccessful) {
                     val body = response.body()
@@ -121,7 +122,14 @@ class LoginActivity : AppCompatActivity() {
 
                         if (loginData != null) {
                             Log.d(TAG, "백엔드 로그인 성공! 서버응답 값: $body")
-                            handleLoginSuccess(loginData.isOnboarded))
+
+                            // 백엔드가 준 JWT 토큰을 내부 저장소에 보관
+                            TokenManager.saveToken(
+                                context = applicationContext,
+                                accessToken = loginData.accessToken,
+                                refreshToken = loginData.refreshToken
+                            )
+                            handleLoginSuccess(loginData.isOnboarded)
                         }
                     } else {
                         // 통신은 됐지만 비즈니스 로직 실패
@@ -137,7 +145,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+            override fun onFailure(call: Call<BaseResponse<LoginResponse>>, t: Throwable) {
                 Log.e(TAG, "네트워크 통신 실패: ${t.message}")
                 Toast.makeText(this@LoginActivity, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
             }
@@ -160,8 +168,6 @@ class LoginActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.onboarding_fragment_container, fragment) // ID 확인 필요
                 .commit()
-
-            // 혹은 온보딩 액티비티가 따로 있다면 startActivity로 이동
         }
     }
 }
