@@ -71,12 +71,14 @@ class EvaluationStep2Fragment : Fragment(R.layout.fragment_evaluation_step2) {
 
         // 다음 버튼: Step 3(최종 완료)으로 이동
         binding.nextButton.setOnClickListener {
-            // TODO: ViewModel에 selectedReasons 저장 (서버 전송용)
+            // 1. 선택된 이유들을 하나의 문자열로 합칩니다. (예: "이유1, 이유2")
+            val reasonString = selectedReasons.joinToString(separator = ", ")
 
-            viewModel.dislikeReason = selectedReasons.toList()
+            // 2. ViewModel의 String 타입 변수에 저장합니다.
+            viewModel.dislikeReason = reasonString
 
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, EvaluationStep3Fragment()) // 다음 프래그먼트 이름 확인 필요
+                .replace(R.id.fragment_container, EvaluationStep3Fragment())
                 .addToBackStack(null)
                 .commit()
         }

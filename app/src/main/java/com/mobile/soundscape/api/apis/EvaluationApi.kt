@@ -4,11 +4,11 @@ import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.EvaluationRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
-import retrofit2.Call
+import retrofit2.Response
 
 interface EvaluationApi {
-    @POST("evaluation")
-    fun sendEvaluation(
+    @POST("/api/v1/review")
+    suspend fun sendEvaluation(
         @Body request: EvaluationRequest
-    ): Call<BaseResponse<String>>
+    ): Response<BaseResponse<String>>
 }

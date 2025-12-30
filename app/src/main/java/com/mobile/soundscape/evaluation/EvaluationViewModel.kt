@@ -1,59 +1,60 @@
 package com.mobile.soundscape.evaluation
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mobile.soundscape.api.client.RetrofitClient
-import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.EvaluationRequest
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 
 class EvaluationViewModel : ViewModel() {
 
-    // 데이터 저장 변수들
-    var spotifyUserId: String = ""
-    var overallRating: Int = -1
-    var dislikeReason: List<String> = emptyList()
+    // 1. UI에서 입력받을 데이터들 (변수명은 새 명세에 맞춤)
+    var rating: Int = 0
+    var dislikeReason: String = ""
     var preferredMood: String = ""
     var lyricsPreference: String = ""
-    var userOpinion: String = ""
+    var feedback: String = ""
     var willReuse: Boolean = false
 
+    // 2. 전송 상태를 알리기 위한 LiveData (Fragment에서 관찰)
+    private val _isSuccess = MutableLiveData<Boolean>()
+    val isSuccess: LiveData<Boolean> get() = _isSuccess
+
     /**
-     * 최종 수집된 데이터를 서버로 전송
+     * 최종 수집된 데이터를 서버로 전송 (Coroutines 사용)
      */
     fun submitEvaluation() {
-        // DTO 생성
+        // 새로운 Swagger 명세에 맞춘 DTO 생성
         val request = EvaluationRequest(
-            spotifyUserId = spotifyUserId,
-            overallRating = overallRating,
+            rating = rating,
             dislikeReason = dislikeReason,
             preferredMood = preferredMood,
             lyricsPreference = lyricsPreference,
-            userOpinion = userOpinion,
+            feedback = feedback,
             willReuse = willReuse
         )
 
-        Log.d("EVALUATION", "전송할 데이터: $request")
+        Log.d("EVALUATION", "전송 시작: $request")
 
-        // API 호출
-        RetrofitClient.evaluationApi.sendEvaluation(request).enqueue(object : Callback<BaseResponse<String>> {
-            override fun onResponse(
-                call: Call<BaseResponse<String>>,
-                response: Response<BaseResponse<String>>
-            ) {
+        // 3. 코루틴을 사용하여 비동기 호출
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.evaluationApi.sendEvaluation(request)
+
                 if (response.isSuccessful) {
-                    Log.d("EVALUATION", "설문 제출 성공")
-                    // 필요하다면 여기서 LiveData를 업데이트하여 화면을 닫거나 이동
+                    Log.d("EVALUATION", "설문 제출 성공: ${response.body()}")
+                    _isSuccess.value = true
                 } else {
-                    Log.e("EVALUATION", "제출 실패 코드: ${response.code()}")
+                    Log.e("EVALUATION", "제출 실패 코드: ${response.code()} / 메시지: ${response.errorBody()?.string()}")
+                    _isSuccess.value = false
                 }
+            } catch (e: Exception) {
+                Log.e("EVALUATION", "통신 오류: ${e.message}")
+                _isSuccess.value = false
             }
-
-            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
-                Log.e("EVALUATION", "통신 오류: ${t.message}")
-            }
-        })
+        }
     }
 }
