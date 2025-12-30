@@ -19,6 +19,7 @@ import com.kakao.sdk.common.util.Utility
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LoginRequest
+import com.mobile.soundscape.api.dto.LoginResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -71,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
             } else if (token != null) {
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
 
-                // ★ 카카오에서 받은 토큰을 백엔드로 전송!
+                // 카카오에서 받은 토큰을 백엔드로 전송!
                 sendKakaoTokenToBackend(token.accessToken)
             }
         }
@@ -104,13 +105,12 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun sendKakaoTokenToBackend(kakaoAccessToken: String) {
-        // 이전 질문에서 정의한 LoginRequest(accessToken = ...) 사용
-        val request = LoginRequest(code = kakaoAccessToken)
+        val request = LoginRequest(kakaoAccessToken = kakaoAccessToken)
 
-        RetrofitClient.loginApi.loginKakao(request).enqueue(object : Callback<BaseResponse<String>> {
+        RetrofitClient.loginApi.loginKakao(request).enqueue(object : Callback<BaseResponse<LoginResponse>> {
             override fun onResponse(
-                call: Call<BaseResponse<String>>,
-                response: Response<BaseResponse<String>>
+                call: Call<BaseResponse<LoginResponse>>,
+                response: Response<BaseResponse<LoginResponse>>
             ) {
                 if (response.isSuccessful) {
                     val body = response.body()
@@ -120,7 +120,8 @@ class LoginActivity : AppCompatActivity() {
                         val loginData = body.data
 
                         if (loginData != null) {
-                            Log.d(TAG, "백엔드 로그인 성공! 토큰 저장 중...")
+                            Log.d(TAG, "서버 응답 코드: ${response.code()}")
+                            Log.d(TAG, "서버 응답 메시지: ${body.message}")
                         }
                     } else {
                         // 통신은 됐지만 비즈니스 로직 실패
@@ -136,7 +137,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+            override fun onFailure(call: Call<BaseResponse<LoginResponse>>, t: Throwable) {
                 Log.e(TAG, "네트워크 통신 실패: ${t.message}")
                 Toast.makeText(this@LoginActivity, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
             }
