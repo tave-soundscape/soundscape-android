@@ -68,13 +68,24 @@
     </fragment>
     <fragment
         android:id="@+id/libraryFragment"
-        android:name="com.mobile.soundscape.home.LibraryFragment"
+        android:name="com.mobile.soundscape.home.library.LibraryFragment"
         android:label="fragment_library"
         tools:layout="@layout/fragment_library" >
         <action
             android:id="@+id/action_libraryFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_libraryFragment_to_libraryDetailFragment"
+            app:destination="@id/libraryDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/libraryDetailFragment"
+        android:name="com.mobile.soundscape.home.library.LibraryDetailFragment"
+        android:label="LibraryDetailFragment" />
     <fragment
         android:id="@+id/mypageFragment"
         android:name="com.mobile.soundscape.home.MypageFragment"
