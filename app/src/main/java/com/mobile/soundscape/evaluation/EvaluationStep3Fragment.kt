@@ -24,27 +24,35 @@ class EvaluationStep3Fragment : Fragment(R.layout.fragment_evaluation_step3) {
     //step3_1 차분 vs 에너제틱
     private fun setupStep31Listeners() {
         binding.btnCalm.setOnClickListener {
-            viewModel.preferredMood = "calm" // 분위기 저장
-            showStep32()
+            selectCard(it, "calm", true)
         }
 
         binding.btnEnergetic.setOnClickListener {
-            viewModel.preferredMood = "energetic" // 분위기 저장
-            showStep32()
+            selectCard(it, "energetic", true)
         }
     }
 
-    //step3_2 가사O vs 가사X
     private fun setupStep32Listeners() {
         binding.btnLyricsOn.setOnClickListener {
-            viewModel.lyricsPreference = "lyrics_on" // 가사 선호도 저장
-            navigateToStep4()
+            selectCard(it, "lyrics_on", false)
         }
 
         binding.btnLyricsOff.setOnClickListener {
-            viewModel.lyricsPreference = "lyrics_off" // 가사 선호도 저장
-            navigateToStep4()
+            selectCard(it, "lyrics_off", false)
         }
+    }
+
+    private fun selectCard(view: View, value: String, isMood: Boolean) {
+        // 1. 시각적 피드백: 클릭한 버튼을 '선택됨' 상태로 변경 (보라색으로 변함)
+        view.isSelected = true
+
+        // 2. 데이터 저장
+        if (isMood) viewModel.preferredMood = value else viewModel.lyricsPreference = value
+
+        // 3. 0.2초 뒤에 다음 단계로 이동 (색상 변화를 볼 시간을 줌)
+        view.postDelayed({
+            if (isMood) showStep32() else navigateToStep4()
+        }, 200)
     }
 
     //step3_1 -> step3-2

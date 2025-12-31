@@ -59,88 +59,128 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_question" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_step3_1_cards"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="144dp"
-        android:orientation="horizontal"
+        android:layout_marginTop="148dp"
         android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@id/tv_caption"
-        tools:layout_editor_absoluteX="40dp">
+        tools:layout_editor_absoluteX="30dp">
 
         <LinearLayout
             android:id="@+id/btn_calm"
             style="@style/EvaluationCardStyle"
-            android:layout_marginEnd="10dp">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@+id/btn_energetic"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_calm" />
+                android:duplicateParentState="true"
+                android:src="@drawable/ic_calm"
+                app:tint="@color/selector_card_content" />
 
             <TextView
                 style="@style/EvaluationCardTextStyle"
-                android:text="차분하게" />
+                android:duplicateParentState="true"
+                android:text="차분하게"
+                android:textColor="@color/selector_card_content" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/btn_energetic"
             style="@style/EvaluationCardStyle"
-            android:layout_marginStart="10dp">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_calm"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_energetic" />
+                android:duplicateParentState="true"
+                android:src="@drawable/ic_energetic"
+                app:tint="@color/selector_card_content" />
 
             <TextView
                 style="@style/EvaluationCardTextStyle"
-                android:text="에너제틱하게" />
+                android:duplicateParentState="true"
+                android:text="에너제틱하게"
+                android:textColor="@color/selector_card_content" />
         </LinearLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_step3_2_cards"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="144dp"
-        android:orientation="horizontal"
+        android:layout_marginTop="148dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tv_caption">
+        app:layout_constraintTop_toBottomOf="@id/tv_caption"
+        tools:layout_editor_absoluteX="30dp">
 
         <LinearLayout
             android:id="@+id/btn_lyrics_on"
             style="@style/EvaluationCardStyle"
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"> <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_lyrics_on" />
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@+id/btn_lyrics_off"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:duplicateParentState="true"
+                android:src="@drawable/ic_lyrics_on"
+                app:tint="@color/selector_card_content" />
 
             <TextView
                 style="@style/EvaluationCardTextStyle"
-                android:text="가사 있는 곡" />
+                android:duplicateParentState="true"
+                android:text="가사 있는 곡"
+                android:textColor="@color/selector_card_content" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/btn_lyrics_off"
             style="@style/EvaluationCardStyle"
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"> <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_lyrics_off" />
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_lyrics_on"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:duplicateParentState="true"
+                android:src="@drawable/ic_lyrics_off"
+                app:tint="@color/selector_card_content" />
 
             <TextView
                 style="@style/EvaluationCardTextStyle"
-                android:text="가사 없는 곡" />
+                android:duplicateParentState="true"
+                android:text="가사 없는 곡"
+                android:textColor="@color/selector_card_content" />
         </LinearLayout>
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
