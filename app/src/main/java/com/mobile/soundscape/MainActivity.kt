@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                     val dialog = EvaluationPopupDialog()
                     dialog.show(supportFragmentManager, "EvaluationPopup")
                 }
-            }, 500) // 0.5초 정도면 충분히 자연스럽습니다.
+            }, 800) //
         }
     }
 

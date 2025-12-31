@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
 import com.mobile.soundscape.MainActivity
+import com.mobile.soundscape.PreferenceManager
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.ActivityPlaylistResultBinding
 

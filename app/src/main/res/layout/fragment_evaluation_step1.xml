@@ -287,11 +287,10 @@
             android:layout_height="40dp"
             android:elevation="4dp"
             android:src="@drawable/ic_slider_handle"
-            app:layout_constraintBottom_toTopOf="@id/dummy_anchor"
             app:layout_constraintEnd_toEndOf="@id/view_slider_track"
             app:layout_constraintStart_toStartOf="@id/view_slider_track"
             app:layout_constraintTop_toTopOf="@id/view_slider_track"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintBottom_toTopOf="@id/view_slider_track" />
 
         <View
             android:id="@+id/dummy_anchor"

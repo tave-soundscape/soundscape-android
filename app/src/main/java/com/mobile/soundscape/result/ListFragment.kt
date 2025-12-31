@@ -29,6 +29,7 @@ import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
 import com.mobile.soundscape.MainActivity
+import com.mobile.soundscape.PreferenceManager
 import com.mobile.soundscape.data.RecommendationManager
 import com.mobile.soundscape.data.RecommendationManager.getPlaylistName
 
@@ -96,6 +97,16 @@ class ListFragment : Fragment() {
     private fun updateUIWithRealData(data: RecommendationResponse, place: String, goal: String) {
 
         Log.d(TAG, "ListFragment: UI 업데이트 함수 진입")
+
+        if (data.songs != null && data.songs.isNotEmpty()) {
+            PreferenceManager.setPlaylistExperienced(requireContext(), true)
+            Log.d("PREF_CHECK", "추천 성공: 도장 찍힘 (true)")
+        } else {
+            // 데이터가 비어있으면 도장을 찍지 않거나 확실히 false로 만듭니다.
+            PreferenceManager.setPlaylistExperienced(requireContext(), false)
+            Log.d("PREF_CHECK", "추천 데이터 없음: 도장 찍지 않음")
+        }
+
         binding.tvSubtitle.text = "$place · $goal"
 
         // 플레이리스트 기본 정보 설정
