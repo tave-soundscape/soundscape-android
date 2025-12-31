@@ -244,7 +244,7 @@ class GalleryFragment : Fragment() {
             // 백엔드로 수정된 플리이름 보내는 함수
             updatePlaylistNameOnServer(savedPlaylistId, newName)
 
-            showCustomToast("이름 수정 및 라이브러리 저장이 완료되었습니다.")
+            showCustomToast("내 라이브러리에 추가됐어요")
             bottomSheetDialog.dismiss()
 
             // 라이브러리로 이동하는 버튼으로 교체
