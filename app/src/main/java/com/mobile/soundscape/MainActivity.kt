@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.mobile.soundscape.databinding.ActivityMainBinding
+import com.mobile.soundscape.evaluation.EvaluationPopupDialog
 import com.mobile.soundscape.home.HomeFragment
 
 
@@ -69,6 +70,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    // MainActivity.kt 에 추가
+    override fun onResume() {
+        super.onResume()
+
+        // 1. PreferenceManager를 통해 경험 여부 확인
+        if (PreferenceManager.isPlaylistExperienced(this)) {
+
+            // 2. 즉시 false로 변경하여 중복 방지
+            PreferenceManager.setPlaylistExperienced(this, false)
+
+            // 3. 화면이 완전히 뜬 후 팝업 노출 (2.5초 지연 대신 post 사용이 더 부드러움)
+            binding.root.postDelayed({
+                val existingDialog = supportFragmentManager.findFragmentByTag("EvaluationPopup")
+                if (existingDialog == null && !isFinishing && !isDestroyed) {
+                    val dialog = EvaluationPopupDialog()
+                    dialog.show(supportFragmentManager, "EvaluationPopup")
+                }
+            }, 500) // 0.5초 정도면 충분히 자연스럽습니다.
+        }
+    }
+
 
     // [추가] 이미 켜진 앱으로 다시 들어올 때 신호 처리
     override fun onNewIntent(intent: Intent) {

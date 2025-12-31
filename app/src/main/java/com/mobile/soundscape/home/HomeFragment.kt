@@ -29,10 +29,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 테스트용: 실행하자마자 "평가 필요함" 상태로 강제 설정(서버 연결 전이니깐)
-        val sharedPref = requireContext().getSharedPreferences("SoundscapePrefs", android.content.Context.MODE_PRIVATE)
-        sharedPref.edit().putBoolean("needs_evaluation", true).apply()
-
         // 홈화면 구슬 움직이는 animation
         com.bumptech.glide.Glide.with(this)
             .load(R.drawable.orb_animation)
@@ -43,26 +39,9 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_homeFragment_to_recPlaceFragment)
         }
 
-        checkAndShowEvaluationPopup()
     }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun checkAndShowEvaluationPopup() {
-        val sharedPref = requireContext().getSharedPreferences("SoundscapePrefs", android.content.Context.MODE_PRIVATE)
-        val needsEvaluation = sharedPref.getBoolean("needs_evaluation", false)
-
-        if (needsEvaluation) {
-            // 2~3초 뒤에 실행되도록 postDelayed 사용
-            view?.postDelayed({
-                // 프래그먼트가 아직 화면에 붙어 있는지(isAdded) 확인하는 것이 안전함
-                if (isAdded) {
-                    val dialog = EvaluationPopupDialog()
-                    dialog.show(parentFragmentManager, "EvaluationPopup")
-                }
-            }, 2500) // 2.5초
-        }
     }
 }
