@@ -15,6 +15,8 @@ import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentRecDecibelBinding
 import android.Manifest
 import android.media.MediaRecorder
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.mobile.soundscape.databinding.WidgetProgressBarBinding
 import androidx.fragment.app.activityViewModels
@@ -35,10 +37,20 @@ class RecDecibelFragment : Fragment() {
         CHANNEL,
         ENCODING
     )
+
+    // 5초 자동 종료를 위한 핸들러 및 Runnable
+    private val autoStopHandler = Handler(Looper.getMainLooper())
+    private val autoStopRunnable = Runnable {
+        if (isRecording) {
+            stopRecording()
+        }
+    }
+
     companion object {
         private const val SAMPLE_RATE = 44100
         private const val CHANNEL = AudioFormat.CHANNEL_IN_MONO
         private const val ENCODING = AudioFormat.ENCODING_PCM_16BIT
+        private const val RECORDING_DURATION = 5000L // 5초
     }
     private lateinit var binding: FragmentRecDecibelBinding
 
@@ -85,7 +97,7 @@ class RecDecibelFragment : Fragment() {
 
         when (newState) {
             DecibelState.INITIAL -> {
-                binding.tvCaption.text = "지금 공간의 소리를 들어볼게요."
+                binding.tvCaption.text = "5초 동안 공간의 소리를 들어볼게요."
                 binding.tvDecibelValue.text = "0 dB"
                 binding.btnAction.setImageResource(R.drawable.decibel_play) // 시작 아이콘
                 binding.ellipse.isVisible = false
@@ -115,6 +127,9 @@ class RecDecibelFragment : Fragment() {
         }
     }
     private fun startRecording() {
+        // 이전 데이터 초기화 (새로운 평균을 위해)
+        allRecordedValues.clear()
+
         // 1. UI 상태 변경 (RECORDING)
         updateUI(DecibelState.RECORDING)
 
@@ -147,6 +162,9 @@ class RecDecibelFragment : Fragment() {
         // 4. 측정 스레드 시작 (백그라운드에서 dB 계산)
         recordingThread = Thread { measureDecibel() }
         recordingThread.start()
+
+        // 5. 5초 후 자동으로 멈추는 타이머 시작
+        autoStopHandler.postDelayed(autoStopRunnable, RECORDING_DURATION)
     }
 
     private fun measureDecibel() {
@@ -182,6 +200,9 @@ class RecDecibelFragment : Fragment() {
     }
 
     private fun stopRecording() {
+        // 수동으로 멈췄을 경우를 대비해 자동 종료 타이머 취소
+        autoStopHandler.removeCallbacks(autoStopRunnable)
+
         isRecording = false
         audioRecord?.stop()
         audioRecord?.release()
@@ -235,5 +256,10 @@ class RecDecibelFragment : Fragment() {
         }
     }
 
+    // 뷰가 사라질 때 메모리 릭 방지를 위해 핸들러 콜백 제거
+    override fun onDestroyView() {
+        super.onDestroyView()
+        autoStopHandler.removeCallbacks(autoStopRunnable)
+    }
 
 }

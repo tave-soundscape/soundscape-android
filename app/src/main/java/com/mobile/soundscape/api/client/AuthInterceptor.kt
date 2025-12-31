@@ -16,19 +16,16 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             return chain.proceed(originalRequest)
         }
 
-        // 토큰 매니저에서 JWT 토큰(백엔드용) 꺼내기
-        // 내 스포티파이 토큰
-        // val token = TokenManager.getAccessToken(context)
-
-        // JWT 임시 토큰
-        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY2ODg3ODcyLCJleHAiOjE3OTg0MjM4NzJ9.SMEJfY6YTcfk3bYbnEoa3JHGlSj2Nm49BvZMWbCqoq-0kGN_5az_3GhuYOeP4-d6"
+        // 토큰 매니저에서 JWT 토큰 꺼내기
+        val token = TokenManager.getAccessToken(context)
+        // JWT 임시 토큰: val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY2ODg3ODcyLCJleHAiOjE3OTg0MjM4NzJ9.SMEJfY6YTcfk3bYbnEoa3JHGlSj2Nm49BvZMWbCqoq-0kGN_5az_3GhuYOeP4-d6"
 
         // 토큰이 없으면 그냥 보냄
         if (token.isNullOrEmpty()){
             return chain.proceed(originalRequest)
         }
 
-        // ★ 3. 토큰이 있으면 헤더에 추가 (Bearer + 띄어쓰기 + 토큰)
+        // 토큰이 있으면 헤더에 추가 (Bearer + 띄어쓰기 + 토큰)
         val newRequest = originalRequest.newBuilder()
             .addHeader("Authorization", "Bearer $token")
             .build()

@@ -18,6 +18,9 @@ data class RecommendationRequest (
 
 // 서버에서 받는 DTO -> 추천 결과에 따른 플레이리스트
 data class RecommendationResponse(
+    @SerializedName("playlistId")
+    val playlistId: Int,
+
     @SerializedName("playlistName")
     val playlistName: String,
 
@@ -49,12 +52,11 @@ data class Song(
     val imageUrl: String,
 
     @SerializedName("duration")
-    val duration: String,
+    val duration: String
 )
 
 
 data class UpdatePlaylistNameRequest(
-    // 만약 특정 플리의 ID가 필요하다면 여기에 val playlistId: Int 도 추가해야 함
-    @SerializedName("playlistName")
+    @SerializedName("newPlaylistName")
     val newPlaylistName: String
 )

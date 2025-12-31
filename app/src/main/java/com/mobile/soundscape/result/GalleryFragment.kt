@@ -64,6 +64,15 @@ class GalleryFragment : Fragment() {
         val place = RecommendationManager.place
         val goal = RecommendationManager.goal
 
+        // 플레이리스트 제목 설정
+        val savedPlaylistName = context?.let { ctx ->
+            RecommendationManager.getPlaylistName(ctx)
+        } ?: ""
+        if (savedPlaylistName.isNotEmpty()) {
+            binding.tvPlaylistName.text = savedPlaylistName
+        } else {
+            binding.tvPlaylistName.text = data?.playlistName ?: "플레이리스트 이름"
+        }
 
         binding.tvPlaylistInfo.text = "$place · $goal"
 
@@ -102,12 +111,12 @@ class GalleryFragment : Fragment() {
         }
         
         // 라이브러리에 추가 버튼
-        binding.addLibrary.setOnClickListener {
-            val currentName = binding.tvPlaylistTitle.text.toString()
+        binding.btnAddLibrary.setOnClickListener {
+            val currentName = binding.tvPlaylistName.text.toString()
             showAddLibraryBottomSheet(currentName)
         }
 
-        binding.movtToLibrary.setOnClickListener {
+        binding.btnMoveToLibrary.setOnClickListener {
             val intent = Intent(requireContext(), MainActivity::class.java)
             // 메인 액티비티를 다시 띄우면서 기존 스택 정리
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -120,9 +129,6 @@ class GalleryFragment : Fragment() {
 
     // --- 뷰모델 데이터로 화면 그리기 ---
     private fun updateUIWithSharedData(data: RecommendationResponse) {
-
-        // 플레이리스트 제목
-        binding.tvPlaylistTitle.text = data.playlistName
 
         // DTO -> MusicModel 변환
         val musicList = data.songs.map { song ->
@@ -226,39 +232,46 @@ class GalleryFragment : Fragment() {
 
         btnConfirm.setOnClickListener {
             val newName = etName.text.toString().trim()
-            binding.tvPlaylistTitle.text = newName
-            showCustomToast("이름이 수정되었습니다.")
+            binding.tvPlaylistName.text = newName
+            // 수정된 플리 이름 내부 저장소에 저장
+            context?.let { ctx ->
+                RecommendationManager.savePlaylistName(ctx, newName)
+            }
+            // 저장한 id 백엔드로 보내기
+            val savedPlaylistId = context?.let { ctx ->
+                RecommendationManager.getPlaylistId(ctx)
+            } ?: ""
+            // 백엔드로 수정된 플리이름 보내는 함수
+            updatePlaylistNameOnServer(savedPlaylistId, newName)
+
+            showCustomToast("이름 수정 및 라이브러리 저장이 완료되었습니다.")
             bottomSheetDialog.dismiss()
 
             // 라이브러리로 이동하는 버튼으로 교체
-            binding.movtToLibrary.visibility = View.VISIBLE
-            binding.addLibrary.visibility = View.GONE
-
-
-            // 백엔드로 수정된 플리이름 보내는 함수
-            updatePlaylistNameOnServer(newName)
+            binding.btnMoveToLibrary.visibility = View.VISIBLE
+            binding.btnAddLibrary.visibility = View.GONE
         }
         bottomSheetDialog.show()
     }
 
 
     // --- 백엔드에 이름 수정 요청 보내기 ---
-    private fun updatePlaylistNameOnServer(newName: String) {
+    private fun updatePlaylistNameOnServer(playlistId: String, newName: String) {
         val requestBody = UpdatePlaylistNameRequest(newPlaylistName = newName)
 
         // 2. API 호출
-        RetrofitClient.recommendationApi.updatePlaylistName(requestBody).enqueue(object : Callback<BaseResponse<String>> {
+        RetrofitClient.recommendationApi.updatePlaylistName(playlistId, requestBody).enqueue(object : Callback<BaseResponse<String>> {
             override fun onResponse(
                 call: Call<BaseResponse<String>>,
                 response: Response<BaseResponse<String>>
             ) {
                 if (response.isSuccessful) {
                     // 성공 로그
-                    Log.d("API_UPDATE", "이름 수정 성공: $newName")
+                    Log.d(TAG, "이름 수정 성공: $newName")
                 } else {
                     // 실패 로그 (하지만 이미 화면은 바꿨으니 조용히 로그만 남김)
-                    Log.e("API_UPDATE", "수정 실패 Code: ${response.code()}")
-                    // 필요하다면 다시 원래 이름으로 되돌리거나 토스트 띄우기
+                    Log.e(TAG, "수정 실패 Code: ${response.code()}")
+                    Toast.makeText(context, "서버 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
 

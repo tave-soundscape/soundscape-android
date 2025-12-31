@@ -20,7 +20,9 @@ import com.mobile.soundscape.api.dto.RecommendationRequest
 import com.mobile.soundscape.databinding.FragmentRecGoalBinding
 import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.RecommendationResponse
+import com.mobile.soundscape.data.OnboardingManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -211,30 +213,34 @@ class RecGoalFragment : Fragment() {
         )
         viewModel.checkData()
 
-        // =========================================================
-        // [실제 배포 모드] : 백엔드 연결 시 아래 주석 해제
-        // =========================================================
-
         // 서버에서 응답 받아서 뷰모델에 저장
-        RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<RecommendationResponse> {
+        RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
 
             override fun onResponse(
-                call: Call<RecommendationResponse>,
-                response: Response<RecommendationResponse>
+                call: Call<BaseResponse<RecommendationResponse>>,
+                response: Response<BaseResponse<RecommendationResponse>>
             ) {
                 if (response.isSuccessful) {
-                    val resultData = response.body()
+                    val baseResponse = response.body()
+                    val resultData = baseResponse?.data
 
                     if (resultData != null) {
                         Log.d(TAG, "RecGoal - 통신 성공! 제목: ${resultData.playlistName}")
-                        Log.d(TAG, "플리 url: ${resultData.playlistUrl}")
+                        Log.d(TAG, "플리 id: ${resultData.playlistId}")
                         Log.d(TAG, "첫 번째 곡 제목: ${resultData.songs[0].title}")
 
+                        // 메모리(싱글톤)에 저장
                         RecommendationManager.place = viewModel.place
                         RecommendationManager.goal = viewModel.goal
                         RecommendationManager.cachedPlaylist = resultData
-
+                        // 뷰모델 업데이트
                         viewModel.currentPlaylist.value = resultData
+
+                        // 내부 저장소에 플리 이름 저장 -> result의 두 프래그먼트에서 동일한 이름 패치되도록
+                        context?.let { ctx ->
+                            RecommendationManager.savePlaylistName(ctx, resultData.playlistName)
+                            RecommendationManager.savePlaylistId(ctx, resultData.playlistId.toString())  // 아이디 저장
+                        }
 
                         moveToResultFragment()
                     } else {
@@ -246,7 +252,7 @@ class RecGoalFragment : Fragment() {
                 }
             }
 
-            override fun onFailure(call: Call<RecommendationResponse>, t: Throwable) {
+            override fun onFailure(call: Call<BaseResponse<RecommendationResponse>>, t: Throwable) {
                 Log.e(TAG, "통신 실패: ${t.message}")
                 Toast.makeText(context, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
             }

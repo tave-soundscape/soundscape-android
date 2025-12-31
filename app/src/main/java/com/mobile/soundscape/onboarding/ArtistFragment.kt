@@ -83,7 +83,7 @@ class ArtistFragment : Fragment() {
                 searchToken = token
                 Log.d(TAG, "검색 토큰 획득 완료")
                 // 토큰을 받은 직후 초기 데이터(2024년 인기 아티스트) 로드
-                searchSpotifyArtists("year:2025", limit = 50)
+                searchSpotifyArtists("year:2024", limit = 50)
             },
             onFailure = {
                 Toast.makeText(context, "서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()

@@ -15,11 +15,11 @@ import kotlin.jvm.java
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.common.util.Utility
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LoginRequest
 import com.mobile.soundscape.api.dto.LoginResponse
+import com.mobile.soundscape.data.TokenManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+/*
         binding.moveHome.setOnClickListener {
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
             startActivity(intent)
@@ -44,18 +44,18 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // TODO: 카카오 oauth 구현하기
-        binding.btnKakaoOauth.setOnClickListener {
-            startKakaoLogin()
-
-        }
-
         binding.moveOnboardingButton.setOnClickListener {
             val fragment = SetnameFragment()
             val transaction = supportFragmentManager.beginTransaction()
             transaction.replace(R.id.onboarding_fragment_container, fragment)
             transaction.addToBackStack(null)
             transaction.commit()
+        }
+*/
+        // TODO: 카카오 oauth 구현하기
+        binding.btnKakaoOauth.setOnClickListener {
+            startKakaoLogin()
+
         }
 
     }
@@ -72,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
             } else if (token != null) {
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
 
-                // 카카오에서 받은 토큰을 백엔드로 전송!
+                // ★ 카카오에서 받은 토큰을 백엔드로 전송!
                 sendKakaoTokenToBackend(token.accessToken)
             }
         }
@@ -103,8 +103,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-
+    // 백엔드 서버에 토큰 전송
     private fun sendKakaoTokenToBackend(kakaoAccessToken: String) {
+        // 이전 질문에서 정의한 LoginRequest(accessToken = ...) 사용
         val request = LoginRequest(kakaoAccessToken = kakaoAccessToken)
 
         RetrofitClient.loginApi.loginKakao(request).enqueue(object : Callback<BaseResponse<LoginResponse>> {
@@ -120,8 +121,15 @@ class LoginActivity : AppCompatActivity() {
                         val loginData = body.data
 
                         if (loginData != null) {
-                            Log.d(TAG, "서버 응답 코드: ${response.code()}")
-                            Log.d(TAG, "서버 응답 메시지: ${body.message}")
+                            Log.d(TAG, "백엔드 로그인 성공! 서버응답 값: $body")
+
+                            // 백엔드가 준 JWT 토큰을 내부 저장소에 보관
+                            TokenManager.saveToken(
+                                context = applicationContext,
+                                accessToken = loginData.accessToken,
+                                refreshToken = loginData.refreshToken
+                            )
+                            handleLoginSuccess(loginData.isOnboarded)
                         }
                     } else {
                         // 통신은 됐지만 비즈니스 로직 실패
@@ -144,17 +152,15 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    /**
-     * 3. 로그인 성공 후 화면 이동 처리
-     */
+    // 로그인 성공 후 분기 처리
     private fun handleLoginSuccess(isOnboarded: Boolean) {
         if (isOnboarded) {
             // [CASE A] 이미 가입하고 온보딩도 한 유저 -> 메인 화면으로
             val intent = Intent(this, MainActivity::class.java)
             // 뒤로가기 누르면 로그인 화면 안 나오게 스택 정리
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-            finish()
+            // finish()
         } else {
             // [CASE B] 처음 가입한 유저 (온보딩 필요) -> 온보딩 프래그먼트 표시
             // (LoginActivity 내에 fragment_container가 있다고 가정)
@@ -162,34 +168,7 @@ class LoginActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.onboarding_fragment_container, fragment) // ID 확인 필요
                 .commit()
-
-            // 혹은 온보딩 액티비티가 따로 있다면 startActivity로 이동
         }
     }
-
-    /*
-    /* 로그인 성공 후 분기 처리 */
-    private fun handleLoginSuccess(isOnboarded: Boolean) {
-        if (isOnboarded) {
-            // [CASE A] 기존 회원 (온보딩 완료) -> 메인 액티비티로 이동
-            val intent = Intent(this, MainActivity::class.java)
-
-            // 뒤로가기 눌렀을 때 로그인 화면 다시 안 나오게 플래그 설정
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
-            startActivity(intent)
-            finish() // 로그인 액티비티 종료
-
-        } else {
-            // [CASE B] 신규 회원 (온보딩 미완료) -> 현재 화면에 온보딩 프래그먼트 띄우기
-            // 2. 프래그먼트 교체
-            val fragment = SetnameFragment()
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.onboarding_fragment_container, fragment)
-                .commit()
-        }
-    }
-
-    */
 }
 

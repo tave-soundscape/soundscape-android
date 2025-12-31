@@ -1,5 +1,6 @@
 package com.mobile.soundscape.result
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
+import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.ActivityPlaylistResultBinding
 
@@ -55,6 +57,8 @@ class PlaylistResultActivity : AppCompatActivity() {
                 // 2초(2000ms) 안에 두 번 눌렀는지 확인
                 if (System.currentTimeMillis() - backPressedTime < 2000) {
                     // [종료 처리] 액티비티를 끄고 홈(이전 액티비티)으로 돌아감
+                    val intent = Intent(this@PlaylistResultActivity, MainActivity::class.java)
+                    startActivity(intent)
                     finish()
                 } else {
                     // [경고 처리] 첫 번째 눌림 -> 시간 갱신 및 토스트 띄우기
