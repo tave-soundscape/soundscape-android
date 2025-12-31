@@ -67,11 +67,8 @@ class LoginActivity : AppCompatActivity() {
         // 로그인 공통 콜백 (카카오톡으로 하든, 웹으로 하든 결과는 여기로 옴)
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
-                Log.e(TAG, "카카오계정으로 로그인 실패", error)
                 Toast.makeText(this, "카카오 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
             } else if (token != null) {
-                Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
-
                 // ★ 카카오에서 받은 토큰을 백엔드로 전송!
                 sendKakaoTokenToBackend(token.accessToken)
             }
@@ -81,8 +78,6 @@ class LoginActivity : AppCompatActivity() {
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
             UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
                 if (error != null) {
-                    Log.e(TAG, "카카오톡으로 로그인 실패", error)
-
                     // 사용자가 '취소'를 누른 경우엔 웹 로그인을 시도하지 않고 종료
                     if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
                         return@loginWithKakaoTalk
@@ -91,8 +86,6 @@ class LoginActivity : AppCompatActivity() {
                     // 카카오톡 로그인 실패 시(설치 안 됨 등), 웹(계정)으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
                 } else if (token != null) {
-                    Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
-
                     // ★ 카카오에서 받은 토큰을 백엔드로 전송!
                     sendKakaoTokenToBackend(token.accessToken)
                 }
@@ -121,7 +114,6 @@ class LoginActivity : AppCompatActivity() {
                         val loginData = body.data
 
                         if (loginData != null) {
-                            Log.d(TAG, "백엔드 로그인 성공! 서버응답 값: $body")
 
                             // 백엔드가 준 JWT 토큰을 내부 저장소에 보관
                             TokenManager.saveToken(
@@ -134,19 +126,16 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         // 통신은 됐지만 비즈니스 로직 실패
                         val errorMsg = body?.message ?: "알 수 없는 서버 오류"
-                        Log.e(TAG, "서버 에러: $errorMsg")
                         Toast.makeText(this@LoginActivity, "로그인 실패: $errorMsg", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     // HTTP 400~500 에러
                     val errorBody = response.errorBody()?.string() // ★ 서버가 보낸 에러 메시지 읽기
-                    Log.e(TAG, "서버 에러 코드: ${response.code()}")
                     Log.e(TAG, "서버 에러 내용: $errorBody")
                 }
             }
 
             override fun onFailure(call: Call<BaseResponse<LoginResponse>>, t: Throwable) {
-                Log.e(TAG, "네트워크 통신 실패: ${t.message}")
                 Toast.makeText(this@LoginActivity, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
             }
         })

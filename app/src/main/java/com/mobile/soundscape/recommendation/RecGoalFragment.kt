@@ -225,9 +225,6 @@ class RecGoalFragment : Fragment() {
                     val resultData = baseResponse?.data
 
                     if (resultData != null) {
-                        Log.d(TAG, "RecGoal - 통신 성공! 제목: ${resultData.playlistName}")
-                        Log.d(TAG, "플리 id: ${resultData.playlistId}")
-                        Log.d(TAG, "첫 번째 곡 제목: ${resultData.songs[0].title}")
 
                         // 메모리(싱글톤)에 저장
                         RecommendationManager.place = viewModel.place

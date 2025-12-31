@@ -81,7 +81,6 @@ class ArtistFragment : Fragment() {
         SpotifyAuthRepository.getSearchToken(
             onSuccess = { token ->
                 searchToken = token
-                Log.d(TAG, "검색 토큰 획득 완료")
                 // 토큰을 받은 직후 초기 데이터(2024년 인기 아티스트) 로드
                 searchSpotifyArtists("year:2024", limit = 50)
             },
@@ -298,7 +297,6 @@ class ArtistFragment : Fragment() {
     private fun searchSpotifyArtists(query: String, limit: Int = 20) {
         val token = searchToken
         if(token.isNullOrEmpty()) {
-            Log.e(TAG, "토큰이 아직 없습니다")
             return
         }
 
@@ -371,9 +369,6 @@ class ArtistFragment : Fragment() {
 
     // ★ 수정 모드일 때 실행되는 설정 함수
     private fun setupEditMode() {
-        Log.d(TAG, "수정 모드로 진입했습니다.")
-
-
         // 3. 버튼 텍스트 변경 ("다음" -> "저장")
         binding.nextButton.text = "취향 변경하기"
         // 수정 모드에서는 처음부터 버튼이 보여야 함 (이미 3개가 선택되어 있을 테니)
@@ -407,13 +402,10 @@ class ArtistFragment : Fragment() {
                     parentFragmentManager.popBackStack()
                 }
                 else {
-                    Log.e("mypage", "code: ${response.code()}, msg: ${response.errorBody()?.string()}")
                     Toast.makeText(context, "저장에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
-                // [실패 2] 통신 에러 (인터넷 끊김 등)
-                Log.e("API_FAIL", "통신 에러: ${t.message}")
                 Toast.makeText(context, "서버와 연결할 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
         })

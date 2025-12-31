@@ -197,9 +197,6 @@ class GenreFragment : Fragment() {
         }
     }
     private fun setupEditMode() {
-        Log.d("GerneFragment", "수정 모드로 진입했습니다.")
-
-
         // 3. 버튼 텍스트 변경 ("다음" -> "저장")
         binding.nextButton.text = "취향 변경하기"
         // 수정 모드에서는 처음부터 버튼이 보여야 함 (이미 3개가 선택되어 있을 테니)
@@ -231,7 +228,6 @@ class GenreFragment : Fragment() {
                     Toast.makeText(context, "장르 취향이 수정되었습니다.", Toast.LENGTH_SHORT).show()
                     parentFragmentManager.popBackStack()
                 } else {
-                    Log.e("mypage", "code: ${response.code()}, msg: ${response.errorBody()?.string()}")
                     Toast.makeText(context, "저장에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 }
             }

@@ -311,7 +311,6 @@ class ListFragment : Fragment() {
             val savedPlaylistId = context?.let { ctx ->
                 RecommendationManager.getPlaylistId(ctx)
             } ?: ""
-            Log.e(TAG, "저장된 id 확인용로그: $savedPlaylistId")
             // *** 백엔드로 수정된 플리이름 보내는 함수 ***
             updatePlaylistNameOnServer(savedPlaylistId,newName)
 
@@ -336,14 +335,10 @@ class ListFragment : Fragment() {
                 response: Response<BaseResponse<String>>
             ) {
                 if (response.isSuccessful) {
-                    // 성공 로그
-                    Log.d(TAG, "이름 수정 성공: $newName")
                 } else {
                     // 실패 로그 (하지만 이미 화면은 바꿨으니 조용히 로그만 남김)
                     val errorBody = response.errorBody()?.string()
                     Log.e(TAG, "수정 실패 Code: ${response.code()}")
-                    Log.e(TAG, "수정 실패 Code: ${response.code()}")
-                    Log.e(TAG, "서버가 보낸 에러 메시지: $errorBody")
 
                     Toast.makeText(context, "서버 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
