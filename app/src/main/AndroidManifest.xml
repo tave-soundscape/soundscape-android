@@ -8,7 +8,7 @@
 
     <application
         android:name=".SoundscapeApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -18,12 +18,12 @@
         android:theme="@style/Theme.Soundscape"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
+
         <activity
             android:name=".SplashActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -31,15 +31,16 @@
         <activity
             android:name=".evaluation.EvaluationActivity"
             android:exported="false" />
+
         <activity
             android:name=".result.PlaylistResultActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true" />
-        <activity
-            android:name=".login.LoginActivity"
-            android:exported="true" />
+            android:exported="false" /> <activity
+        android:name=".MainActivity"
+        android:exported="true"
+        android:launchMode="singleTop" /> <activity
+        android:name=".login.LoginActivity"
+        android:exported="true" />
+
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
@@ -48,7 +49,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- 리다이렉트 URI: "kakao${NATIVE_APP_KEY}://oauth" -->
                 <data android:host="oauth"
                     android:scheme="kakao23027bc8d10e3a8f7abcb09a61efdc13" />
             </intent-filter>
