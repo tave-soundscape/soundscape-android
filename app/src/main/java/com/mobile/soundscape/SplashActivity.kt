@@ -25,34 +25,36 @@ class SplashActivity : AppCompatActivity() {
         Log.d(TAG, "Splash 시작 ")
 
         Handler(Looper.getMainLooper()).postDelayed({
-            moveToLoginActivity()
+            checkAutoLogin()
         }, 1500)
 
     }
-/*
+
     // 배포할 때 주석해제
     // Splash 화면에서 액세스 토큰이 유효한지 검사
     private fun checkAutoLogin() {
         // JWT 토큰 꺼내기
         val accessToken = TokenManager.getAccessToken(this)
 
-        if(!accessToken.isNullOrEmpty()){
-            // case A: 토큰이 있다면 -> 메인으로 이동 (자동 로그인)
+        if (!accessToken.isNullOrEmpty()) {
+            // 토큰이 있다 -> 메인으로 이동
+            Log.d(TAG, "토큰 있음: 메인으로 이동")
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            finish()
         } else {
+            // 토큰이 없다 -> 로그인으로 이동
+            Log.d(TAG, "토큰 없음: 로그인으로 이동")
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-            finish()
         }
+        finish()
     }
-    */
 
+/*
     private fun moveToLoginActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
     }
-
+*/
 }

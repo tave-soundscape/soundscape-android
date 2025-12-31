@@ -1,6 +1,7 @@
 package com.mobile.soundscape.api.dto
 
 import com.google.gson.annotations.SerializedName
+import com.mobile.soundscape.api.dto.Song
 
 
 // --- 마이페이지 관련 DTO ---
@@ -35,4 +36,22 @@ data class PlaylistDetail (
 
     @SerializedName("playlistName")
     val playlistName: String
+)
+
+// 상세 정보 dto
+data class LibraryPlaylistDetailResponse (
+    @SerializedName("playlistId")
+    val playlistId: Int,
+
+    @SerializedName("playlistName")
+    val playlistName: String,
+
+    @SerializedName("playlistUrl")
+    val playlistUrl: String,
+
+    @SerializedName("spotifyPlaylistId")
+    val spotifyPlaylistId: String,
+
+    @SerializedName("songs")
+    val songs: List<Song>
 )

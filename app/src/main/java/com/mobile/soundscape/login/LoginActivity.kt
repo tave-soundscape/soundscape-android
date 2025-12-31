@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+/*
         binding.moveHome.setOnClickListener {
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
             startActivity(intent)
@@ -44,18 +44,18 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // TODO: 카카오 oauth 구현하기
-        binding.btnKakaoOauth.setOnClickListener {
-            startKakaoLogin()
-
-        }
-
         binding.moveOnboardingButton.setOnClickListener {
             val fragment = SetnameFragment()
             val transaction = supportFragmentManager.beginTransaction()
             transaction.replace(R.id.onboarding_fragment_container, fragment)
             transaction.addToBackStack(null)
             transaction.commit()
+        }
+*/
+        // TODO: 카카오 oauth 구현하기
+        binding.btnKakaoOauth.setOnClickListener {
+            startKakaoLogin()
+
         }
 
     }

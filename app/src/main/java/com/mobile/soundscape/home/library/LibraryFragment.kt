@@ -92,7 +92,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
 
     private fun fetchLibraryPlaylists() {
         // size 파라미터는 기본값 10이 적용되거나, 명시적으로 10을 넣을 수 있습니다.
-        RetrofitClient.libraryApi.getLibraryPlaylists().enqueue(object : Callback<BaseResponse<LibraryPlaylistResponse>> {
+        RetrofitClient.libraryApi.getLibraryPlaylists(size=20).enqueue(object : Callback<BaseResponse<LibraryPlaylistResponse>> {
 
             override fun onResponse(
                 call: Call<BaseResponse<LibraryPlaylistResponse>>,
@@ -125,16 +125,16 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
         // API 데이터(PlaylistDetail) -> UI 데이터(LibraryPlaylistModel) 변환
         val uiDataList = apiPlaylists.map { detail ->
             LibraryPlaylistModel(
+                playlistId = detail.playlistId,
                 title = detail.playlistName,
-                // API에 노래 목록이 없어서 임시로 빈 리스트 처리 (나중에 상세 조회 API가 따로 있다면 거기서 불러와야 함)
                 songs = emptyList()
             )
         }
 
         libraryAdapter = LibraryAdapter(uiDataList) { selectedPlaylist ->
             val bundle = Bundle().apply {
+                putString("playlistId", selectedPlaylist.playlistId.toString())
                 putString("title", selectedPlaylist.title)
-                putSerializable("songs", ArrayList(selectedPlaylist.songs))
             }
             findNavController().navigate(R.id.action_libraryFragment_to_libraryDetailFragment, bundle)
         }

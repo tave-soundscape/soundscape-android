@@ -52,7 +52,7 @@ data class Song(
     val imageUrl: String,
 
     @SerializedName("duration")
-    val duration: String,
+    val duration: String
 )
 
 
