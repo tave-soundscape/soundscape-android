@@ -37,11 +37,11 @@ class RecPlaceFragment : Fragment() {
     private val allPlaceData = listOf(
         Place("p0", "집/실내", R.color.btn_pink, R.drawable.place_icon0, R.id.center_button),
         Place("p1", "카페", R.color.btn_orange, R.drawable.place_icon1, R.id.btn1_wrapper),
-        Place("p2", "공원", R.color.btn_blue, R.drawable.place_icon2, R.id.btn2_wrapper),
-        Place("p3", "코워킹", R.color.btn_purple, R.drawable.place_icon3, R.id.btn3_wrapper),
+        Place("p2", "코워킹", R.color.btn_blue, R.drawable.place_icon2, R.id.btn2_wrapper),
+        Place("p3", "헬스장", R.color.btn_purple, R.drawable.place_icon3, R.id.btn3_wrapper),
         Place("p4", "도서관", R.color.btn_yellow, R.drawable.place_icon4, R.id.btn4_wrapper),
-        Place("p5", "헬스장", R.color.btn_red, R.drawable.place_icon5, R.id.btn5_wrapper),
-        Place("p6", "집/실내", R.color.btn_green, R.drawable.place_icon6, R.id.btn6_wrapper)
+        Place("p5", "이동중", R.color.btn_red, R.drawable.place_icon5, R.id.btn5_wrapper),
+        Place("p6", "공원", R.color.btn_green, R.drawable.place_icon6, R.id.btn6_wrapper)
     )
 
     override fun onCreateView(

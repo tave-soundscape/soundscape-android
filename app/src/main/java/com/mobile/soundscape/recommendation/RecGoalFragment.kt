@@ -54,7 +54,7 @@ class RecGoalFragment : Fragment() {
         Goal("g4", "안정", R.color.btn_yellow, R.drawable.goal_icon4, R.id.btn4_wrapper),
         Goal("g5", "분노", R.color.btn_red, R.drawable.goal_icon5, R.id.btn5_wrapper),
         Goal("g6", "휴식", R.color.btn_green, R.drawable.goal_icon6, R.id.btn6_wrapper),
-        Goal("g7", "미선택", R.color.btn_empty, R.drawable.goal_icon7, R.id.btn7_wrapper) // 미선택 버튼 추가
+        // Goal("g7", "미선택", R.color.btn_empty, R.drawable.goal_icon7, R.id.btn7_wrapper) // 미선택 버튼 추가
     )
 
     override fun onCreateView(
@@ -77,7 +77,7 @@ class RecGoalFragment : Fragment() {
             binding.btn4Wrapper,
             binding.btn5Wrapper,
             binding.btn6Wrapper,
-            binding.btn7Wrapper
+            // binding.btn7Wrapper
         )
 
         //  초기 상태 설정
@@ -98,9 +98,9 @@ class RecGoalFragment : Fragment() {
             val selectedData = allGoalData.find { it.wrapperId == selectedButtonWrapper?.id }
             if (selectedData != null) {
                 viewModel.goal = selectedData.name
+                viewModel.checkData()
             }
-
-            sendRecommendationRequest()
+            findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)
         }
 
         // TODO: loadRadialButtons 호출 (목표 데이터로 Custom View 채우기)
@@ -179,7 +179,7 @@ class RecGoalFragment : Fragment() {
 
         // 6. 다음 버튼 활성화
         binding.ellipse.isVisible = isSelected
-        binding.nextBtn.isVisible = true
+        binding.nextBtn.isVisible = isSelected
         binding.nextBtn.isEnabled = isSelected
         binding.nextBtn.alpha = if (isSelected) 1.0f else 0.5f
     }
@@ -193,71 +193,9 @@ class RecGoalFragment : Fragment() {
             R.id.btn4_wrapper -> R.id.btn4_icon
             R.id.btn5_wrapper -> R.id.btn5_icon
             R.id.btn6_wrapper -> R.id.btn6_icon
-            R.id.btn7_wrapper -> R.id.btn7_icon // btn7 추가
+            // R.id.btn7_wrapper -> R.id.btn7_icon // btn7 추가
             else -> throw IllegalArgumentException("Unknown wrapper ID: $wrapperId")
         }
-    }
-
-    /**
-     * [백엔드 전송 함수]
-     * 1. 뷰모델의 (장소, 데시벨, 목표)를 모두 꺼내서 서버로 전송
-     * 2. 서버에서 받은 결과(RecommendationResponse)를 뷰모델에 저장
-     * 3. 다음 화면으로 이동
-     */
-    private fun sendRecommendationRequest() {
-        // 1. 뷰모델에서 장소, 데시벨, 목표 꺼내서 서버로 전송
-        val request = RecommendationRequest(
-            place = viewModel.place,
-            decibel = viewModel.decibel,
-            goal = viewModel.goal
-        )
-        viewModel.checkData()
-
-        // 서버에서 응답 받아서 뷰모델에 저장
-        RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
-
-            override fun onResponse(
-                call: Call<BaseResponse<RecommendationResponse>>,
-                response: Response<BaseResponse<RecommendationResponse>>
-            ) {
-                if (response.isSuccessful) {
-                    val baseResponse = response.body()
-                    val resultData = baseResponse?.data
-
-                    if (resultData != null) {
-
-                        // 메모리(싱글톤)에 저장
-                        RecommendationManager.place = viewModel.place
-                        RecommendationManager.goal = viewModel.goal
-                        RecommendationManager.cachedPlaylist = resultData
-                        // 뷰모델 업데이트
-                        viewModel.currentPlaylist.value = resultData
-
-                        // 내부 저장소에 플리 이름 저장 -> result의 두 프래그먼트에서 동일한 이름 패치되도록
-                        context?.let { ctx ->
-                            RecommendationManager.savePlaylistName(ctx, resultData.playlistName)
-                            RecommendationManager.savePlaylistId(ctx, resultData.playlistId.toString())  // 아이디 저장
-                        }
-
-                        moveToResultFragment()
-                    } else {
-                        Toast.makeText(context, "서버 응답이 비어있습니다.", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Log.e(TAG, "서버 에러 코드: ${response.code()}")
-                    Toast.makeText(context, "서버 에러 발생", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<BaseResponse<RecommendationResponse>>, t: Throwable) {
-                Log.e(TAG, "통신 실패: ${t.message}")
-                Toast.makeText(context, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun moveToResultFragment() {
-        findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)
     }
 
     private fun getTextViewIdForWrapper(wrapperId: Int): Int {
@@ -269,7 +207,7 @@ class RecGoalFragment : Fragment() {
             R.id.btn4_wrapper -> R.id.txt4
             R.id.btn5_wrapper -> R.id.txt5
             R.id.btn6_wrapper -> R.id.txt6
-            R.id.btn7_wrapper -> R.id.txt7 // txt7 추가 (XML에 ID가 없으면 에러 발생)
+            // R.id.btn7_wrapper -> R.id.txt7 // txt7 추가 (XML에 ID가 없으면 에러 발생)
             else -> throw IllegalArgumentException("Unknown wrapper ID for text: $wrapperId")
         }
     }

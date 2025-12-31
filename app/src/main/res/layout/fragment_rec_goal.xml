@@ -239,7 +239,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="집/실내"
+            android:text="수면"
             android:textColor="@color/white"
             app:layout_constraintEnd_toStartOf="@+id/btn3_wrapper"
             app:layout_constraintStart_toEndOf="@+id/btn5_wrapper"
@@ -261,56 +261,56 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="28dp"
             android:text="위로"
             android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn2_wrapper"
+            app:layout_constraintStart_toEndOf="@+id/btn2_wrapper"
             app:layout_constraintTop_toBottomOf="@+id/btn2_wrapper" />
 
         <TextView
             android:id="@+id/txt3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
             android:text="활력"
             android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn3_wrapper" />
+            app:layout_constraintEnd_toStartOf="@+id/btn3_wrapper"
+            app:layout_constraintStart_toEndOf="@+id/btn3_wrapper"
+            app:layout_constraintTop_toBottomOf="@+id/btn3_wrapper"/>
 
         <TextView
             android:id="@+id/txt4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="164dp"
             android:text="안정"
             android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn4_wrapper" />
+            app:layout_constraintEnd_toStartOf="@+id/btn4_wrapper"
+            app:layout_constraintStart_toEndOf="@+id/btn4_wrapper"
+            app:layout_constraintTop_toBottomOf="@+id/btn4_wrapper"/>
 
         <TextView
             android:id="@+id/txt5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="36dp"
             android:text="분노"
             android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn5_wrapper" />
+            app:layout_constraintEnd_toStartOf="@+id/btn5_wrapper"
+            app:layout_constraintStart_toEndOf="@+id/btn5_wrapper"
+            app:layout_constraintTop_toBottomOf="@+id/btn5_wrapper"/>
 
         <TextView
             android:id="@+id/txt6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="36dp"
             android:layout_marginTop="4dp"
             android:text="휴식"
             android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn6_wrapper" />
+            app:layout_constraintStart_toStartOf="@id/btn6_wrapper"
+            app:layout_constraintEnd_toEndOf="@id/btn6_wrapper"
+            app:layout_constraintTop_toBottomOf="@id/btn6_wrapper" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+<!--
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btn7_wrapper"
         android:layout_width="100dp"
@@ -350,6 +350,7 @@
         app:layout_constraintStart_toStartOf="@+id/btn7_wrapper"
         app:layout_constraintEnd_toEndOf="@+id/btn7_wrapper"
         app:layout_constraintTop_toBottomOf="@+id/btn7_wrapper" />
+    -->
 
     <TextView
         android:id="@+id/tvCaption"

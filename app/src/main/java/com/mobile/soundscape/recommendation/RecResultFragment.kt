@@ -1,22 +1,36 @@
 package com.mobile.soundscape.recommendation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.mobile.soundscape.R
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.RecommendationRequest
+import com.mobile.soundscape.api.dto.RecommendationResponse
+import com.mobile.soundscape.data.RecommendationManager
 import com.mobile.soundscape.databinding.FragmentRecResultBinding
 import com.mobile.soundscape.result.PlaylistResultActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import kotlin.getValue
 
 class RecResultFragment : Fragment() {
 
     private var _binding: FragmentRecResultBinding? = null
     private val binding get() = _binding!!
+    val TAG = "PlayTest"
+    private val viewModel: RecommendationViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +48,8 @@ class RecResultFragment : Fragment() {
             .load(R.drawable.orb_animation)
             .into(binding.centerButton)
 
+        sendRecommendationRequest()
+
         // 5초 딜레이 시작 (Coroutines 사용)
         // (viewLifecycleOwner를 사용해야 화면이 꺼지면 타이머도 안전하게 종료됨)
         viewLifecycleOwner.lifecycleScope.launch {
@@ -47,6 +63,62 @@ class RecResultFragment : Fragment() {
             val intent = android.content.Intent(requireContext(), PlaylistResultActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    /**
+     * [백엔드 전송 함수]
+     * 1. 뷰모델의 (장소, 데시벨, 목표)를 모두 꺼내서 서버로 전송
+     * 2. 서버에서 받은 결과(RecommendationResponse)를 뷰모델에 저장
+     * 3. 다음 화면으로 이동
+     */
+    private fun sendRecommendationRequest() {
+        // 1. 뷰모델에서 장소, 데시벨, 목표 꺼내서 서버로 전송
+        val request = RecommendationRequest(
+            place = viewModel.place,
+            decibel = viewModel.decibel,
+            goal = viewModel.goal
+        )
+        viewModel.checkData()
+
+        // 서버에서 응답 받아서 뷰모델에 저장
+        RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
+
+            override fun onResponse(
+                call: Call<BaseResponse<RecommendationResponse>>,
+                response: Response<BaseResponse<RecommendationResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val baseResponse = response.body()
+                    val resultData = baseResponse?.data
+
+                    if (resultData != null) {
+
+                        // 메모리(싱글톤)에 저장
+                        RecommendationManager.place = viewModel.place
+                        RecommendationManager.goal = viewModel.goal
+                        RecommendationManager.cachedPlaylist = resultData
+                        // 뷰모델 업데이트
+                        viewModel.currentPlaylist.value = resultData
+
+                        // 내부 저장소에 플리 이름 저장 -> result의 두 프래그먼트에서 동일한 이름 패치되도록
+                        context?.let { ctx ->
+                            RecommendationManager.savePlaylistName(ctx, resultData.playlistName)
+                            RecommendationManager.savePlaylistId(ctx, resultData.playlistId.toString())  // 아이디 저장
+                        }
+                    } else {
+                        Toast.makeText(context, "서버 응답이 비어있습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Log.e(TAG, "서버 에러 코드: ${response.code()}")
+                    Toast.makeText(context, "서버 에러 발생", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<RecommendationResponse>>, t: Throwable) {
+                Log.e(TAG, "통신 실패: ${t.message}")
+                Toast.makeText(context, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun updateUIForCompletion() {

@@ -5,7 +5,7 @@ import java.io.Serial
 
 // 서버로 보낼 때 쓰는 DTO
 data class RecommendationRequest (
-    @SerializedName("place")
+    @SerializedName("location")
     val place: String,
 
     @SerializedName("decibel")

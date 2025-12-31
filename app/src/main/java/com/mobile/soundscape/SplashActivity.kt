@@ -22,6 +22,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
+        // Log.e(TAG, "accesstoken: ${TokenManager.getAccessToken(this)}")
         Handler(Looper.getMainLooper()).postDelayed({
             checkAutoLogin()
         }, 1500)
