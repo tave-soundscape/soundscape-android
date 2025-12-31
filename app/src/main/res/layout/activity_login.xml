@@ -13,7 +13,7 @@
         android:id="@+id/vector"
         android:layout_width="138dp"
         android:layout_height="158dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="170dp"
         android:src="@drawable/login_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,23 +80,23 @@
 -->
     <Button
         android:id="@+id/btnKakaoOauth"
-        android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:layout_marginHorizontal="20dp"
-        android:backgroundTint="#FFE90A"
-        android:text="kakao로 시작하기"
+        android:layout_width="220dp"
+        android:layout_height="55dp"
+        android:background="@drawable/bg_input_rounded"
+        app:backgroundTint="@null"
+        android:backgroundTint="#FEE500"
+        android:text="카카오로 시작하기"
         android:textColor="@color/black"
         android:textSize="17sp"
-        android:textStyle="bold"
-        app:icon="@drawable/kakao_logo"
+        app:icon="@drawable/login_kakao_logo"
         app:iconGravity="textStart"
         app:iconPadding="7dp"
         app:iconSize="25dp"
         app:iconTint="@null"
+        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="100dp"/>
+        app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
 
     <FrameLayout
         android:id="@+id/onboarding_fragment_container"

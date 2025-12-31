@@ -11,28 +11,13 @@
 
     <ImageView
         android:id="@+id/vector"
-        android:layout_width="138dp"
-        android:layout_height="158dp"
-        android:layout_marginBottom="120dp"
-        android:src="@drawable/orb_animation"
+        android:layout_width="100dp"
+        android:layout_height="110dp"
+        android:src="@drawable/login_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:gravity="center"
-        android:text="DIP"
-        android:textColor="@color/white"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vector" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
