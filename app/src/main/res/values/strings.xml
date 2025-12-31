@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">soundscape</string>
+    <string name="app_name">DIP</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="desc_make_dip_button">몰입 시작 버튼</string>
