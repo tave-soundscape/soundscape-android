@@ -18,7 +18,6 @@ class AuthInterceptor(private val context: Context) : Interceptor {
 
         // 토큰 매니저에서 JWT 토큰 꺼내기
         val token = TokenManager.getAccessToken(context)
-        // JWT 임시 토큰: val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzY2ODg3ODcyLCJleHAiOjE3OTg0MjM4NzJ9.SMEJfY6YTcfk3bYbnEoa3JHGlSj2Nm49BvZMWbCqoq-0kGN_5az_3GhuYOeP4-d6"
 
         // 토큰이 없으면 그냥 보냄
         if (token.isNullOrEmpty()){
