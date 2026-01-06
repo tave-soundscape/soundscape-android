@@ -15,7 +15,7 @@
         android:layout_marginTop="50dp"
         android:text="마이페이지"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        style="@style/Subtitle02_100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -49,8 +49,7 @@
             android:layout_height="wrap_content"
             android:text="이름"
             android:textColor="#AAAAAA"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            style="@style/Body01_100"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -64,6 +63,17 @@
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_name_label" />
+
+        <ImageView
+            android:id="@+id/btn_edit_name"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/playlist_result_editpencil"
+            app:tint="@color/white"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -97,6 +107,7 @@
             android:background="@drawable/bg_mypage_capsule"
             android:gravity="center"
             android:text="가수1"
+            style="@style/Body01_100"
             app:layout_constraintHorizontal_weight="1"
             android:textColor="@color/white"
             android:textStyle="bold"
@@ -113,6 +124,7 @@
             android:background="@drawable/bg_mypage_capsule"
             android:gravity="center"
             android:text="가수2"
+            style="@style/Body01_100"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:padding="3dp"
@@ -129,6 +141,7 @@
             android:background="@drawable/bg_mypage_capsule"
             android:gravity="center"
             android:text="가수3"
+            style="@style/Body01_100"
             android:padding="3dp"
             android:textColor="@color/white"
             android:textStyle="bold"
@@ -167,6 +180,7 @@
             android:layout_height="100dp"
             android:background="@drawable/bg_mypage_capsule"
             android:gravity="center"
+            style="@style/Body01_100"
             android:text="장르1"
             android:textColor="@color/white"
             android:textStyle="bold"
@@ -182,6 +196,7 @@
             android:background="@drawable/bg_mypage_capsule"
             android:gravity="center"
             android:text="장르2"
+            style="@style/Body01_100"
             android:textColor="@color/white"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -196,6 +211,7 @@
             android:background="@drawable/bg_mypage_capsule"
             android:gravity="center"
             android:text="장르3"
+            style="@style/Body01_100"
             android:textColor="@color/white"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -5,7 +5,7 @@ import com.mobile.soundscape.api.dto.Song
 
 
 // --- 마이페이지 관련 DTO ---
-data class MypageNameRequest (
+data class MypageNameRequest(
     @SerializedName("username")
     val username: String
 )

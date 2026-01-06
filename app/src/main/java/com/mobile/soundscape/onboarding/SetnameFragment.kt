@@ -4,14 +4,23 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentSetnameBinding
 import androidx.fragment.app.activityViewModels
+import com.mobile.soundscape.api.apis.MypageApi
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.MypageNameRequest
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class SetnameFragment : Fragment() {
@@ -30,7 +39,7 @@ class SetnameFragment : Fragment() {
     private val colorSuccess = Color.parseColor("#34C759") // Green
     private val colorError = Color.parseColor("#ED433A")   // Red
     private val colorDefault = Color.parseColor("#4A494C")
-
+    private var currentMode: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +52,16 @@ class SetnameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // 1. 모드 확인 (Bundle에서 데이터 꺼내기)
+        currentMode = arguments?.getString("mode")
+
+        // 2. 수정 모드일 경우 UI 변경
+        if (currentMode == "edit") {
+            binding.nextButton.text = "이름 수정하기"      // 버튼 텍스트 변경
+            binding.tvTitle.text = "이름 수정"
+            binding.tvQuestion.text = "어떤 이름으로 수정할까요?"
+        }
 
         // 텍스트 입력 감지 리스너 설정
         binding.getNameInput.addTextChangedListener(object : TextWatcher {
@@ -131,17 +150,23 @@ class SetnameFragment : Fragment() {
         binding.nextButton.setOnClickListener {
             val finalNickname = binding.getNameInput.text.toString().trim()
             viewModel.nickname = finalNickname // 뷰모델에 닉네임 저장
+            viewModel.updateNickname(requireContext(), finalNickname)
 
-            // UI 정리
-            val background = binding.getNameInput.background as? android.graphics.drawable.GradientDrawable
-            background?.setStroke(0, 0)
+            if(currentMode == "edit") {
+                updateNicknameToServer(finalNickname)
+            } else {
+                // UI 정리
+                val background =
+                    binding.getNameInput.background as? android.graphics.drawable.GradientDrawable
+                background?.setStroke(0, 0)
 
-            // 다음 아티스트 프래그먼트로 이동
-            val nextFragment = ArtistFragment()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.onboarding_fragment_container, nextFragment)
-                .addToBackStack(null)
-                .commit()
+                // 다음 아티스트 프래그먼트로 이동
+                val nextFragment = ArtistFragment()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.onboarding_fragment_container, nextFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
     }
 
@@ -159,5 +184,30 @@ class SetnameFragment : Fragment() {
 
         // 왼쪽 체크 아이콘 색상 변경 (Tint)
         textView.compoundDrawablesRelative[0]?.setTint(color)
+    }
+
+    // 서버로 닉네임 수정 요청 보내기
+    private fun updateNicknameToServer(newName: String) {
+
+        RetrofitClient.mypageApi.updateName(MypageNameRequest(newName)).enqueue( object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "이름이 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+                } else {
+                    Toast.makeText(context, "이름 변경 실패: ${response.code()}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                Toast.makeText(context, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                Log.e("SetnameFragment", "Error: ${t.message}")
+            }
+        })
+
     }
 }

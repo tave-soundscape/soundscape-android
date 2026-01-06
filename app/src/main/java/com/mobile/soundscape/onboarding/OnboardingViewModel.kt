@@ -92,11 +92,11 @@ class OnboardingViewModel : ViewModel() {
 
     }
 
-//    fun updateNickname(context: Context, name: String) {
-//        nickname = name
-//        _Nickname.value = nickname
-//        OnboardingManager.saveNickname(context, nickname)
-//    }
+    fun updateNickname(context: Context, name: String) {
+        nickname = name
+        _Nickname.value = nickname
+        OnboardingManager.saveNickname(context, nickname)
+    }
 
     fun updateArtists(context: Context, list: List<String>) {
         selectedArtists = list.toMutableList()

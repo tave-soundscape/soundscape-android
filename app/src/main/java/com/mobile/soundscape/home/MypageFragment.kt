@@ -6,13 +6,24 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mobile.soundscape.R
+import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.MypageGenreRequest
+import com.mobile.soundscape.data.RecommendationManager
 import com.mobile.soundscape.databinding.FragmentMypageBinding
 import com.mobile.soundscape.onboarding.ArtistFragment
 import com.mobile.soundscape.onboarding.GenreFragment
 import com.mobile.soundscape.onboarding.OnboardingViewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class MypageFragment : Fragment() {
@@ -51,6 +62,13 @@ class MypageFragment : Fragment() {
             binding.tvGenre3.text = genres.getOrNull(2) ?: ""
         }
 
+        // 이름 변경하기
+        binding.btnEditName.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("mode", "edit")
+
+            findNavController().navigate(R.id.action_mypageFragment_to_setnameFragment2, bundle)
+        }
 
         /* --- 취향 변경하기 --- */
         // 아티스트 취향 변경

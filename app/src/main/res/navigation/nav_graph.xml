@@ -100,6 +100,9 @@
         <action
             android:id="@+id/action_mypageFragment_to_genreFragment2"
             app:destination="@id/genreFragment2" />
+        <action
+            android:id="@+id/action_mypageFragment_to_setnameFragment2"
+            app:destination="@id/setnameFragment2" />
     </fragment>
     <fragment
         android:id="@+id/artistFragment2"
@@ -115,6 +118,14 @@
         android:label="GenreFragment" >
         <action
             android:id="@+id/action_genreFragment2_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/setnameFragment2"
+        android:name="com.mobile.soundscape.onboarding.SetnameFragment"
+        android:label="SetnameFragment" >
+        <action
+            android:id="@+id/action_setnameFragment2_to_mypageFragment"
             app:destination="@id/mypageFragment" />
     </fragment>
 
