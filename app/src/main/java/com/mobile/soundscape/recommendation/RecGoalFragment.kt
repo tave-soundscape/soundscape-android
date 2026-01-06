@@ -52,7 +52,7 @@ class RecGoalFragment : Fragment() {
         Goal("g1", "집중", "focus", R.color.btn_orange, R.drawable.goal_icon1, R.id.btn1_wrapper),
         Goal("g2", "위로", "consolation", R.color.btn_blue, R.drawable.goal_icon2, R.id.btn2_wrapper),
         Goal("g3", "활력", "active", R.color.btn_purple, R.drawable.goal_icon3, R.id.btn3_wrapper),
-        Goal("g4", "안정", "stability", R.color.btn_yellow, R.drawable.goal_icon4, R.id.btn4_wrapper),
+        Goal("g4", "안정", "rest", R.color.btn_yellow, R.drawable.goal_icon4, R.id.btn4_wrapper),
         Goal("g5", "분노", "anger", R.color.btn_red, R.drawable.goal_icon5, R.id.btn5_wrapper),
         Goal("g6", "휴식", "relax", R.color.btn_green, R.drawable.goal_icon6, R.id.btn6_wrapper),
         // Goal("g7", "미선택", R.color.btn_empty, R.drawable.goal_icon7, R.id.btn7_wrapper) // 미선택 버튼 추가
