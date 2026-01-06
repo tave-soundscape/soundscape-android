@@ -31,6 +31,7 @@ import com.mobile.soundscape.data.RecommendationManager
 data class Goal(
     val id: String,
     val name: String,
+    val englishName: String,
     val iconColorId: Int, // R.color.btn_pink 등
     val iconDrawableId: Int, // R.drawable.goal_icon0 등
     val wrapperId: Int      // R.id.center_button, R.id.btn1_wrapper 등 ConstraintLayout ID
@@ -47,13 +48,13 @@ class RecGoalFragment : Fragment() {
 
     //  3. 목표 데이터 정의 (XML ID와 텍스트 레이블에 맞춤)
     private val allGoalData = listOf(
-        Goal("g0", "수면", R.color.btn_pink, R.drawable.goal_icon0, R.id.center_button),
-        Goal("g1", "집중", R.color.btn_orange, R.drawable.goal_icon1, R.id.btn1_wrapper),
-        Goal("g2", "위로", R.color.btn_blue, R.drawable.goal_icon2, R.id.btn2_wrapper),
-        Goal("g3", "활력", R.color.btn_purple, R.drawable.goal_icon3, R.id.btn3_wrapper),
-        Goal("g4", "안정", R.color.btn_yellow, R.drawable.goal_icon4, R.id.btn4_wrapper),
-        Goal("g5", "분노", R.color.btn_red, R.drawable.goal_icon5, R.id.btn5_wrapper),
-        Goal("g6", "휴식", R.color.btn_green, R.drawable.goal_icon6, R.id.btn6_wrapper),
+        Goal("g0", "수면", "sleep", R.color.btn_pink, R.drawable.goal_icon0, R.id.center_button),
+        Goal("g1", "집중", "focus", R.color.btn_orange, R.drawable.goal_icon1, R.id.btn1_wrapper),
+        Goal("g2", "위로", "consolation", R.color.btn_blue, R.drawable.goal_icon2, R.id.btn2_wrapper),
+        Goal("g3", "활력", "active", R.color.btn_purple, R.drawable.goal_icon3, R.id.btn3_wrapper),
+        Goal("g4", "안정", "stability", R.color.btn_yellow, R.drawable.goal_icon4, R.id.btn4_wrapper),
+        Goal("g5", "분노", "anger", R.color.btn_red, R.drawable.goal_icon5, R.id.btn5_wrapper),
+        Goal("g6", "휴식", "relax", R.color.btn_green, R.drawable.goal_icon6, R.id.btn6_wrapper),
         // Goal("g7", "미선택", R.color.btn_empty, R.drawable.goal_icon7, R.id.btn7_wrapper) // 미선택 버튼 추가
     )
 
@@ -97,7 +98,7 @@ class RecGoalFragment : Fragment() {
         binding.nextBtn.setOnClickListener {
             val selectedData = allGoalData.find { it.wrapperId == selectedButtonWrapper?.id }
             if (selectedData != null) {
-                viewModel.goal = selectedData.name
+                viewModel.goal = selectedData.englishName
                 viewModel.checkData()
             }
             findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)
