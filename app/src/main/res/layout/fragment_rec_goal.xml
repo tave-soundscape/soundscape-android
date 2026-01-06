@@ -59,7 +59,7 @@
             android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="0"
-            app:layout_constraintCircleRadius="150dp"
+            app:layout_constraintCircleRadius="140dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -91,7 +91,7 @@
             android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="60"
-            app:layout_constraintCircleRadius="150dp"
+            app:layout_constraintCircleRadius="140dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -121,7 +121,7 @@
             android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="120"
-            app:layout_constraintCircleRadius="150dp"
+            app:layout_constraintCircleRadius="140dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -151,7 +151,7 @@
             android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="180"
-            app:layout_constraintCircleRadius="150dp"
+            app:layout_constraintCircleRadius="140dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -181,7 +181,7 @@
             android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="240"
-            app:layout_constraintCircleRadius="150dp"
+            app:layout_constraintCircleRadius="140dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -211,7 +211,7 @@
             android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="300"
-            app:layout_constraintCircleRadius="150dp"
+            app:layout_constraintCircleRadius="140dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -310,36 +310,35 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-<!--
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btn7_wrapper"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginBottom="150dp"
+
+        android:layout_marginTop="-50dp"
+        android:layout_marginStart="35dp"
 
         android:background="@drawable/button_default_background"
         android:clickable="true"
         android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_group_wrapper">
+
+        app:layout_constraintTop_toBottomOf="@id/button_group_wrapper"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/btn7_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:padding="16dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
             android:src="@drawable/goal_icon7"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <TextView
         android:id="@+id/txt7"
@@ -350,7 +349,7 @@
         app:layout_constraintStart_toStartOf="@+id/btn7_wrapper"
         app:layout_constraintEnd_toEndOf="@+id/btn7_wrapper"
         app:layout_constraintTop_toBottomOf="@+id/btn7_wrapper" />
-    -->
+
 
     <TextView
         android:id="@+id/tvCaption"
