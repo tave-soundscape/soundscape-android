@@ -125,6 +125,10 @@ class GalleryFragment : Fragment() {
             startActivity(intent)
             requireActivity().finish()
         }
+
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     // --- 뷰모델 데이터로 화면 그리기 ---

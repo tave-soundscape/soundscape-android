@@ -23,6 +23,7 @@ import com.mobile.soundscape.data.TokenManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.kakao.sdk.common.util.Utility
 
 class LoginActivity : AppCompatActivity() {
 
@@ -51,7 +52,12 @@ class LoginActivity : AppCompatActivity() {
             transaction.addToBackStack(null)
             transaction.commit()
         }
+
 */
+
+        var keyHash = Utility.getKeyHash(this)
+        Log.e(TAG, keyHash)
+
         // TODO: 카카오 oauth 구현하기
         binding.btnKakaoOauth.setOnClickListener {
             startKakaoLogin()

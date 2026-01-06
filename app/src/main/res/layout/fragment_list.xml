@@ -66,8 +66,7 @@
                     android:layout_marginTop="50dp"
                     android:text="DIP Playlist"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    style="@style/Subtitle02_100"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -104,8 +103,7 @@
                     android:gravity="center"
                     app:layout_constrainedWidth="true"
                     android:textColor="#FFFFFF"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
+                    style="@style/Subtitle02_100"
                     android:layout_marginHorizontal="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +116,7 @@
                     android:layout_marginTop="10dp"
                     android:text="장소 · 목표"
                     android:textColor="#AAAAAA"
-                    android:textSize="16sp"
+                    style="@style/Body01_100"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvPlaylistName" />
@@ -230,7 +228,7 @@
             app:backgroundTint="@color/black"
             android:text="라이브러리 추가하기"
             android:textColor="@color/white"
-            android:textSize="16sp"
+            style="@style/Body01_100"
             app:iconGravity="textEnd"
             app:iconPadding="15dp"
             app:iconSize="14dp"
@@ -262,18 +260,30 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="15dp"
+            android:src="@drawable/ic_back"
+            android:layout_marginTop="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:tint="@color/white" />
 
         <ImageView
             android:id="@+id/btnListToGallery"
             android:layout_width="30dp"
             android:layout_height="20dp"
             android:src="@drawable/list_to_gallery"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="52dp"
-            android:layout_marginLeft="19dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="20dp"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

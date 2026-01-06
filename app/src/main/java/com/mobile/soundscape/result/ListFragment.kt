@@ -91,6 +91,10 @@ class ListFragment : Fragment() {
             startActivity(intent)
             requireActivity().finish()
         }
+
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     // --- 받아온 데이터로 화면 채우기 ---

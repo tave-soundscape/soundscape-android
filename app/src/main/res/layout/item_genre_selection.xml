@@ -27,6 +27,8 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:gravity="center"
+        style="@style/Body01_200"
+
         app:layout_constraintStart_toStartOf="@id/iv_genre_card"
         app:layout_constraintBottom_toBottomOf="@id/iv_genre_card"
         app:layout_constraintEnd_toEndOf="@id/iv_genre_card"

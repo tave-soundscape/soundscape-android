@@ -133,9 +133,6 @@ class ArtistFragment : Fragment() {
 
         // 어댑터 갱신
         adapter.updateList(currentList)
-
-        // 스크롤을 맨 위로 올려서 사용자가 선택된 것을 바로 보게 함
-        binding.rvArtistList.scrollToPosition(0)
     }
 
     /* --- 버튼 상태 업데이트 --- */
@@ -357,7 +354,6 @@ class ArtistFragment : Fragment() {
 
         // 어댑터에 데이터 넣고 스크롤 맨 위로
         adapter.updateList(sortedList)
-        binding.rvArtistList.scrollToPosition(0)
     }
 
     override fun onDestroyView() {
