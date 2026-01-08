@@ -129,7 +129,8 @@ class RecPlaceFragment : Fragment() {
             selectedButtonWrapper = newlySelectedWrapper
 
             // 뷰모델에 데이터 저장
-            viewModel.place = selectedData.englishName
+            viewModel.place = selectedData.name
+            viewModel.englishPlace = selectedData.englishName
             viewModel.checkData()
         }
 

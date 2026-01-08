@@ -9,6 +9,10 @@ class RecommendationViewModel : ViewModel() {
     var place: String = ""
     var decibel: Float = 0.0f
     var goal: String = ""
+
+    var englishPlace: String = ""
+    var englishGoal: String = ""
+
     fun checkData() {
         Log.d("PlayTest", "현재 저장된 데이터 -> 장소: $place / 데시벨: $decibel / 목표: $goal")
     }

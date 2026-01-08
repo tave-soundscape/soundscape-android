@@ -74,9 +74,9 @@ class RecResultFragment : Fragment() {
     private fun sendRecommendationRequest() {
         // 1. 뷰모델에서 장소, 데시벨, 목표 꺼내서 서버로 전송
         val request = RecommendationRequest(
-            place = viewModel.place,
+            place = viewModel.englishPlace,
             decibel = viewModel.decibel,
-            goal = viewModel.goal
+            goal = viewModel.englishGoal
         )
         viewModel.checkData()
 
