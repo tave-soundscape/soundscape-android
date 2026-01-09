@@ -10,7 +10,11 @@ import com.mobile.soundscape.data.OnboardingManager.getPreferences
 
 object RecommendationManager {
     var place: String = ""
+    var decibel: Float = 0.0f
     var goal: String = ""
+    var englishPlace: String = ""
+    var englishGoal: String = ""
+
     var cachedPlaylist: RecommendationResponse? = null
     private const val PREFS_NAME = "soundscape_prefs" // 저장소 이름 상수화
     private const val KEY_PLAYLIST_NAME = "my_playlist_name" // 플리 이름 키

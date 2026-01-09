@@ -28,10 +28,15 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.PreferenceManager
+import com.mobile.soundscape.api.dto.RecommendationRequest
 import com.mobile.soundscape.data.RecommendationManager
 import com.mobile.soundscape.data.RecommendationManager.getPlaylistName
+import com.mobile.soundscape.recommendation.RecommendationViewModel
+import kotlin.getValue
 
 
 class ListFragment : Fragment() {
@@ -39,7 +44,7 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     // 프래그먼트에서 바인딩은 get()을 통해 접근하는 것이 안전합니다.
     private val binding get() = _binding!!
-
+    private val viewModel: RecommendationViewModel by activityViewModels()
     private val TAG = "PlayTest"
     private lateinit var adapter: PlaylistResultAdapter
 
@@ -237,35 +242,89 @@ class ListFragment : Fragment() {
     }
 
     private fun showRegenerateBottomSheet() {
-        // 1. 다이얼로그 생성 (Context 필요 -> requireContext())
+        // 다이얼로그 생성 (Context 필요 -> requireContext())
         val bottomSheetDialog = BottomSheetDialog(requireContext())
-
-        // 2. 레이아웃(XML) 가져오기 (layoutInflater 접근 변경)
+        // 레이아웃(XML) 가져오기 (layoutInflater 접근 변경)
         val view = requireActivity().layoutInflater.inflate(R.layout.bottom_sheet_result, null)
         bottomSheetDialog.setContentView(view)
 
         // --- [닫기 기능 구현] ---
-
-        // 3. 뷰에서 닫기 버튼 찾기 (ID: closeBtn)
+        // 닫기 버튼 누르면 다이얼로그 사라지기
         val closeBtn = view.findViewById<View>(R.id.btnClose)
+        closeBtn.setOnClickListener { bottomSheetDialog.dismiss() }
 
-        // 4. 클릭 리스너 연결 -> 다이얼로그 닫기(.dismiss())
-        closeBtn.setOnClickListener {
-            bottomSheetDialog.dismiss()
-        }
-
-        // (참고) 다시하기 버튼에도 기능 연결 가능
+        // 다시하기 버튼에도 기능 연결 가능
         val confirmBtn = view.findViewById<View>(R.id.btnRegenerateConfirm)
+        val progressBar = view.findViewById<View>(R.id.loadingProgressBar)
+
         confirmBtn?.setOnClickListener {
             // 플리 다시 생성하는 코드
-            // 일단 베타 버전에서는 불가능 -> 토스트로 알리기
-            //showCustomToast("죄송합니다.베타버전에서는\n플레이리스트 새로 생성이 어렵습니다.")
-            Toast.makeText(requireContext(), "죄송합니다.베타버전에서는\n지원하지 않는 기능입니다.", Toast.LENGTH_SHORT).show()
-            bottomSheetDialog.dismiss() // 작업 후 닫기
-        }
+            // Toast.makeText(requireContext(), "죄송합니다.베타버전에서는\n지원하지 않는 기능입니다.", Toast.LENGTH_SHORT).show()
+            progressBar.visibility = View.VISIBLE
+            confirmBtn.isEnabled = false
 
-        // 5. 다이얼로그 보여주기
+            regeneratePlaylist {
+                bottomSheetDialog.dismiss()
+                // binding.recyclerView.scrollToPosition(0)
+                binding.appBarLayout.setExpanded(true, true)
+            }
+        }
         bottomSheetDialog.show()
+    }
+
+    // 플리 다시 생성하는 함수
+    private fun regeneratePlaylist(onComplete: () -> Unit) {
+        val request = RecommendationRequest(
+            place = RecommendationManager.englishPlace,
+            decibel = RecommendationManager.decibel,
+            goal = RecommendationManager.englishGoal
+        )
+        viewModel.checkData()
+
+        // 서버에서 응답 받아서 뷰모델에 저장
+        RetrofitClient.recommendationApi.sendRecommendations(request).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
+
+            override fun onResponse(
+                call: Call<BaseResponse<RecommendationResponse>>,
+                response: Response<BaseResponse<RecommendationResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val baseResponse = response.body()
+                    val resultData = baseResponse?.data
+
+                    if (resultData != null) {
+
+                        RecommendationManager.cachedPlaylist = resultData
+                        // 뷰모델 업데이트
+                        viewModel.currentPlaylist.value = resultData
+
+                        // 내부 저장소에 플리 이름 저장 -> result의 두 프래그먼트에서 동일한 이름 패치되도록
+                        context?.let { ctx ->
+                            RecommendationManager.savePlaylistName(ctx, resultData.playlistName)
+                            RecommendationManager.savePlaylistId(ctx, resultData.playlistId.toString())  // 아이디 저장
+                        }
+
+                        // UI 업데이트 하기
+                        updateUIWithRealData(resultData, RecommendationManager.place, RecommendationManager.goal)
+                        onComplete()
+
+                    } else {
+                        Toast.makeText(context, "서버 응답이 비어있습니다.", Toast.LENGTH_SHORT).show()
+                        onComplete()
+                    }
+                } else {
+                    Log.e(TAG, "서버 에러 코드: ${response.code()}")
+                    Toast.makeText(context, "서버 에러 발생", Toast.LENGTH_SHORT).show()
+                    onComplete()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<RecommendationResponse>>, t: Throwable) {
+                Log.e(TAG, "통신 실패: ${t.message}")
+                Toast.makeText(context, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                onComplete()
+            }
+        })
     }
 
     // 플리 이름 수정 코드
@@ -287,24 +346,6 @@ class ListFragment : Fragment() {
         // 닫기(X) 버튼
         btnClose.setOnClickListener {
             bottomSheetDialog.dismiss()
-        }
-
-        // 아무 입력도 없으면 "추가하기" 버튼 색깔 블러처리
-        btnConfirm.isEnabled = false
-        btnConfirm.alpha = 0.4f // 투명도를 낮쳐서 흐릿하게(블러 느낌) 만듦
-
-        // 텍스트 변경 감지 리스너 추가 -> 어떤 입력이라도 들어오면
-        etName.doAfterTextChanged { text ->
-            val input = text.toString().trim()
-
-            if (input.isNotEmpty()) {
-                // 입력이 있을 때 -> 선명하게 & 클릭 가능
-                btnConfirm.isEnabled = true
-                btnConfirm.alpha = 1.0f // 투명도 원상복구
-            } else {  // 입력이 없을 때 -> 흐리게 & 클릭 불가
-                btnConfirm.isEnabled = false
-                btnConfirm.alpha = 0.4f
-            }
         }
 
         // 수정하기 버튼 눌렀을 때 이벤트 처리

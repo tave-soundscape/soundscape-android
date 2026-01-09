@@ -57,7 +57,11 @@
         android:id="@+id/recResultFragment"
         android:name="com.mobile.soundscape.recommendation.RecResultFragment"
         android:label="fragment_rec_result"
-        tools:layout="@layout/fragment_rec_result" />
+        tools:layout="@layout/fragment_rec_result" >
+        <action
+            android:id="@+id/action_recResultFragment_to_listFragment2"
+            app:destination="@id/listFragment2" />
+    </fragment>
     <fragment
         android:id="@+id/exploreFragment"
         android:name="com.mobile.soundscape.explore.ExploreFragment"
@@ -127,6 +131,14 @@
         <action
             android:id="@+id/action_setnameFragment2_to_mypageFragment"
             app:destination="@id/mypageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listFragment2"
+        android:name="com.mobile.soundscape.result.ListFragment"
+        android:label="ListFragment" >
+        <action
+            android:id="@+id/action_listFragment2_to_recResultFragment"
+            app:destination="@id/recResultFragment" />
     </fragment>
 
 </navigation>

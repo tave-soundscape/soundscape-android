@@ -50,14 +50,6 @@ class RecResultFragment : Fragment() {
 
         sendRecommendationRequest()
 
-        // 5초 딜레이 시작 (Coroutines 사용)
-        // (viewLifecycleOwner를 사용해야 화면이 꺼지면 타이머도 안전하게 종료됨)
-        viewLifecycleOwner.lifecycleScope.launch {
-            delay(5000) // 5000ms = 5초 대기
-
-            updateUIForCompletion()
-        }
-
         // "보러가기" 버튼을 누르면 -> 플레이리스트로 이동
         binding.nextButton.setOnClickListener {
             val intent = android.content.Intent(requireContext(), PlaylistResultActivity::class.java)
@@ -94,6 +86,9 @@ class RecResultFragment : Fragment() {
                     if (resultData != null) {
 
                         // 메모리(싱글톤)에 저장
+                        RecommendationManager.englishGoal = viewModel.englishGoal
+                        RecommendationManager.englishPlace = viewModel.englishPlace
+                        RecommendationManager.decibel = viewModel.decibel
                         RecommendationManager.place = viewModel.place
                         RecommendationManager.goal = viewModel.goal
                         RecommendationManager.cachedPlaylist = resultData
@@ -105,6 +100,9 @@ class RecResultFragment : Fragment() {
                             RecommendationManager.savePlaylistName(ctx, resultData.playlistName)
                             RecommendationManager.savePlaylistId(ctx, resultData.playlistId.toString())  // 아이디 저장
                         }
+
+                        updateUIForCompletion()
+
                     } else {
                         Toast.makeText(context, "서버 응답이 비어있습니다.", Toast.LENGTH_SHORT).show()
                     }
