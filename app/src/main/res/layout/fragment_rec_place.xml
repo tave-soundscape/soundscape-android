@@ -249,6 +249,7 @@
             android:layout_marginTop="2dp"
             android:text="집/실내"
             android:textColor="@color/white"
+            style="@style/Body02_100"
             app:layout_constraintEnd_toStartOf="@+id/btn3_wrapper"
             app:layout_constraintStart_toEndOf="@+id/btn5_wrapper"
             app:layout_constraintTop_toBottomOf="@+id/center_button" />
@@ -260,6 +261,7 @@
             android:layout_marginTop="2dp"
             android:text="카페"
             android:textColor="@color/white"
+            style="@style/Body02_100"
             app:layout_constraintEnd_toStartOf="@+id/btn2_wrapper"
             app:layout_constraintStart_toEndOf="@+id/btn6_wrapper"
             app:layout_constraintTop_toBottomOf="@+id/btn1_wrapper" />
@@ -271,6 +273,7 @@
             android:layout_marginTop="4dp"
             android:text="코워킹"
             android:textColor="@color/white"
+            style="@style/Body02_100"
             app:layout_constraintStart_toStartOf="@id/btn2_wrapper"
             app:layout_constraintEnd_toEndOf="@id/btn2_wrapper"
             app:layout_constraintTop_toBottomOf="@id/btn2_wrapper"/>
@@ -281,6 +284,7 @@
             android:layout_height="wrap_content"
             android:text="헬스장"
             android:textColor="@color/white"
+            style="@style/Body02_100"
             app:layout_constraintStart_toStartOf="@id/btn3_wrapper"
             app:layout_constraintEnd_toEndOf="@id/btn3_wrapper"
             app:layout_constraintTop_toBottomOf="@id/btn3_wrapper"/>
@@ -292,6 +296,7 @@
             android:layout_marginTop="4dp"
             android:text="도서관"
             android:textColor="@color/white"
+            style="@style/Body02_100"
             app:layout_constraintStart_toStartOf="@id/btn4_wrapper"
             app:layout_constraintEnd_toEndOf="@id/btn4_wrapper"
             app:layout_constraintTop_toBottomOf="@id/btn4_wrapper"/>
@@ -302,6 +307,7 @@
             android:layout_height="wrap_content"
             android:text="이동중"
             android:textColor="@color/white"
+            style="@style/Body02_100"
             app:layout_constraintStart_toStartOf="@id/btn5_wrapper"
             app:layout_constraintEnd_toEndOf="@id/btn5_wrapper"
             app:layout_constraintTop_toBottomOf="@id/btn5_wrapper" />
@@ -313,6 +319,7 @@
             android:layout_marginTop="4dp"
             android:text="공원"
             android:textColor="@color/white"
+            style="@style/Body02_100"
             app:layout_constraintStart_toStartOf="@id/btn6_wrapper"
             app:layout_constraintEnd_toEndOf="@id/btn6_wrapper"
             app:layout_constraintTop_toBottomOf="@id/btn6_wrapper" />

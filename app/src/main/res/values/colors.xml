@@ -31,4 +31,6 @@
     <color name="btn_green">#3ED76C</color>
     <color name="btn_pink">#FF75C8</color>
     <color name="btn_empty">#7C7B80</color>
+    <color name="btn_gray">#2B2B2B</color>
+    <color name="btn_unselected_gray">#8E8E8E</color>
 </resources>

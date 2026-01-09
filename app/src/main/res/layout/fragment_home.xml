@@ -32,7 +32,7 @@
         android:text="오늘도 몰입을 시작해볼까요?"
         android:textColor="@color/white"
         android:textSize="24sp"
-        android:textStyle="bold"
+        style="@style/Title02_100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -46,6 +46,7 @@
         android:text="시작하기 버튼으로 플레이리스트\n추천을 받을 수 있어요"
         android:textColor="#B0AFB2"
         android:textSize="16sp"
+        style="@style/Body01_200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/some_id" />
@@ -171,6 +172,7 @@
         android:text="시작하기"
         android:textColor="@color/white"
         android:textSize="16sp"
+        style="@style/Body01_100"
         android:layout_marginTop="60dp"
         android:background="@drawable/bg_input_rounded"
         app:layout_constraintStart_toStartOf="parent"

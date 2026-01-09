@@ -20,7 +20,6 @@ import androidx.fragment.app.activityViewModels
 data class Place(
     val id: String,
     val name: String,
-    val englishName: String,
     val iconColorId: Int,
     val iconDrawableId: Int,
     val wrapperId: Int
@@ -36,13 +35,13 @@ class RecPlaceFragment : Fragment() {
     private var selectedButtonWrapper: View? = null
 
     private val allPlaceData = listOf(
-        Place("p0", "집/실내", "home", R.color.btn_pink, R.drawable.place_icon0, R.id.center_button),
-        Place("p1", "카페", "cafe", R.color.btn_orange, R.drawable.place_icon1, R.id.btn1_wrapper),
-        Place("p2", "코워킹", "co-working", R.color.btn_blue, R.drawable.place_icon2, R.id.btn2_wrapper),
-        Place("p3", "헬스장", "gym", R.color.btn_purple, R.drawable.place_icon3, R.id.btn3_wrapper),
-        Place("p4", "도서관", "library", R.color.btn_yellow, R.drawable.place_icon4, R.id.btn4_wrapper),
-        Place("p5", "이동중", "moving", R.color.btn_red, R.drawable.place_icon5, R.id.btn5_wrapper),
-        Place("p6", "공원", "park", R.color.btn_green, R.drawable.place_icon6, R.id.btn6_wrapper)
+        Place("p0", "집/실내", R.color.btn_pink, R.drawable.place_icon0, R.id.center_button),
+        Place("p1", "카페", R.color.btn_orange, R.drawable.place_icon1, R.id.btn1_wrapper),
+        Place("p2", "공원", R.color.btn_blue, R.drawable.place_icon2, R.id.btn2_wrapper),
+        Place("p3", "코워킹", R.color.btn_purple, R.drawable.place_icon3, R.id.btn3_wrapper),
+        Place("p4", "도서관", R.color.btn_yellow, R.drawable.place_icon4, R.id.btn4_wrapper),
+        Place("p5", "헬스장", R.color.btn_red, R.drawable.place_icon5, R.id.btn5_wrapper),
+        Place("p6", "집/실내", R.color.btn_green, R.drawable.place_icon6, R.id.btn6_wrapper)
     )
 
     override fun onCreateView(
@@ -107,7 +106,7 @@ class RecPlaceFragment : Fragment() {
             // RecGoalFragment와 동일한 진한 농도
             val colors = intArrayOf(
                 Color.TRANSPARENT,
-                Color.argb(0x60, Color.red(selectedColorInt), Color.green(selectedColorInt), Color.blue(selectedColorInt)), // 0x10 -> 0x40 변경
+                Color.argb(0x40, Color.red(selectedColorInt), Color.green(selectedColorInt), Color.blue(selectedColorInt)), // 0x10 -> 0x40 변경
                 selectedColorInt
             )
 
@@ -118,7 +117,7 @@ class RecPlaceFragment : Fragment() {
                 shape = GradientDrawable.OVAL
                 gradientType = GradientDrawable.RADIAL_GRADIENT
                 // RecGoalFragment와 동일한 크기 (반지름 1.0배)
-                gradientRadius = (newlySelectedWrapper.width.toFloat().takeIf { it > 0 } ?: 100f * resources.displayMetrics.density) * 1.0f // 0.5f -> 1.0f 변경
+                gradientRadius = (newlySelectedWrapper.width.toFloat().takeIf { it > 0 } ?: 100f * resources.displayMetrics.density) * 0.7f // 0.5f -> 1.0f 변경
             }
 
             newlySelectedWrapper.background = gradientDrawable
@@ -129,7 +128,7 @@ class RecPlaceFragment : Fragment() {
             selectedButtonWrapper = newlySelectedWrapper
 
             // 뷰모델에 데이터 저장
-            viewModel.place = selectedData.englishName
+            viewModel.place = selectedData.name
             viewModel.checkData()
         }
 
@@ -155,6 +154,7 @@ class RecPlaceFragment : Fragment() {
         binding.nextBtn.isEnabled = isSelected
         binding.nextBtn.alpha = if (isSelected) 1.0f else 0.5f
     }
+
 
     private fun getIconIdForWrapper(wrapperId: Int): Int {
         return when (wrapperId) {
