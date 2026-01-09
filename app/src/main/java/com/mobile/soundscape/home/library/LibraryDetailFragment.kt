@@ -38,7 +38,8 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
 
         // 3. UI 데이터 연결
         binding.tvDetailPlaylistName.text = title
-        // binding.tvDetailDescription.text = "${date}에 생성된 플레이리스트"
+        // binding.tvDetailDescription.text = "${date}에 생성된
+        // 플레이리스트"
         binding.tvDetailCount.text = "곡 ${songs.size}개"
 
         // 4. 투명 배경 어댑터 연결 (LibraryDetailAdapter 사용)
