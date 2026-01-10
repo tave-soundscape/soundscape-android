@@ -29,6 +29,7 @@ import androidx.fragment.app.activityViewModels
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.MypageArtistRequest
+import com.mobile.soundscape.data.LocalArtistModel
 import com.mobile.soundscape.data.SpotifyAuthRepository
 import retrofit2.Retrofit
 import kotlin.collections.map
@@ -251,7 +252,13 @@ class ArtistFragment : Fragment() {
         binding.nextButton.setOnClickListener {
             if (selectedArtistsMap.size == 3) {
                 // ViewModel에 데이터 저장
-                val finalList = selectedArtistsMap.keys.toMutableList()
+                val finalList = selectedArtistsMap.values.map { artist ->
+                    LocalArtistModel(
+                        name = artist.name,
+                        imageUrl = artist.imageResId
+                    )
+                }
+
                 viewModel.updateArtists(requireContext(), finalList)
 
                 // 2. 분기 처리
@@ -384,8 +391,9 @@ class ArtistFragment : Fragment() {
     }
 
     // 수정모드에서 변경된 아티스트를 서버로 보내는 함수
-    fun updateArtistToServer(artistList : List<String>){
-        val request = MypageArtistRequest(artists = artistList)
+    fun updateArtistToServer(localModel : List<LocalArtistModel>){
+        val nameOnly = localModel.map {it.name}
+        val request = MypageArtistRequest(artists = nameOnly)
 
         RetrofitClient.mypageApi.updateArtists(request).enqueue(object : Callback<BaseResponse<String>> {
             override fun onResponse(
@@ -393,7 +401,7 @@ class ArtistFragment : Fragment() {
                 response: Response<BaseResponse<String>>
             ) {
                 if(response.isSuccessful) {
-                    viewModel.updateArtists(requireContext(), artistList)
+                    viewModel.updateArtists(requireContext(), localModel)
                     Toast.makeText(context, "아티스트 취향이 수정되었습니다.", Toast.LENGTH_SHORT).show()
                     parentFragmentManager.popBackStack()
                 }

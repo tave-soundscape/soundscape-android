@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this@LoginActivity, EvaluationActivity::class.java)
             startActivity(intent)
         }
-
+*/
         binding.moveOnboardingButton.setOnClickListener {
             val fragment = SetnameFragment()
             val transaction = supportFragmentManager.beginTransaction()
@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
             transaction.commit()
         }
 
-*/
+
 
         var keyHash = Utility.getKeyHash(this)
         Log.e(TAG, keyHash)

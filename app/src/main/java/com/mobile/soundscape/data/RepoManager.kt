@@ -1,6 +1,8 @@
 package com.mobile.soundscape.data
 
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.mobile.soundscape.api.dto.RecommendationResponse
 import com.mobile.soundscape.data.OnboardingManager.PREFS_NAME
 import com.mobile.soundscape.data.OnboardingManager.getPreferences
@@ -59,6 +61,8 @@ object RecommendationManager {
  * 마이페이지에서 사용!
  */
 
+
+
 object OnboardingManager {
     private const val PREFS_NAME = "soundscape_prefs" // 저장소 이름 상수화
 
@@ -84,17 +88,20 @@ object OnboardingManager {
     }
 
     // 아티스트 목록 저장 (List -> String 변환, 콤마로 구분)
-    fun saveArtistList(context: Context, list: List<String>) {
-        // 예: ["아이유", "BTS"] -> "아이유,BTS"
-        val joinString = list.joinToString(",")
+    fun saveArtistList(context: Context, list: List<LocalArtistModel>) {
+        val gson= Gson()
+        val joinString = gson.toJson(list)
         getPreferences(context).edit().putString(KEY_MY_ARTISTS, joinString).apply()
     }
 
     // 아티스트 목록 불러오기 (String -> List 변환)
-    fun getArtistList(context: Context): List<String> {
+    fun getArtistList(context: Context): List<LocalArtistModel> {
         val joinString = getPreferences(context).getString(KEY_MY_ARTISTS, "") ?: ""
         if (joinString.isEmpty()) return emptyList()
-        return joinString.split(",")
+
+        val gson = Gson()
+        val type = object : TypeToken<List<LocalArtistModel>>() {}.type
+        return gson.fromJson(joinString, type)
     }
 
     // 장르 목록 저장
