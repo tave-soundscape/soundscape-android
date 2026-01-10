@@ -5,10 +5,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
@@ -40,11 +43,11 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
         binding.tvDetailPlaylistName.text = title
         // binding.tvDetailDescription.text = "${date}에 생성된
         // 플레이리스트"
-        binding.tvDetailCount.text = "곡 ${songs.size}개"
+        binding.tvSubtitle.text = "곡 ${songs.size}개"
 
         // 4. 투명 배경 어댑터 연결 (LibraryDetailAdapter 사용)
         val detailAdapter = LibraryDetailAdapter(songs)
-        binding.rvSongList.apply {
+        binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = detailAdapter
         }
@@ -94,7 +97,8 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
     private fun updateUI(data: LibraryPlaylistDetailResponse) {
         binding.tvDetailPlaylistName.text = data.playlistName
         // 곡 개수 표시
-        binding.tvDetailCount.text = "곡 ${data.songs.size}개"
+        // TODO: 곡 갯수 말고 장소/목표로 바꾸기
+        binding.tvSubtitle.text = "곡 ${data.songs.size}개"
 
         binding.btnDeepLinkSpotify.setOnClickListener {
             val spotifyUrl = data.playlistUrl
@@ -127,9 +131,42 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
 
         // 리사이클러뷰 어댑터 연결
         val detailAdapter = LibraryDetailAdapter(musicList)
-        binding.rvSongList.apply {
+        binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = detailAdapter
+        }
+
+        val headerImageViews = listOf(
+            binding.ivCover1,
+            binding.ivCover2,
+            binding.ivCover3,
+            binding.ivCover4
+        )
+
+        // 리스트에서 앞에서부터 순서대로 이미지를 꺼내 헤더에 넣음
+        for (i in headerImageViews.indices) {
+            if (i < musicList.size) {
+                // 각 ImageView에 URL 로드
+                loadUrlToImageView(headerImageViews[i], musicList[i].albumCover)
+            }
+        }
+
+        // 배경 그라데이션 이미지 (첫 번째 곡의 커버를 배경으로 사용)
+        if (musicList.isNotEmpty()) {
+            loadUrlToImageView(binding.ivBackgroundGradient, musicList[0].albumCover)
+        }
+    }
+
+    private fun loadUrlToImageView(imageView: ImageView, url: String) {
+        if (url.isNotEmpty()) {
+            // Fragment에서는 this를 그대로 사용해도 Glide가 지원함 (viewLifecycleOwner 권장하지만 this도 가능)
+            Glide.with(this)
+                .load(url)
+                .transform(CenterCrop()) // 꽉 채우기
+                .into(imageView)
+        } else {
+            // URL이 비어있을 때 보여줄 기본 색상
+            imageView.setImageResource(R.color.black)
         }
     }
 

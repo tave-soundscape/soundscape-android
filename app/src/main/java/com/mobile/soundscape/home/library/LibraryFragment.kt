@@ -48,6 +48,13 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
         binding.rvPlaylist.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = libraryAdapter
+
+            if (itemDecorationCount > 0) {
+                removeItemDecorationAt(0)
+            }
+
+            val spacingInPixels = (5 * resources.displayMetrics.density).toInt()
+            addItemDecoration(GridSpacingItemDecoration(2, 10, true))
         }
     }
 
