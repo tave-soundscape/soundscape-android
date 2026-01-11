@@ -14,6 +14,7 @@ import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentRecPlaceBinding
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 
@@ -54,6 +55,23 @@ class RecPlaceFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.buttonGroupWrapper.post {
+            val wrapperWidth = binding.buttonGroupWrapper.width
+            // 반지름을 래퍼 너비의 35%로 설정 (버튼 크기가 22%이므로 겹치지 않는 적정 거리)
+            val responsiveRadius = (wrapperWidth * 0.35).toInt()
+
+            val wrappers = listOf(
+                binding.btn1Wrapper, binding.btn2Wrapper, binding.btn3Wrapper,
+                binding.btn4Wrapper, binding.btn5Wrapper, binding.btn6Wrapper
+            )
+
+            wrappers.forEach { wrapper ->
+                val params = wrapper.layoutParams as ConstraintLayout.LayoutParams
+                params.circleRadius = responsiveRadius
+                wrapper.layoutParams = params
+            }
+        }
 
         // 모든 버튼을 목록에 저장
         allButtons = listOf(
@@ -181,6 +199,7 @@ class RecPlaceFragment : Fragment() {
             else -> throw IllegalArgumentException("Unknown wrapper ID for text: $wrapperId")
         }
     }
+
 
     // 메모리 누수 방지
     override fun onDestroyView() {
