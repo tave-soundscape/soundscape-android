@@ -19,6 +19,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.client.RetrofitClient.libraryApi
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LibraryPlaylistDetailResponse
 import com.mobile.soundscape.api.dto.UpdatePlaylistNameRequest
@@ -166,6 +167,8 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
         val tvName = view.findViewById<TextView>(R.id.tvTitle) // ID 확인 필요
         val tvEdit = view.findViewById<TextView>(R.id.tvEditName) // 수정 버튼
         val tvDelete = view.findViewById<TextView>(R.id.tvDelete) // 삭제 버튼
+        val btnClose = view.findViewById<ImageView>(R.id.btnClose)
+
 
         // 앨범 커버 이미지뷰들
         val ivCover1 = view.findViewById<ImageView>(R.id.ivCover1)
@@ -187,6 +190,10 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
             }
         }
 
+        btnClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
         // 수정 버튼 클릭
         tvEdit.setOnClickListener {
             bottomSheetDialog.dismiss() // 더보기 창 닫고
@@ -195,7 +202,8 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
 
         // 삭제 버튼 클릭 (추후 구현)
         tvDelete.setOnClickListener {
-            // showDeleteDialog()
+            bottomSheetDialog.dismiss() // 더보기 창 닫고
+            showDeleteBottomSheet(data.playlistId.toString()) // 삭제 창 열기
         }
 
         bottomSheetDialog.show()
@@ -270,11 +278,66 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
         }
     }
 
-    // 커스텀 토스트
-    private fun showCustomToast(message: String) {
+    // 삭제 바텀시트
+    private fun showDeleteBottomSheet(id: String) {
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_library_delete, null)
+        bottomSheetDialog.setContentView(view)
+
+        val btnConfirmDelete = view.findViewById<View>(R.id.btnConfirmDelete)
+        val btnClose = view.findViewById<View>(R.id.btnClose)
+
+        btnClose.setOnClickListener { bottomSheetDialog.dismiss() }
+
+        btnConfirmDelete.setOnClickListener {
+            deletePlaylistOnServer(id, bottomSheetDialog)
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun deletePlaylistOnServer(id: String, dialogToClose: BottomSheetDialog) {
+
+        RetrofitClient.libraryApi.deletePlaylist(id).enqueue(object : Callback<BaseResponse<String>> {
+            override fun onResponse(
+                call: Call<BaseResponse<String>>,
+                response: Response<BaseResponse<String>>
+            ) {
+                if (response.isSuccessful) {
+                    // 1. 성공 토스트 (삭제 아이콘 포함)
+                    showCustomToast("플레이리스트가 삭제됐어요", isDelete = true)
+
+                    // 2. 더보기 바텀시트 닫기
+                    dialogToClose.dismiss()
+
+                    // 3. ★중요★ 삭제된 플리 상세 화면에서 나가기 (목록으로 이동)
+                    findNavController().popBackStack()
+
+                } else {
+                    showCustomToast("삭제를 실패했습니다.")
+                    Log.e("API_DELETE", "Code: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                showCustomToast("네트워크 오류가 발생했습니다.")
+                Log.e("API_DELETE", "Error: ${t.message}")
+            }
+        })
+    }
+
+
+    // 커스텀 토스트 - 기본값은 false
+    private fun showCustomToast(message: String, isDelete: Boolean = false) {
         val inflater = LayoutInflater.from(requireContext())
         val layout = inflater.inflate(R.layout.toast_custom, null)
         layout.findViewById<TextView>(R.id.tv_toast_message).text = message
+
+        val ivIcon = layout.findViewById<ImageView>(R.id.iv_toast_icon)
+        if (isDelete) {
+            ivIcon.setImageResource(R.drawable.icon_library_detail_delete)
+            ivIcon.visibility = View.VISIBLE // 아이콘 보이게
+        }
 
         val toast = Toast(requireContext())
         toast.duration = Toast.LENGTH_SHORT
