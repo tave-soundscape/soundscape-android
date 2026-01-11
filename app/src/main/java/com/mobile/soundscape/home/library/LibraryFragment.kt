@@ -58,7 +58,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
         }
     }
 
-    // [Step 1] 전체 플레이리스트 목록(ID, 이름)만 먼저 가져오기
+    // 전체 플레이리스트 목록(ID, 이름)만 먼저 가져오기
     private fun fetchLibraryPlaylists() {
         RetrofitClient.libraryApi.getLibraryPlaylists(size = 20).enqueue(object : Callback<BaseResponse<LibraryPlaylistResponse>> {
             override fun onResponse(
@@ -82,7 +82,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
         })
     }
 
-    // [Step 2] 받아온 목록으로 UI를 먼저 그리고, 상세 조회 반복문 시작
+    // 받아온 목록으로 UI를 먼저 그리고, 상세 조회 반복문 시작
     private fun initPlaylistList(apiPlaylists: List<PlaylistDetail>) {
         playlistDataList.clear()
 
@@ -98,14 +98,14 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
             )
         }
 
-        // 2. 어댑터에 알려서 껍데기라도 먼저 보여줌
+        // 어댑터에 알려서 껍데기라도 먼저 보여줌
         libraryAdapter.notifyDataSetChanged()
 
-        // 3. ★ 핵심: 각 아이템마다 상세 정보(이미지)를 가지러 감
+        // 각 아이템마다 상세 정보(이미지)를 가지러 감
         fetchAllDetails()
     }
 
-    // [Step 3] 반복문을 돌며 상세 API 호출
+    // 반복문을 돌며 상세 API 호출
     private fun fetchAllDetails() {
         // 리스트에 있는 모든 플레이리스트를 순회
         for ((index, playlist) in playlistDataList.withIndex()) {
@@ -139,7 +139,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
         }
     }
 
-    // [Step 4] 상세 데이터가 도착하면 해당 아이템만 업데이트
+    // 상세 데이터가 도착하면 해당 아이템만 업데이트
     private fun updateSinglePlaylist(index: Int, detailData: LibraryPlaylistDetailResponse) {
 
         // 1. API Song -> 앱 MusicModel 변환
@@ -163,8 +163,8 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                 songCount = musicList.size
             )
 
-            // 3. 어댑터에게 "이 위치(index) 바뀌었어!" 하고 알림
-            // 주의: 어댑터 0번은 '좋아요' 카드이므로, 실제 위치는 index + 1 입니다.
+            // 어댑터에게 위치(index) 바뀐 거 알림
+            // 어댑터 0번 = '좋아요' 카드 / 실제 위치는 index + 1 입니다.
             libraryAdapter.notifyItemChanged(index + 1)
         }
     }

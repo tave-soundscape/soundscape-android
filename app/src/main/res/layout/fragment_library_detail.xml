@@ -191,7 +191,7 @@
             app:tint="@color/white" />
 
         <ImageView
-            android:id="@+id/btnListToGallery"
+            android:id="@+id/btnMore"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/icon_library_detatil_more"

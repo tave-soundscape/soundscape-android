@@ -44,7 +44,7 @@ data class LibraryPlaylistDetailResponse (
     val playlistId: Int,
 
     @SerializedName("playlistName")
-    val playlistName: String,
+    var playlistName: String,
 
     @SerializedName("playlistUrl")
     val playlistUrl: String,
