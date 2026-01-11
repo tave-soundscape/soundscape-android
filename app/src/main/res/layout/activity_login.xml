@@ -66,6 +66,16 @@
         app:layout_constraintBottom_toBottomOf="@id/btnKakaoOauth"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+        android:id="@+id/moveOnboardingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="(임시)온보딩 페이지로 가기"
+        app:layout_constraintTop_toBottomOf="@id/btnKakaoOauth"
+        android:layout_marginTop="100dp"/>
 -->
 
     <Button
@@ -88,16 +98,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
-
-    <Button
-        android:id="@+id/moveOnboardingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="(임시)온보딩 페이지로 가기"
-        app:layout_constraintTop_toBottomOf="@id/btnKakaoOauth"
-        android:layout_marginTop="100dp"/>
 
     <FrameLayout
         android:id="@+id/onboarding_fragment_container"

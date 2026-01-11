@@ -43,7 +43,9 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
         setupRecyclerView()
 
         // 처음 실행 시 데이터 로드
-        loadLibraryData(currentPage)
+        if (playlistDataList.isEmpty()) {
+            loadLibraryData(0)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -192,7 +194,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
 
     private fun handlePlaylistClick(selectedPlaylist: LibraryPlaylistModel?) {
         if (selectedPlaylist == null) {
-            Toast.makeText(context, "좋아요 목록", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "🔨좋아요 기능은 구현 중입니다", Toast.LENGTH_SHORT).show()
         } else {
             val bundle = Bundle().apply {
                 putString("playlistId", selectedPlaylist.playlistId.toString())

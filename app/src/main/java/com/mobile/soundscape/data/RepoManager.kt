@@ -118,3 +118,25 @@ object OnboardingManager {
     }
 
 }
+
+
+// 스플래시에서 쓰는거 - 업데이트 후 최초 1회 업데이트
+object PreferenceManager {
+    private const val PREF_NAME = "my_app_prefs"
+
+    // 이번 업데이트에서 최초 1회 온보딩을 다시 실행해야함.
+    // v2를 붙여서 키 이름을 변경
+    // 기존 사용자는 이 키를 가지고 있지 않으므로 false가 반환됩니다.
+    private const val KEY_ONBOARDING_DONE = "is_onboarding_done_v2"
+
+    fun isOnboardingFinished(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        // 기본값 false: 키가 없으면(업데이트 직후) 안 한 걸로 간주
+        return prefs.getBoolean(KEY_ONBOARDING_DONE, false)
+    }
+
+    fun setOnboardingFinished(context: Context, isFinished: Boolean) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_ONBOARDING_DONE, isFinished).apply()
+    }
+}

@@ -81,6 +81,17 @@ class GalleryFragment : Fragment() {
             updateUIWithSharedData(data)
             // spotify deep link로 연결
             binding.btnDeepLinkSpotify.setOnClickListener {
+
+                // 딥링크 누르면 백엔드로 클릭여부 보내기
+                RetrofitClient.recommendationApi.sendAnalytics(data.playlistId.toString()).enqueue(object : Callback<BaseResponse<String>> {
+                    override fun onResponse(
+                        call: Call<BaseResponse<String>>,
+                        response: Response<BaseResponse<String>>
+                    ) {}
+                    override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                    }
+                })
+
                 val spotifyUrl = data.playlistUrl
 
                 if (!spotifyUrl.isNullOrEmpty()) {

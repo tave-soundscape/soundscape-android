@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.kakao.sdk.auth.model.OAuthToken
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.R
@@ -24,6 +25,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import com.kakao.sdk.common.util.Utility
+import com.mobile.soundscape.data.PreferenceManager
 
 class LoginActivity : AppCompatActivity() {
 
@@ -44,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this@LoginActivity, EvaluationActivity::class.java)
             startActivity(intent)
         }
-*/
+
         binding.moveOnboardingButton.setOnClickListener {
             val fragment = SetnameFragment()
             val transaction = supportFragmentManager.beginTransaction()
@@ -52,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
             transaction.addToBackStack(null)
             transaction.commit()
         }
-
+*/
 
 
         var keyHash = Utility.getKeyHash(this)
@@ -148,20 +150,28 @@ class LoginActivity : AppCompatActivity() {
     }
 
     // 로그인 성공 후 분기 처리
-    private fun handleLoginSuccess(isOnboarded: Boolean) {
-        if (isOnboarded) {
-            // [CASE A] 이미 가입하고 온보딩도 한 유저 -> 메인 화면으로
+    private fun handleLoginSuccess(serverIsOnboarded: Boolean) {
+
+        // 로컬에 저장된 v2 완려 여부 확인
+        val localOnboardingDone = PreferenceManager.isOnboardingFinished(this)
+
+        // 조건 1. 로컬에 v2 키가 있고 & 서버에서도 온보딩 완료면 -> 메인으로 통과
+        if (localOnboardingDone && serverIsOnboarded) {
             val intent = Intent(this, MainActivity::class.java)
-            // 뒤로가기 누르면 로그인 화면 안 나오게 스택 정리
-            // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            // 로그인 화면이 백스택에 남지 않게 클리어
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-            // finish()
-        } else {
-            // [CASE B] 처음 가입한 유저 (온보딩 필요) -> 온보딩 프래그먼트 표시
-            // (LoginActivity 내에 fragment_container가 있다고 가정)
+            finish()
+        }
+        else {
+            // [그 외 모든 경우] -> 온보딩 진행!
+            // case 1: 신규 유저 (local=false, server=false)
+            // case 2: 업데이트 유저 (local=false, server=true) -> 강제 재온보딩
+
+            // 프래그먼트 교체 (온보딩 시작)
             val fragment = SetnameFragment()
             supportFragmentManager.beginTransaction()
-                .replace(R.id.onboarding_fragment_container, fragment) // ID 확인 필요
+                .replace(R.id.onboarding_fragment_container, fragment)
                 .commit()
         }
     }

@@ -28,6 +28,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.mobile.soundscape.MainActivity
@@ -174,6 +175,18 @@ class ListFragment : Fragment() {
 
         // spotify deep link로 연결
         binding.btnDeepLinkSpotify.setOnClickListener {
+
+            // 딥링크 누르면 백엔드로 클릭여부 보내기
+            RetrofitClient.recommendationApi.sendAnalytics(data.playlistId.toString()).enqueue(object : Callback<BaseResponse<String>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<String>>,
+                    response: Response<BaseResponse<String>>
+                ) {}
+                override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
+                }
+            })
+
+            // 스포티파이 딥링크로 연결
             val spotifyUrl = data.playlistUrl
 
             if (!spotifyUrl.isNullOrEmpty()) {
