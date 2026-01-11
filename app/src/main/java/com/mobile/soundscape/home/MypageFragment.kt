@@ -50,9 +50,37 @@ class MypageFragment : Fragment() {
 
         // 아티스트 취향 불러오기
         viewModel.artistList.observe(viewLifecycleOwner) { artists ->
-            binding.tvArtist1.text = artists.getOrNull(0) ?: ""
-            binding.tvArtist2.text = artists.getOrNull(1) ?: ""
-            binding.tvArtist3.text = artists.getOrNull(2) ?: ""
+            // artists: List<LocalArtistModel>
+
+            // 1. 첫 번째 아티스트
+            val artist1 = artists.getOrNull(0)
+            binding.tvArtist1.text = artist1?.name ?: ""
+            if (artist1 != null && artist1.imageUrl.isNotEmpty()) {
+                com.bumptech.glide.Glide.with(this)
+                    .load(artist1.imageUrl)
+                    .circleCrop() // 원형으로 자르기 (선택사항)
+                    .into(binding.ivArtist1) // ★ xml에 ImageView(ivArtist1) 있어야 함
+            }
+
+            // 2. 두 번째 아티스트
+            val artist2 = artists.getOrNull(1)
+            binding.tvArtist2.text = artist2?.name ?: ""
+            if (artist2 != null && artist2.imageUrl.isNotEmpty()) {
+                com.bumptech.glide.Glide.with(this)
+                    .load(artist2.imageUrl)
+                    .circleCrop()
+                    .into(binding.ivArtist2)
+            }
+
+            // 3. 세 번째 아티스트
+            val artist3 = artists.getOrNull(2)
+            binding.tvArtist3.text = artist3?.name ?: ""
+            if (artist3 != null && artist3.imageUrl.isNotEmpty()) {
+                com.bumptech.glide.Glide.with(this)
+                    .load(artist3.imageUrl)
+                    .circleCrop()
+                    .into(binding.ivArtist3)
+            }
         }
 
         // 장르 취향 불러오기

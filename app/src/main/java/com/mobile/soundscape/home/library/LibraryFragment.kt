@@ -6,105 +6,203 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.LibraryPlaylistDetailResponse
 import com.mobile.soundscape.api.dto.LibraryPlaylistResponse
 import com.mobile.soundscape.api.dto.PlaylistDetail
 import com.mobile.soundscape.databinding.FragmentLibraryBinding
-import com.mobile.soundscape.result.MusicDataProvider
+import com.mobile.soundscape.result.MusicModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.collections.map
-
 
 class LibraryFragment : Fragment(R.layout.fragment_library) {
 
     private var _binding: FragmentLibraryBinding? = null
     private val binding get() = _binding!!
-    // 전역 변수로 뺴서 나중에 데이터 갱신 시 사용
-    private lateinit var libraryAdapter: LibraryAdapter
-    private val TAG = "PlayTest"
 
+    private lateinit var libraryAdapter: LibraryAdapter
+    private var playlistDataList = mutableListOf<LibraryPlaylistModel>()
+
+    // 페이지네이션 변수
+    private var currentPage = 0       // 보통 0부터 시작 (서버가 1부터라면 1로 변경)
+    private val PAGE_SIZE = 10
+    private var isLoading = false
+    private var isLastPage = false
+
+    private val TAG = "LibraryFragment"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentLibraryBinding.bind(view)
 
-        setupRecyclerView()  // 초기 어탭터 설정
-        fetchLibraryPlaylists()  // 서버에서 라이브러리 플레이리스트 가져오기
+        setupRecyclerView()
 
-
+        // 처음 실행 시 데이터 로드
+        if (playlistDataList.isEmpty()) {
+            loadLibraryData(0)
+        }
     }
 
     private fun setupRecyclerView() {
-        // 처음에는 빈 리스트로 어댑터 생성
-        libraryAdapter = LibraryAdapter(emptyList()) { selectedPlaylist ->
+        libraryAdapter = LibraryAdapter(playlistDataList) { selectedPlaylist ->
+            handlePlaylistClick(selectedPlaylist)
+        }
+
+        binding.rvPlaylist.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2)
+            adapter = libraryAdapter
+
+            // 데코레이션 중복 방지
+            if (itemDecorationCount > 0) removeItemDecorationAt(0)
+            val spacingInPixels = (5 * resources.displayMetrics.density).toInt()
+            addItemDecoration(GridSpacingItemDecoration(2, spacingInPixels, true))
+
+            // 스크롤 리스너
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    // 바닥에 닿았는지 확인
+                    if (!recyclerView.canScrollVertically(1) && dy > 0 && !isLoading && !isLastPage) {
+                        Log.d(TAG, "스크롤 바닥 감지! 다음 페이지($currentPage + 1) 요청")
+                        isLoading = true
+                        currentPage++
+                        loadLibraryData(currentPage)
+                    }
+                }
+            })
+        }
+    }
+
+    private fun loadLibraryData(page: Int) {
+        isLoading = true
+
+        Log.d(TAG, "API 호출: page=$page, size=$PAGE_SIZE") // 로그로 확인해보세요!
+
+        RetrofitClient.libraryApi.getLibraryPlaylists(page = page, size = PAGE_SIZE)
+            .enqueue(object : Callback<BaseResponse<LibraryPlaylistResponse>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<LibraryPlaylistResponse>>,
+                    response: Response<BaseResponse<LibraryPlaylistResponse>>
+                ) {
+                    if (response.isSuccessful) {
+                        val playlists = response.body()?.data?.playlists
+
+                        // 데이터가 없거나 비어있으면 마지막 페이지 처리
+                        if (playlists.isNullOrEmpty()) {
+                            isLastPage = true
+                            isLoading = false
+                            Log.d(TAG, "더 이상 불러올 데이터가 없습니다.")
+                            return
+                        }
+
+                        // 사이즈가 요청한 것보다 적으면 다음 페이지는 없다고 판단
+                        if (playlists.size < PAGE_SIZE) {
+                            isLastPage = true
+                        }
+
+                        // 리스트에 '추가'합니다. (clear 아님)
+                        addPlaylistsToAdapter(playlists)
+
+                    } else {
+                        Log.e(TAG, "서버 에러: ${response.code()}")
+                        isLoading = false
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponse<LibraryPlaylistResponse>>, t: Throwable) {
+                    Log.e(TAG, "통신 에러: ${t.message}")
+                    isLoading = false
+                }
+            })
+    }
+
+    private fun addPlaylistsToAdapter(newApiPlaylists: List<PlaylistDetail>) {
+        val startPosition = playlistDataList.size // 추가되기 전 마지막 위치
+
+        newApiPlaylists.forEach { detail ->
+            playlistDataList.add(
+                LibraryPlaylistModel(
+                    playlistId = detail.playlistId,
+                    title = detail.playlistName,
+                    songs = emptyList(),
+                    songCount = 0
+                )
+            )
+        }
+
+        // 데이터 변경 알림 (전체가 아니라 추가된 부분만)
+        // Header(0번)가 있으므로 인덱스는 startPosition + 1 부터 시작
+        libraryAdapter.notifyItemRangeInserted(startPosition + 1, newApiPlaylists.size)
+        isLoading = false
+
+        // 새로 추가된 아이템들에 대해 상세정보(이미지) 요청
+        fetchDetailsForNewItems(startPosition, newApiPlaylists)
+    }
+
+    private fun fetchDetailsForNewItems(startIndex: Int, newItems: List<PlaylistDetail>) {
+        for ((i, playlist) in newItems.withIndex()) {
+            val globalIndex = startIndex + i
+
+            RetrofitClient.libraryApi.getPlaylistDetail(playlist.playlistId.toString())
+                .enqueue(object : Callback<BaseResponse<LibraryPlaylistDetailResponse>> {
+                    override fun onResponse(
+                        call: Call<BaseResponse<LibraryPlaylistDetailResponse>>,
+                        response: Response<BaseResponse<LibraryPlaylistDetailResponse>>
+                    ) {
+                        if (!isAdded) return
+                        if (response.isSuccessful) {
+                            response.body()?.data?.let { detailData ->
+                                updateSinglePlaylist(globalIndex, detailData)
+                            }
+                        }
+                    }
+                    override fun onFailure(call: Call<BaseResponse<LibraryPlaylistDetailResponse>>, t: Throwable) {
+                        // 실패 로그 생략
+                    }
+                })
+        }
+    }
+
+    private fun updateSinglePlaylist(index: Int, detailData: LibraryPlaylistDetailResponse) {
+        val musicList = detailData.songs.map { song ->
+            MusicModel(
+                title = song.title ?: "",
+                artist = song.artistName ?: "",
+                albumCover = song.imageUrl ?: "",
+                trackUri = song.uri ?: ""
+            )
+        }
+
+        if (index < playlistDataList.size) {
+            val oldItem = playlistDataList[index]
+            playlistDataList[index] = oldItem.copy(
+                songs = musicList,
+                songCount = musicList.size,
+                location = detailData.location,
+                goal = detailData.goal
+            )
+            // Header 때문에 index + 1 위치를 갱신
+            libraryAdapter.notifyItemChanged(index + 1)
+        }
+    }
+
+    private fun handlePlaylistClick(selectedPlaylist: LibraryPlaylistModel?) {
+        if (selectedPlaylist == null) {
+            Toast.makeText(context, "🔨좋아요 기능은 구현 중입니다", Toast.LENGTH_SHORT).show()
+        } else {
             val bundle = Bundle().apply {
+                putString("playlistId", selectedPlaylist.playlistId.toString())
                 putString("title", selectedPlaylist.title)
-                // putString("date", selectedPlaylist.date)
                 putSerializable("songs", ArrayList(selectedPlaylist.songs))
             }
             findNavController().navigate(R.id.action_libraryFragment_to_libraryDetailFragment, bundle)
         }
-
-        binding.rvPlaylist.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = libraryAdapter
-        }
-    }
-
-    private fun fetchLibraryPlaylists() {
-        // size 파라미터는 기본값 10이 적용되거나, 명시적으로 10을 넣을 수 있습니다.
-        RetrofitClient.libraryApi.getLibraryPlaylists(size=20).enqueue(object : Callback<BaseResponse<LibraryPlaylistResponse>> {
-
-            override fun onResponse(
-                call: Call<BaseResponse<LibraryPlaylistResponse>>,
-                response: Response<BaseResponse<LibraryPlaylistResponse>>
-            ) {
-                if (response.isSuccessful) {
-                    val baseResponse = response.body()
-                    val libraryResponse = baseResponse?.data
-
-                    if (libraryResponse != null) {
-                        updateUI(libraryResponse.playlists)
-                    } else {
-                        // 데이터가 null일 경우 처리
-                        Log.e(TAG, "Response data is null")
-                    }
-                } else {
-                    Log.e(TAG, "Error: ${response.code()}")
-                    Toast.makeText(context, "데이터를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<BaseResponse<LibraryPlaylistResponse>>, t: Throwable) {
-                Log.e(TAG, "Network Error: ${t.message}")
-                Toast.makeText(context, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun updateUI(apiPlaylists: List<PlaylistDetail>) {
-        // API 데이터(PlaylistDetail) -> UI 데이터(LibraryPlaylistModel) 변환
-        val uiDataList = apiPlaylists.map { detail ->
-            LibraryPlaylistModel(
-                playlistId = detail.playlistId,
-                title = detail.playlistName,
-                songs = emptyList()
-            )
-        }
-
-        libraryAdapter = LibraryAdapter(uiDataList) { selectedPlaylist ->
-            val bundle = Bundle().apply {
-                putString("playlistId", selectedPlaylist.playlistId.toString())
-                putString("title", selectedPlaylist.title)
-            }
-            findNavController().navigate(R.id.action_libraryFragment_to_libraryDetailFragment, bundle)
-        }
-        binding.rvPlaylist.adapter = libraryAdapter
     }
 
     override fun onDestroyView() {
