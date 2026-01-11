@@ -49,7 +49,6 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
 
         // 우선 Bundle 데이터로 화면 그리기 (빠른 로딩)
         binding.tvDetailPlaylistName.text = title
-        binding.tvSubtitle.text = "곡 ${songs.size}개"
         setupRecyclerView(songs) // 리사이클러뷰 연결 함수 분리
 
         // 뒤로가기
@@ -114,7 +113,18 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
     private fun updateUI(data: LibraryPlaylistDetailResponse) {
         // 텍스트 정보 갱신
         binding.tvDetailPlaylistName.text = data.playlistName
-        binding.tvSubtitle.text = "곡 ${data.songs.size}개"
+        // subtitle에 장소 및 목표 띄우기
+        val rawLocation = data.location ?: ""
+        val rawGoal = data.goal ?: ""
+
+        if (rawLocation == "old_playlist" || rawGoal == "old_playlist") {
+            binding.tvSubtitle.text = "곡 ${data.songs.size}개"
+        } else {
+            val kPlace = LabelMapper.getKoreanPlace(rawLocation)
+            val kGoal = LabelMapper.getKoreanGoal(rawGoal)
+
+            binding.tvSubtitle.text = "$kPlace • $kGoal"
+        }
 
         // 스포티파이 링크 버튼
         binding.btnDeepLinkSpotify.setOnClickListener {

@@ -46,11 +46,17 @@ data class LibraryPlaylistDetailResponse (
     @SerializedName("playlistName")
     var playlistName: String,
 
-    @SerializedName("playlistUrl")
-    val playlistUrl: String,
+    @SerializedName("location")
+    val location: String,
+
+    @SerializedName("goal")
+    val goal: String,
 
     @SerializedName("spotifyPlaylistId")
     val spotifyPlaylistId: String,
+
+    @SerializedName("playlistUrl")
+    val playlistUrl: String,
 
     @SerializedName("songs")
     val songs: List<Song>

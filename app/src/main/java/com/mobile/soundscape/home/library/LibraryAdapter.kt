@@ -61,7 +61,19 @@ class LibraryAdapter(
     inner class PlaylistViewHolder(private val binding: ItemLibraryPlaylistBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: LibraryPlaylistModel) {
             binding.tvPlaylistTitle.text = item.title
-            binding.tvSubtitle.text = "곡 ${item.songCount}개"
+
+            // 장소/목표 or 곡 개수 표시
+            val rawLocation = item.location ?: ""
+            val rawGoal = item.goal ?: ""
+
+            if (rawLocation == "old_playlist" || rawGoal == "old_playlist") {
+             binding.tvSubtitle.text = "곡 ${item.songCount}개"
+            } else {
+                val kPlace = LabelMapper.getKoreanPlace(rawLocation)
+                val kGoal = LabelMapper.getKoreanGoal(rawGoal)
+
+                binding.tvSubtitle.text = "$kPlace • $kGoal"
+            }
 
             // 1. MusicModel 리스트에서 앨범 커버 URL만 최대 4개 추출
             val coverUrls = item.songs.take(4).map { it.albumCover }

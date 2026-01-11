@@ -104,7 +104,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                             isLastPage = true
                         }
 
-                        // ★ 중요: 리스트에 '추가'합니다. (clear 아님)
+                        // 리스트에 '추가'합니다. (clear 아님)
                         addPlaylistsToAdapter(playlists)
 
                     } else {
@@ -181,7 +181,9 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
             val oldItem = playlistDataList[index]
             playlistDataList[index] = oldItem.copy(
                 songs = musicList,
-                songCount = musicList.size
+                songCount = musicList.size,
+                location = detailData.location,
+                goal = detailData.goal
             )
             // Header 때문에 index + 1 위치를 갱신
             libraryAdapter.notifyItemChanged(index + 1)

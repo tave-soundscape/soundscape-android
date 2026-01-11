@@ -24,6 +24,15 @@ data class RecommendationResponse(
     @SerializedName("playlistName")
     val playlistName: String,
 
+    @SerializedName("location")
+    val location: String,
+
+    @SerializedName("goal")
+    val goal: String,
+
+    @SerializedName("spotifyPlaylistId")
+    val spotifyPlaylistId: String,
+
     @SerializedName("playlistUrl")
     val playlistUrl: String,
 
