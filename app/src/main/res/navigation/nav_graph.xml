@@ -25,6 +25,13 @@
         <action
             android:id="@+id/action_homeFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_listFragment"
+            app:destination="@id/listFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/recPlaceFragment"
@@ -57,7 +64,14 @@
         android:id="@+id/recResultFragment"
         android:name="com.mobile.soundscape.recommendation.RecResultFragment"
         android:label="fragment_rec_result"
-        tools:layout="@layout/fragment_rec_result" />
+        tools:layout="@layout/fragment_rec_result">
+
+        <action
+            android:id="@+id/action_recResultFragment_to_listFragment"
+            app:destination="@id/listFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popUpTo="@id/homeFragment" /> </fragment>
     <fragment
         android:id="@+id/exploreFragment"
         android:name="com.mobile.soundscape.explore.ExploreFragment"
@@ -128,5 +142,25 @@
             android:id="@+id/action_setnameFragment2_to_mypageFragment"
             app:destination="@id/mypageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.mobile.soundscape.result.ListFragment"
+        android:label="ListFragment" >
+
+        <action
+            android:id="@+id/action_listFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+
+        <action
+            android:id="@+id/action_listFragment_to_libraryFragment"
+            app:destination="@id/libraryFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.mobile.soundscape.playlist.GalleryFragment"
+        android:label="GalleryFragment"
+        tools:layout="@layout/fragment_gallery" />
 
 </navigation>

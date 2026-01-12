@@ -30,16 +30,18 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        // 홈 화면으로 돌아올 때마다 DB를 다시 확인해서 UI를 갱신
+        loadHistoryAndSetupUI()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //공통 설정: 구슬 애니메이션
         com.bumptech.glide.Glide.with(this)
             .load(R.drawable.orb_animation)
             .into(binding.centerButton)
-
-        //데이터베이스 확인 및 UI 업데이트
-        loadHistoryAndSetupUI()
     }
 
     private fun loadHistoryAndSetupUI() {
@@ -78,39 +80,47 @@ class HomeFragment : Fragment() {
     // [A안] 데이터가 있을 때 호출되는 함수
     private fun updateHomeUIWithHistory(historyList: List<PlaylistHistory>) {
         binding.apply {
-            // 1. 하단 버튼 숨기고 문구 변경
             startButton.visibility = View.GONE
             tvSubtitle2.text = "최근 추천받은 몰입 테마예요\n중앙 버튼을 눌러 새로 시작할 수 있어요"
 
-            // 2. 중앙 구슬을 "시작하기" 버튼으로 활용
             centerButton.setOnClickListener {
                 findNavController().navigate(R.id.action_homeFragment_to_recPlaceFragment)
             }
 
-            // 3. 기록 버튼 세팅을 위한 리스트화
             val wrappers = listOf(historyWrapper1, historyWrapper2, historyWrapper3, historyWrapper4, historyWrapper5, historyWrapper6)
             val icons = listOf(historyIcon1, historyIcon2, historyIcon3, historyIcon4, historyIcon5, historyIcon6)
             val texts = listOf(historyTxt1, historyTxt2, historyTxt3, historyTxt4, historyTxt5, historyTxt6)
 
-            // 4. 데이터 매핑
             historyList.forEachIndexed { index, data ->
                 if (index < wrappers.size) {
                     val wrapper = wrappers[index]
                     wrapper.visibility = View.VISIBLE
 
-                    // 텍스트 (이미 저장 시 한글화 됨)
-                    texts[index].text = "${data.place}\n${data.goal}"
+                    val targetPlaylistId = data.playlistId.toString()
+                    val targetPlace = data.place
+                    val targetGoal = data.goal
 
-                    // 아이콘 세팅
+                    texts[index].text = "$targetPlace • $targetGoal"
+
                     val resId = resources.getIdentifier(data.iconResName, "drawable", requireContext().packageName)
                     if (resId != 0) {
                         icons[index].setImageResource(resId)
                     }
 
-                    // 히스토리 버튼 클릭 리스너 (나중에 재생 화면으로 바로 보낼 때 사용)
+                    // 이제 리스너는 루프 당시 고정되었던 targetPlaylistId를 기억합니다.
+                    android.util.Log.d("HomeHistory", "Index: $index, ID: ${data.playlistId}")
                     wrapper.setOnClickListener {
-                        Toast.makeText(requireContext(), "${data.place} 플레이리스트 재생", Toast.LENGTH_SHORT).show()
-                        // TODO: playlistId를 이용한 이동 로직 추가
+                        val args = Bundle().apply {
+                            putString("playlistId", targetPlaylistId)
+                            putBoolean("isHistory", true)
+                            putString("place", targetPlace)
+                            putString("goal", targetGoal)
+                        }
+
+                        findNavController().navigate(
+                            R.id.action_homeFragment_to_listFragment,
+                            args
+                        )
                     }
                 }
             }

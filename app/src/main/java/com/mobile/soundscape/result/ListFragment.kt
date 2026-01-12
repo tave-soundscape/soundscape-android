@@ -28,6 +28,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
+import androidx.navigation.fragment.findNavController
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.PreferenceManager
 import com.mobile.soundscape.data.RecommendationManager
@@ -55,41 +56,37 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-/*
-        // 1. 더미 데이터 생성
-        val dummyList = MusicDataProvider.createDummyData()
 
-        // 2. 리사이클러뷰 설정
-        setupRecyclerView(dummyList)
+        // 1. 번들 데이터 읽기
+        val playlistId = arguments?.getString("playlistId")
+        val isHistory = arguments?.getBoolean("isHistory", false) ?: false
+        val hPlace = arguments?.getString("place") ?: ""
+        val hGoal = arguments?.getString("goal") ?: ""
 
-        // 3. 상단 헤더 이미지 설정 (자동으로 dummyList의 앞 4개를 가져옴)
-        setupHeaderImages(dummyList)
-*/
-        // 내부 저장소 창고에서 꺼내기
-        val data = RecommendationManager.cachedPlaylist
-        val place = RecommendationManager.place
-        val goal = RecommendationManager.goal
+        Log.d(TAG, "ListFragment: 진입 (isHistory: $isHistory, id: $playlistId)")
 
-        Log.d(TAG, "ListFragment: 뷰모델 관찰 시작")
-
-        if (data != null) {
-            setupButtons(data)
-            // UI 업데이트
-            updateUIWithRealData(data, place, goal)
+        // 2. 모드에 따른 분기
+        if (isHistory && playlistId != null) {
+            // [히스토리 모드] 서버에서 직접 가져오기
+            loadPlaylistDetail(playlistId, hPlace, hGoal)
         } else {
-            Log.e(TAG, "창고가 비어있습니다! (데이터 전달 실패)")
-            Toast.makeText(context, "데이터를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            // [일반 추천 모드] 창고에서 꺼내기
+            val data = RecommendationManager.cachedPlaylist
+            val place = RecommendationManager.place ?: ""
+            val goal = RecommendationManager.goal ?: ""
+
+            if (data != null) {
+                setupButtons(data)
+                updateUIWithRealData(data, place, goal)
+            } else {
+                Log.e(TAG, "데이터가 없습니다! (RecommendationManager 확인 필요)")
+                Toast.makeText(context, "데이터를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
 
-
+        // 3. 공통 버튼 리스너 (이동 및 뒤로가기)
         binding.btnMoveToLibrary.setOnClickListener {
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            // 메인 액티비티를 다시 띄우면서 기존 스택 정리
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            // 메인에서 라이브러리 탭을 열도록 신호 전달
-            intent.putExtra("NAVIGATE_TO", "LIBRARY")
-            startActivity(intent)
-            requireActivity().finish()
+            findNavController().navigate(R.id.action_listFragment_to_libraryFragment)
         }
 
         binding.btnBack.setOnClickListener {
@@ -97,31 +94,57 @@ class ListFragment : Fragment() {
         }
     }
 
+    private fun loadPlaylistDetail(id: String, place: String, goal: String) {
+        RetrofitClient.recommendationApi.getPlaylistDetail(id).enqueue(object : Callback<BaseResponse<RecommendationResponse>> {
+            override fun onResponse(
+                call: Call<BaseResponse<RecommendationResponse>>,
+                response: Response<BaseResponse<RecommendationResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val data = response.body()?.data
+                    if (data != null) {
+                        // 서버에서 받아온 상세 데이터로 UI 업데이트
+                        setupButtons(data)
+                        updateUIWithRealData(data, place, goal)
+                    }
+                } else {
+                    Log.e(TAG, "상세 조회 실패 Code: ${response.code()}")
+                    context?.let { ctx ->
+                        Toast.makeText(ctx, "플레이리스트 정보를 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse<RecommendationResponse>>, t: Throwable) {
+                Log.e(TAG, "통신 에러: ${t.message}")
+            }
+        })
+    }
     // --- 받아온 데이터로 화면 채우기 ---
     private fun updateUIWithRealData(data: RecommendationResponse, place: String, goal: String) {
 
         Log.d(TAG, "ListFragment: UI 업데이트 함수 진입")
 
-        if (data.songs != null && data.songs.isNotEmpty()) {
-            PreferenceManager.setPlaylistExperienced(requireContext(), true)
-            Log.d("PREF_CHECK", "추천 성공: 도장 찍힘 (true)")
-        } else {
-            // 데이터가 비어있으면 도장을 찍지 않거나 확실히 false로 만듭니다.
-            PreferenceManager.setPlaylistExperienced(requireContext(), false)
-            Log.d("PREF_CHECK", "추천 데이터 없음: 도장 찍지 않음")
+        val koreanGoal = when (goal.lowercase()) {
+            "sleep" -> "수면"
+            "focus" -> "집중"
+            "cosolation" -> "위로"
+            "active" -> "활력"
+            "stabilization" -> "안정"
+            "anger" -> "분노"
+            "relax" -> "휴식"
+            "neutral" -> "미선택"
+            else -> goal // 혹시 모르니 기본값은 영어 그대로
         }
 
-        binding.tvSubtitle.text = "$place · $goal"
+        binding.tvSubtitle.text = "$place · $koreanGoal"
 
-        // 플레이리스트 기본 정보 설정
-        val savedPlaylistName = context?.let { ctx ->
-            RecommendationManager.getPlaylistName(ctx)
-        } ?: ""
-        if (savedPlaylistName.isNotEmpty()) {
-            binding.tvPlaylistName.text = savedPlaylistName
+        val finalName = if (!data.playlistName.isNullOrEmpty()) {
+            data.playlistName // 서버가 보내준 이 구슬만의 고유 이름
         } else {
-            binding.tvPlaylistName.text = data?.playlistName ?: "플레이리스트 이름"
+            "맞춤 플레이리스트" // 혹시 이름이 없을 때의 기본값
         }
+        binding.tvPlaylistName.text = finalName
 
         val songs = data.songs ?: emptyList() // null이면 빈 리스트로 처리
         Log.d(TAG, "ListFragment: 리사이클러뷰에 넣을 곡 개수: ${songs.size}")
@@ -161,10 +184,7 @@ class ListFragment : Fragment() {
 
         // 갤러리로 이동
         binding.btnListToGallery.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.playlist_fragment_container, GalleryFragment()) // 프래그먼트 교체
-                .addToBackStack(null) // 뒤로가기 누르면 앱이 꺼지는 대신 다시 리스트로 돌아오게 함
-                .commit()
+            findNavController().navigate(R.id.action_listFragment_to_galleryFragment)
         }
 
         // spotify deep link로 연결

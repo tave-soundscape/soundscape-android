@@ -37,6 +37,8 @@ class RecResultFragment : Fragment() {
     val TAG = "PlayTest"
     private val viewModel: RecommendationViewModel by activityViewModels()
 
+    private var isDataLoaded = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,10 +65,14 @@ class RecResultFragment : Fragment() {
             updateUIForCompletion()
         }
 
-        // "보러가기" 버튼을 누르면 -> 플레이리스트로 이동
+        // "보러가기" 버튼 클릭 시 -> ListFragment로 이동
         binding.nextButton.setOnClickListener {
-            val intent = android.content.Intent(requireContext(), PlaylistResultActivity::class.java)
-            startActivity(intent)
+            if (isDataLoaded) {
+                findNavController().navigate(R.id.action_recResultFragment_to_listFragment)
+            } else {
+                // 아직 데이터 저장 중이면 조금만 기다려달라고 하기
+                Toast.makeText(requireContext(), "플레이리스트를 불러오는 중입니다. 잠시만 기다려주세요.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -91,12 +97,14 @@ class RecResultFragment : Fragment() {
             override fun onResponse(
                 call: Call<BaseResponse<RecommendationResponse>>,
                 response: Response<BaseResponse<RecommendationResponse>>
-            ) {
+            )
+            {
                 if (response.isSuccessful) {
                     val baseResponse = response.body()
                     val resultData = baseResponse?.data
 
                     if (resultData != null) {
+                        isDataLoaded = true
 
                         // 메모리(싱글톤)에 저장
                         RecommendationManager.place = viewModel.place
@@ -107,10 +115,12 @@ class RecResultFragment : Fragment() {
 
                         // 내부 저장소에 플리 이름 저장 -> result의 두 프래그먼트에서 동일한 이름 패치되도록
                         context?.let { ctx ->
-                            RecommendationManager.savePlaylistName(ctx, resultData.playlistName)
-                            RecommendationManager.savePlaylistId(ctx, resultData.playlistId.toString())  // 아이디 저장
+                            com.mobile.soundscape.PreferenceManager.setPlaylistExperienced(ctx, true)
 
-                            //Room Database 에 최근 기록 저장
+                            RecommendationManager.savePlaylistName(ctx, resultData.playlistName)
+                            RecommendationManager.savePlaylistId(ctx, resultData.playlistId.toString())
+
+                            // Room Database 에 최근 기록 저장
                             saveToRoomHistory(ctx, viewModel.place, viewModel.goal, resultData.playlistId)
                         }
                     } else {
@@ -155,19 +165,21 @@ class RecResultFragment : Fragment() {
 
     private fun saveToRoomHistory(context: Context, place: String, goal: String, playlistId: Int) {
         val history = PlaylistHistory(
-            place = place,                         // 예: "카페"
-            goal = translateGoal(goal),            // 예: "STABILIZATION" -> "안정"
-            iconResName = getIconNameForPlace(place), // 예: "카페" -> "place_icon1"
+            place = place,
+            goal = translateGoal(goal),
+            iconResName = getIconNameForPlace(place),
             playlistId = playlistId,
             timestamp = System.currentTimeMillis()
         )
 
-        CoroutineScope(Dispatchers.IO).launch {
+        // GlobalScope나 별도 Scope 대신 viewLifecycleOwner.lifecycleScope 사용 권장
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 AppDatabase.getDatabase(context).historyDao().insert(history)
-                Log.d("RoomDB", "성공적으로 저장됨: ${history.place} + ${history.goal}")
+                // ✅ 로그캣에 이 문구가 뜨는지 꼭 확인하세요!
+                Log.d("RoomDB_CHECK", "저장 성공! ID: $playlistId, Place: $place")
             } catch (e: Exception) {
-                Log.e("RoomDB", "저장 실패: ${e.message}")
+                Log.e("RoomDB_CHECK", "저장 실패: ${e.message}")
             }
         }
     }
@@ -176,13 +188,13 @@ class RecResultFragment : Fragment() {
         return when (goal?.lowercase()) {
             "sleep" -> "수면"
             "focus" -> "집중"
-            "cosolation" -> "위로"     // 찾으신 단어가 다르면 여기를 수정!
+            "cosolation" -> "위로"
             "active" -> "활력"
             "stabilization" -> "안정"
             "anger" -> "분노"
             "relax" -> "휴식"
             "neutral", null -> "미선택"
-            else -> goal ?: "미선택" // 목록에 없으면 영어 그대로 노출
+            else -> goal ?: "미선택"
         }
     }
 
