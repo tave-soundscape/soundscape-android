@@ -1,5 +1,6 @@
 package com.mobile.soundscape.recommendation
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,9 +16,13 @@ import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.RecommendationRequest
 import com.mobile.soundscape.api.dto.RecommendationResponse
+import com.mobile.soundscape.data.AppDatabase
+import com.mobile.soundscape.data.PlaylistHistory
 import com.mobile.soundscape.data.RecommendationManager
 import com.mobile.soundscape.databinding.FragmentRecResultBinding
 import com.mobile.soundscape.result.PlaylistResultActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -104,6 +109,9 @@ class RecResultFragment : Fragment() {
                         context?.let { ctx ->
                             RecommendationManager.savePlaylistName(ctx, resultData.playlistName)
                             RecommendationManager.savePlaylistId(ctx, resultData.playlistId.toString())  // 아이디 저장
+
+                            //Room Database 에 최근 기록 저장
+                            saveToRoomHistory(ctx, viewModel.place, viewModel.goal, resultData.playlistId)
                         }
                     } else {
                         Toast.makeText(context, "서버 응답이 비어있습니다.", Toast.LENGTH_SHORT).show()
@@ -142,6 +150,53 @@ class RecResultFragment : Fragment() {
 
             ellipse.alpha = 0f
             ellipse.animate().alpha(1f).setDuration(1000).start()
+        }
+    }
+
+    private fun saveToRoomHistory(context: Context, place: String, goal: String, playlistId: Int) {
+        val history = PlaylistHistory(
+            place = place,                         // 예: "카페"
+            goal = translateGoal(goal),            // 예: "STABILIZATION" -> "안정"
+            iconResName = getIconNameForPlace(place), // 예: "카페" -> "place_icon1"
+            playlistId = playlistId,
+            timestamp = System.currentTimeMillis()
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                AppDatabase.getDatabase(context).historyDao().insert(history)
+                Log.d("RoomDB", "성공적으로 저장됨: ${history.place} + ${history.goal}")
+            } catch (e: Exception) {
+                Log.e("RoomDB", "저장 실패: ${e.message}")
+            }
+        }
+    }
+    //영문 -> 한글로
+    private fun translateGoal(goal: String?): String {
+        return when (goal?.lowercase()) {
+            "sleep" -> "수면"
+            "focus" -> "집중"
+            "cosolation" -> "위로"     // 찾으신 단어가 다르면 여기를 수정!
+            "active" -> "활력"
+            "stabilization" -> "안정"
+            "anger" -> "분노"
+            "relax" -> "휴식"
+            "neutral", null -> "미선택"
+            else -> goal ?: "미선택" // 목록에 없으면 영어 그대로 노출
+        }
+    }
+
+    //홈에 뜨게 할 아이콘
+    private fun getIconNameForPlace(place: String): String {
+        return when (place) {
+            "집/실내" -> "place_icon0"
+            "카페" -> "place_icon1"
+            "코워킹" -> "place_icon2"
+            "헬스장" -> "place_icon3"
+            "도서관" -> "place_icon4"
+            "이동중" -> "place_icon5"
+            "공원" -> "place_icon6"
+            else -> "place_icon0"
         }
     }
 

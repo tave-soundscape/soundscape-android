@@ -5,14 +5,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.mobile.soundscape.R
+import com.mobile.soundscape.data.AppDatabase
+import com.mobile.soundscape.data.PlaylistHistory
 import com.mobile.soundscape.databinding.FragmentHomeBinding
 import com.mobile.soundscape.evaluation.EvaluationPopupDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -21,25 +26,97 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // 2. View Binding으로 초기화 및 루트 뷰 반환
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root //  binding 객체의 루트 뷰 반환
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 홈화면 구슬 움직이는 animation
+        //공통 설정: 구슬 애니메이션
         com.bumptech.glide.Glide.with(this)
             .load(R.drawable.orb_animation)
             .into(binding.centerButton)
 
-        // 시작하기 버튼 누르면 추천 받기 시작
-        binding.startButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_recPlaceFragment)
-        }
-
+        //데이터베이스 확인 및 UI 업데이트
+        loadHistoryAndSetupUI()
     }
+
+    private fun loadHistoryAndSetupUI() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            // DB에서 최근 기록 6개 가져오기
+            val historyList = withContext(Dispatchers.IO) {
+                AppDatabase.getDatabase(requireContext()).historyDao().getRecentHistory()
+            }
+
+            if (historyList.isNotEmpty()) {
+                // [A안] 기록이 있는 경우
+                updateHomeUIWithHistory(historyList)
+            } else {
+                // [B안] 기록이 없는 경우 (초기 상태)
+                setupDefaultUI()
+            }
+        }
+    }
+
+    // [B안] 데이터가 없을 때 호출되는 함수
+    private fun setupDefaultUI() {
+        binding.apply {
+            startButton.visibility = View.VISIBLE
+            tvSubtitle2.text = "시작하기 버튼으로 플레이리스트\n추천을 받을 수 있어요"
+
+            // 하단 버튼 클릭 시 추천 시작
+            startButton.setOnClickListener {
+                findNavController().navigate(R.id.action_homeFragment_to_recPlaceFragment)
+            }
+
+            // 데이터가 없을 땐 중앙 구슬 클릭 리스너 제거 (혹은 유지하고 싶다면 동일하게 설정 가능)
+            centerButton.setOnClickListener(null)
+        }
+    }
+
+    // [A안] 데이터가 있을 때 호출되는 함수
+    private fun updateHomeUIWithHistory(historyList: List<PlaylistHistory>) {
+        binding.apply {
+            // 1. 하단 버튼 숨기고 문구 변경
+            startButton.visibility = View.GONE
+            tvSubtitle2.text = "최근 추천받은 몰입 테마예요\n중앙 버튼을 눌러 새로 시작할 수 있어요"
+
+            // 2. 중앙 구슬을 "시작하기" 버튼으로 활용
+            centerButton.setOnClickListener {
+                findNavController().navigate(R.id.action_homeFragment_to_recPlaceFragment)
+            }
+
+            // 3. 기록 버튼 세팅을 위한 리스트화
+            val wrappers = listOf(historyWrapper1, historyWrapper2, historyWrapper3, historyWrapper4, historyWrapper5, historyWrapper6)
+            val icons = listOf(historyIcon1, historyIcon2, historyIcon3, historyIcon4, historyIcon5, historyIcon6)
+            val texts = listOf(historyTxt1, historyTxt2, historyTxt3, historyTxt4, historyTxt5, historyTxt6)
+
+            // 4. 데이터 매핑
+            historyList.forEachIndexed { index, data ->
+                if (index < wrappers.size) {
+                    val wrapper = wrappers[index]
+                    wrapper.visibility = View.VISIBLE
+
+                    // 텍스트 (이미 저장 시 한글화 됨)
+                    texts[index].text = "${data.place}\n${data.goal}"
+
+                    // 아이콘 세팅
+                    val resId = resources.getIdentifier(data.iconResName, "drawable", requireContext().packageName)
+                    if (resId != 0) {
+                        icons[index].setImageResource(resId)
+                    }
+
+                    // 히스토리 버튼 클릭 리스너 (나중에 재생 화면으로 바로 보낼 때 사용)
+                    wrapper.setOnClickListener {
+                        Toast.makeText(requireContext(), "${data.place} 플레이리스트 재생", Toast.LENGTH_SHORT).show()
+                        // TODO: playlistId를 이용한 이동 로직 추가
+                    }
+                }
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

@@ -57,9 +57,11 @@ class RecPlaceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonGroupWrapper.post {
-            val wrapperWidth = binding.buttonGroupWrapper.width
-            // 반지름을 래퍼 너비의 35%로 설정 (버튼 크기가 22%이므로 겹치지 않는 적정 거리)
-            val responsiveRadius = (wrapperWidth * 0.35).toInt()
+
+            val minSide = Math.min(binding.buttonGroupWrapper.width, binding.buttonGroupWrapper.height)
+
+            // 반지름을 전체 크기의 32% 정도로 설정 (가장 안전한 비율)
+            val safeRadius = (minSide * 0.32).toInt()
 
             val wrappers = listOf(
                 binding.btn1Wrapper, binding.btn2Wrapper, binding.btn3Wrapper,
@@ -67,8 +69,8 @@ class RecPlaceFragment : Fragment() {
             )
 
             wrappers.forEach { wrapper ->
-                val params = wrapper.layoutParams as ConstraintLayout.LayoutParams
-                params.circleRadius = responsiveRadius
+                val params = wrapper.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+                params.circleRadius = safeRadius
                 wrapper.layoutParams = params
             }
         }
