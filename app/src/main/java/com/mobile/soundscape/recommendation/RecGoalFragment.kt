@@ -118,7 +118,8 @@ class RecGoalFragment : Fragment() {
         binding.nextBtn.setOnClickListener {
             val selectedData = allGoalData.find { it.wrapperId == selectedButtonWrapper?.id }
             if (selectedData != null) {
-                viewModel.goal = selectedData.englishName
+                viewModel.goal = selectedData.name
+                viewModel.englishGoal = selectedData.englishName
                 viewModel.checkData()
             }
             findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)

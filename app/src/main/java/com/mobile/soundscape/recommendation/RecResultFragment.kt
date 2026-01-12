@@ -57,15 +57,7 @@ class RecResultFragment : Fragment() {
 
         sendRecommendationRequest()
 
-        // 5초 딜레이 시작 (Coroutines 사용)
-        // (viewLifecycleOwner를 사용해야 화면이 꺼지면 타이머도 안전하게 종료됨)
-        viewLifecycleOwner.lifecycleScope.launch {
-            delay(5000) // 5000ms = 5초 대기
-
-            updateUIForCompletion()
-        }
-
-        // "보러가기" 버튼 클릭 시 -> ListFragment로 이동
+        // "보러가기" 버튼을 누르면 -> 플레이리스트로 이동
         binding.nextButton.setOnClickListener {
             if (isDataLoaded) {
                 findNavController().navigate(R.id.action_recResultFragment_to_listFragment)
@@ -85,9 +77,9 @@ class RecResultFragment : Fragment() {
     private fun sendRecommendationRequest() {
         // 1. 뷰모델에서 장소, 데시벨, 목표 꺼내서 서버로 전송
         val request = RecommendationRequest(
-            place = viewModel.place,
+            place = viewModel.englishPlace,
             decibel = viewModel.decibel,
-            goal = viewModel.goal
+            goal = viewModel.englishGoal
         )
         viewModel.checkData()
 
@@ -97,8 +89,7 @@ class RecResultFragment : Fragment() {
             override fun onResponse(
                 call: Call<BaseResponse<RecommendationResponse>>,
                 response: Response<BaseResponse<RecommendationResponse>>
-            )
-            {
+            ) {
                 if (response.isSuccessful) {
                     val baseResponse = response.body()
                     val resultData = baseResponse?.data
@@ -107,6 +98,9 @@ class RecResultFragment : Fragment() {
                         isDataLoaded = true
 
                         // 메모리(싱글톤)에 저장
+                        RecommendationManager.englishGoal = viewModel.englishGoal
+                        RecommendationManager.englishPlace = viewModel.englishPlace
+                        RecommendationManager.decibel = viewModel.decibel
                         RecommendationManager.place = viewModel.place
                         RecommendationManager.goal = viewModel.goal
                         RecommendationManager.cachedPlaylist = resultData
@@ -123,6 +117,9 @@ class RecResultFragment : Fragment() {
                             // Room Database 에 최근 기록 저장
                             saveToRoomHistory(ctx, viewModel.place, viewModel.goal, resultData.playlistId)
                         }
+
+                        updateUIForCompletion()
+
                     } else {
                         Toast.makeText(context, "서버 응답이 비어있습니다.", Toast.LENGTH_SHORT).show()
                     }
@@ -176,7 +173,7 @@ class RecResultFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 AppDatabase.getDatabase(context).historyDao().insert(history)
-                // ✅ 로그캣에 이 문구가 뜨는지 꼭 확인하세요!
+
                 Log.d("RoomDB_CHECK", "저장 성공! ID: $playlistId, Place: $place")
             } catch (e: Exception) {
                 Log.e("RoomDB_CHECK", "저장 실패: ${e.message}")

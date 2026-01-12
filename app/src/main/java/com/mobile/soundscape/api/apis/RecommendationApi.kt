@@ -19,7 +19,7 @@ interface RecommendationApi {
     ): Call<BaseResponse<RecommendationResponse>>
 
     // 플레이리스트 이름 수정 요청
-    @PATCH("api/v1/playlists/{playlistId}")
+    @POST("api/v1/playlists/{playlistId}")
     fun updatePlaylistName(
         @Path("playlistId") id: String,
         @Body request: UpdatePlaylistNameRequest
@@ -29,4 +29,10 @@ interface RecommendationApi {
     fun getPlaylistDetail(
         @Path("playlistId") id: String
     ): Call<BaseResponse<RecommendationResponse>>
+
+    // 사용자가 스포티파이 딥링크를 클릭하면 서버로 보내기
+    @POST("api/v1/analytics/{playlistId}")
+    fun sendAnalytics(
+        @Path("playlistId") id: String,
+    ): Call<BaseResponse<String>>
 }

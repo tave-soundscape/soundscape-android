@@ -9,6 +9,7 @@ import com.mobile.soundscape.api.dto.MypageNameRequest
 import com.mobile.soundscape.api.dto.UpdatePlaylistNameRequest
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.Path
@@ -49,4 +50,10 @@ interface LibraryApi {
     fun getPlaylistDetail(
         @Path("playlistId") id: String
     ): Call<BaseResponse<LibraryPlaylistDetailResponse>>
+
+    // 플레이리스트 삭제 요청
+    @DELETE("api/v1/playlists/{playlistId}")
+    fun deletePlaylist (
+        @Path("playlistId") id: String
+    ): Call<BaseResponse<String>>
 }

@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             // 1. 하단 바를 보여줄 화면들 정의 (이 리스트에 없으면 숨김)
             val showNavDestinations = setOf(
                 R.id.homeFragment,
-                R.id.exploreFragment,
+                //R.id.exploreFragment,
                 R.id.libraryFragment, // (나중에 추가될 프래그먼트)
                 R.id.mypageFragment   // (나중에 추가될 프래그먼트)
             )
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 // 기존 UI 업데이트 로직 실행
                 val selectedLayoutId = when (destination.id) {
                     R.id.homeFragment -> R.id.layout_nav_home
-                    // R.id.exploreFragment -> R.id.layout_nav_explore
+                    //R.id.exploreFragment -> R.id.layout_nav_explore
                     R.id.libraryFragment -> R.id.layout_nav_library
                     R.id.mypageFragment -> R.id.layout_nav_mypage
                     else -> R.id.layout_nav_home
@@ -116,9 +116,11 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.homeFragment, null, getNavOptions())
         }
 
-//        binding.bottomNavBar.layoutNavExplore.setOnClickListener {
-//            navController.navigate(R.id.exploreFragment, null, getNavOptions())
-//        }
+        /*
+        binding.bottomNavBar.layoutNavExplore.setOnClickListener {
+            navController.navigate(R.id.exploreFragment, null, getNavOptions())
+        }*/
+
         // 라이브러리 눌렀을 때
         binding.bottomNavBar.layoutNavLibrary.setOnClickListener {
             navController.navigate(R.id.libraryFragment, null, getNavOptions())
@@ -139,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         val items = listOf(
             Triple(navBinding.layoutNavHome, navBinding.ivNavHome, navBinding.tvNavHome),
             Triple(navBinding.layoutNavLibrary, navBinding.ivNavLibrary, navBinding.tvNavLibrary),
-            // Triple(navBinding.layoutNavExplore, navBinding.ivNavExplore, navBinding.tvNavExplore),
+            //Triple(navBinding.layoutNavExplore, navBinding.ivNavExplore, navBinding.tvNavExplore),
             Triple(navBinding.layoutNavMypage, navBinding.ivNavMypage, navBinding.tvNavMypage)
         )
 
