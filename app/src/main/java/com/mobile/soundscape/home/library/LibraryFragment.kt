@@ -10,15 +10,20 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.client.RetrofitClient
+import com.mobile.soundscape.api.client.SpotifyClient
 import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.LibraryPlaylistDetailResponse
 import com.mobile.soundscape.api.dto.LibraryPlaylistResponse
+import com.mobile.soundscape.api.dto.PlaylistCoverImageResponse
 import com.mobile.soundscape.api.dto.PlaylistDetail
+import com.mobile.soundscape.data.SpotifyAuthRepository
 import com.mobile.soundscape.databinding.FragmentLibraryBinding
 import com.mobile.soundscape.result.MusicModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import kotlin.collections.isNullOrEmpty
 
 class LibraryFragment : Fragment(R.layout.fragment_library) {
 
@@ -35,20 +40,23 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
     private var isLastPage = false
 
     private val TAG = "LibraryFragment"
-
+    private var searchToken: String? = null
 
     // TODO: spotify API로 4분할 사진 직접 불러오기
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentLibraryBinding.bind(view)
 
         setupRecyclerView()
 
-        // 처음 실행 시 데이터 로드
-        if (playlistDataList.isEmpty()) {
-            loadLibraryData(0)
-        }
+//        // 처음 실행 시 데이터 로드
+//        if (playlistDataList.isEmpty()) {
+//            loadLibraryData(0)
+//        }
+
+        initTokenAndLoadData()
+
     }
 
     private fun setupRecyclerView() {
@@ -134,7 +142,11 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                     playlistId = detail.playlistId,
                     title = detail.playlistName,
                     songs = emptyList(),
-                    songCount = 0
+                    songCount = 0,
+                    mainCoverUrl = null,
+                    location=detail.location,
+                    goal=detail.goal
+
                 )
             )
         }
@@ -145,52 +157,70 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
         isLoading = false
 
         // 새로 추가된 아이템들에 대해 상세정보(이미지) 요청
-        fetchDetailsForNewItems(startPosition, newApiPlaylists)
+        fetchSpotifyCovers(startPosition, newApiPlaylists)
     }
 
-    private fun fetchDetailsForNewItems(startIndex: Int, newItems: List<PlaylistDetail>) {
+    // 초기화 및 토큰 발급
+    private fun initTokenAndLoadData() {
+        SpotifyAuthRepository.getSearchToken(
+            onSuccess = { token ->
+                searchToken = token
+
+                // ★ 토큰이 준비되었으니 이제 목록을 불러옵니다!
+                if (playlistDataList.isEmpty()) {
+                    loadLibraryData(0)
+                }
+            },
+            onFailure = {
+                Toast.makeText(context, "서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    private fun fetchSpotifyCovers(startIndex: Int, newItems: List<PlaylistDetail>) {
+        val token = searchToken ?: return
+
         for ((i, playlist) in newItems.withIndex()) {
             val globalIndex = startIndex + i
+            val spotifyPlaylistId = playlist.spotifyPlaylistId.toString()
 
-            RetrofitClient.libraryApi.getPlaylistDetail(playlist.playlistId.toString())
-                .enqueue(object : Callback<BaseResponse<LibraryPlaylistDetailResponse>> {
+            SpotifyClient.api.getPlaylistCoverImage("Bearer $token", spotifyPlaylistId)
+                .enqueue(object : Callback<List<PlaylistCoverImageResponse>> {
                     override fun onResponse(
-                        call: Call<BaseResponse<LibraryPlaylistDetailResponse>>,
-                        response: Response<BaseResponse<LibraryPlaylistDetailResponse>>
+                        call: Call<List<PlaylistCoverImageResponse>>,
+                        response: Response<List<PlaylistCoverImageResponse>>
                     ) {
+                        // 프래그먼트 죽었으면 중단
                         if (!isAdded) return
+
                         if (response.isSuccessful) {
-                            response.body()?.data?.let { detailData ->
-                                updateSinglePlaylist(globalIndex, detailData)
+                            val images = response.body()
+                            // 이미지가 있다면 첫 번째(가장 고화질) URL 사용
+                            if (!images.isNullOrEmpty()) {
+                                updateSinglePlaylistCover(globalIndex, images[0].url)
                             }
+                        } else {
+                            Log.e(TAG, "Spotify Image Error: ${response.code()}")
                         }
                     }
-                    override fun onFailure(call: Call<BaseResponse<LibraryPlaylistDetailResponse>>, t: Throwable) {
-                        // 실패 로그 생략
+
+                    override fun onFailure(call: Call<List<PlaylistCoverImageResponse>>, t: Throwable) {
+                        Log.e(TAG, "Spotify Image Network Error: ${t.message}")
                     }
                 })
         }
     }
 
-    private fun updateSinglePlaylist(index: Int, detailData: LibraryPlaylistDetailResponse) {
-        val musicList = detailData.songs.map { song ->
-            MusicModel(
-                title = song.title ?: "",
-                artist = song.artistName ?: "",
-                albumCover = song.imageUrl ?: "",
-                trackUri = song.uri ?: ""
-            )
-        }
-
+    private fun updateSinglePlaylistCover(index: Int, imageUrl: String) {
         if (index < playlistDataList.size) {
             val oldItem = playlistDataList[index]
+
+            // 기존 데이터는 유지하고 커버 URL만 업데이트
             playlistDataList[index] = oldItem.copy(
-                songs = musicList,
-                songCount = musicList.size,
-                location = detailData.location,
-                goal = detailData.goal
+                mainCoverUrl = imageUrl
             )
-            // Header 때문에 index + 1 위치를 갱신
+
+            // 어댑터 갱신 (헤더 때문에 index + 1)
             libraryAdapter.notifyItemChanged(index + 1)
         }
     }

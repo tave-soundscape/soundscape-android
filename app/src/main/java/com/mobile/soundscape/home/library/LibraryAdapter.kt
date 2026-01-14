@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.ItemLibraryLikedBinding
 import com.mobile.soundscape.databinding.ItemLibraryPlaylistBinding
+import com.mobile.soundscape.databinding.ItemLibrarySpotifyCoverBinding
 
 class LibraryAdapter(
     private val items: List<LibraryPlaylistModel>,
@@ -33,7 +34,7 @@ class LibraryAdapter(
             val binding = ItemLibraryLikedBinding.inflate(inflater, parent, false)
             LikedViewHolder(binding)
         } else {
-            val binding = ItemLibraryPlaylistBinding.inflate(inflater, parent, false)
+            val binding = ItemLibrarySpotifyCoverBinding.inflate(inflater, parent, false)
             PlaylistViewHolder(binding)
         }
     }
@@ -58,8 +59,9 @@ class LibraryAdapter(
     }
 
     // [2] 일반 플레이리스트 뷰홀더 (2x2 이미지 처리)
-    inner class PlaylistViewHolder(private val binding: ItemLibraryPlaylistBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class PlaylistViewHolder(private val binding: ItemLibrarySpotifyCoverBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: LibraryPlaylistModel) {
+            // 제목 설정
             binding.tvPlaylistTitle.text = item.title
 
             // 장소/목표 or 곡 개수 표시
@@ -75,55 +77,18 @@ class LibraryAdapter(
                 binding.tvSubtitle.text = "$kPlace • $kGoal"
             }
 
-            // 1. MusicModel 리스트에서 앨범 커버 URL만 최대 4개 추출
-            val coverUrls = item.songs.take(4).map { it.albumCover }
-
-            val imageViews = listOf(
-                binding.ivCover1,
-                binding.ivCover2,
-                binding.ivCover3,
-                binding.ivCover4
-            )
-
-            // 2. 초기화 (재사용 문제 방지)
-            imageViews.forEach {
-                it.setImageDrawable(null)
-                it.setBackgroundColor(0xFF333333.toInt()) // 빈 공간은 진한 회색
-
-                // 레이아웃 초기화 (2x2 모드로 복구)
-                val params = it.layoutParams as ConstraintLayout.LayoutParams
-                params.matchConstraintPercentWidth = 0.5f
-                params.matchConstraintPercentHeight = 0.5f
-                it.layoutParams = params
-                it.visibility = View.VISIBLE
-            }
-            binding.ivEmptyPlaceholder.visibility = View.GONE
-
-
-            // 3. 이미지 개수에 따른 로직 분기
-            if (coverUrls.isEmpty()) {
-                // 곡이 없을 때 -> 음표 아이콘 표시
-                binding.ivEmptyPlaceholder.visibility = View.VISIBLE
-
-            } else if (coverUrls.size < 4) {
-                // 곡이 1~3개일 때 -> 첫 번째 곡 커버를 크게 꽉 채워서 보여줌
-                val params = binding.ivCover1.layoutParams as ConstraintLayout.LayoutParams
-                params.matchConstraintPercentWidth = 1f
-                params.matchConstraintPercentHeight = 1f
-                binding.ivCover1.layoutParams = params
-
-                Glide.with(itemView.context).load(coverUrls[0]).into(binding.ivCover1)
-
-                // 나머지 뷰는 가리기 (1번이 덮어버림)
-
+            // 커버 이미지 설정 (spotify에서 4분할 이미지 받아온 거)
+            if(!item.mainCoverUrl.isNullOrEmpty()){
+                Glide.with(itemView.context)
+                    .load(item.mainCoverUrl)
+                    .placeholder(R.color.gray800)
+                    .error(R.color.gray600)       // 에러 시 보여줄 색
+                    .into(binding.ivCoverMain)
             } else {
-                // 곡이 4개 이상일 때 -> 2x2 격자로 4개 모두 로드
-                for (i in 0 until 4) {
-                    Glide.with(itemView.context)
-                        .load(coverUrls[i])
-                        .into(imageViews[i])
-                }
+                // 이미지가 없을 때 기본 이미지 처리
+                binding.ivCoverMain.setImageResource(R.drawable.ic_launcher_background)
             }
+
 
             itemView.setOnClickListener {
                 onItemClick(item)
