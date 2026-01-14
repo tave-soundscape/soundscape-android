@@ -36,6 +36,9 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
 
     private val TAG = "LibraryFragment"
 
+
+    // TODO: spotify API로 4분할 사진 직접 불러오기
+    
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentLibraryBinding.bind(view)
