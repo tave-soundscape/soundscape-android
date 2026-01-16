@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             // 1. 하단 바를 보여줄 화면들 정의 (이 리스트에 없으면 숨김)
             val showNavDestinations = setOf(
                 R.id.homeFragment,
-                //R.id.exploreFragment,
+                R.id.exploreFragment,
                 R.id.libraryFragment, // (나중에 추가될 프래그먼트)
                 R.id.mypageFragment   // (나중에 추가될 프래그먼트)
             )
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 // 기존 UI 업데이트 로직 실행
                 val selectedLayoutId = when (destination.id) {
                     R.id.homeFragment -> R.id.layout_nav_home
-                    //R.id.exploreFragment -> R.id.layout_nav_explore
+                    R.id.exploreFragment -> R.id.layout_nav_explore
                     R.id.libraryFragment -> R.id.layout_nav_library
                     R.id.mypageFragment -> R.id.layout_nav_mypage
                     else -> R.id.layout_nav_home
@@ -116,36 +116,36 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.homeFragment, null, getNavOptions())
         }
 
-        /*
         binding.bottomNavBar.layoutNavExplore.setOnClickListener {
             navController.navigate(R.id.exploreFragment, null, getNavOptions())
-        }*/
+        }
 
-        // 라이브러리 눌렀을 때
+            // 라이브러리 눌렀을 때
         binding.bottomNavBar.layoutNavLibrary.setOnClickListener {
             navController.navigate(R.id.libraryFragment, null, getNavOptions())
         }
-        // 마이페이지 눌렀을 때
+            // 마이페이지 눌렀을 때
         binding.bottomNavBar.layoutNavMypage.setOnClickListener {
             navController.navigate(R.id.mypageFragment, null, getNavOptions())
         }
+
     }
 
     private fun updateBottomNavUI(selectedLayoutId: Int) {
-        // 애니메이션 시작
+            // 애니메이션 시작
         TransitionManager.beginDelayedTransition(binding.bottomNavBar.navContainer)
 
         val navBinding = binding.bottomNavBar
 
-        // 루프를 돌리기 위해 리스트로 묶음
+            // 루프를 돌리기 위해 리스트로 묶음
         val items = listOf(
             Triple(navBinding.layoutNavHome, navBinding.ivNavHome, navBinding.tvNavHome),
-            Triple(navBinding.layoutNavLibrary, navBinding.ivNavLibrary, navBinding.tvNavLibrary),
-            //Triple(navBinding.layoutNavExplore, navBinding.ivNavExplore, navBinding.tvNavExplore),
+            Triple(navBinding.layoutNavLibrary, navBinding.ivNavLibrary,navBinding.tvNavLibrary),
+            Triple(navBinding.layoutNavExplore, navBinding.ivNavExplore, navBinding.tvNavExplore),
             Triple(navBinding.layoutNavMypage, navBinding.ivNavMypage, navBinding.tvNavMypage)
         )
 
-        // dp 단위를 픽셀(px)로 변환
+            // dp 단위를 픽셀(px)로 변환
         val density = resources.displayMetrics.density
         val expandedWidthPx = (107 * density).toInt()
         val expandedHeightPx = (48 * density).toInt()
@@ -179,15 +179,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 내비게이션 옵션 생성 함수 (복붙해서 쓰세요)
     private fun getNavOptions(): androidx.navigation.NavOptions {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
         return androidx.navigation.NavOptions.Builder()
-            .setLaunchSingleTop(true) // 이미 해당 화면이면 다시 띄우지 않음
-            .setPopUpTo(navController.graph.startDestinationId, false) // 백스택 관리 (홈으로 돌아가면 중간 기록 삭제)
+            .setLaunchSingleTop(true) //
+            .setPopUpTo(
+                navController.graph.startDestinationId,
+                false
+            )
             .build()
     }
 }

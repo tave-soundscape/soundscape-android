@@ -22,49 +22,103 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_black_gradient"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_mini_covers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_mini_cover1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/CircleImage"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1.5dp"
+                android:src="@drawable/img_placeholder" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_mini_cover2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="22dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/CircleImage"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1.5dp"
+                android:src="@drawable/img_placeholder" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_mini_cover3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="44dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/CircleImage"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1.5dp"
+                android:src="@drawable/img_placeholder" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/tv_playlist_title"
-            android:layout_width="0dp"
+            android:id="@+id/tv_go_playlist"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="주말에 집에서 듣는 감성 플레이리스트"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_black_rounded_btn"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="플레이리스트 보러가기"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="12sp"
+            style="@style/Body02_100"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/tv_playlist_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="국외 23곡 • 아티스트명 등"
+            android:text="곡 20개 • 아티스트명 등"
             android:textColor="#CCCCCC"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@id/tv_playlist_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_playlist_title" />
+            style="@style/Caption01_100"
+            app:layout_constraintStart_toStartOf="@+id/tv_playlist_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_playlist_title" />
 
         <TextView
-            android:id="@+id/tv_playlist_tag"
+            android:id="@+id/tv_playlist_title"
+            style="@style/Subtitle01_100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="#빈트리"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="주말에 집에서 듣는 감성 플레이리스트"
             android:textColor="@color/white"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@id/tv_playlist_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_playlist_description" />
+            android:textSize="21sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/layout_mini_covers"
+            app:layout_constraintTop_toBottomOf="@+id/layout_mini_covers" />
 
         <ImageButton
             android:id="@+id/btn_add_library"
             android:layout_width="44dp"
             android:layout_height="53dp"
             android:layout_marginEnd="12dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_add_playlist"
             app:layout_constraintBottom_toBottomOf="parent"

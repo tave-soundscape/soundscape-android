@@ -23,7 +23,7 @@ class ExploreBottomSheetFragment(val onItemSelected: (String) -> Unit) : BottomS
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 각 항목 클릭 시 메인 프래그먼트로 값 전달 후 닫기
+        // selectItem에 "한글 이름"만 전달하도록 수정
         binding.tvOptionPlace.setOnClickListener { selectItem("장소") }
         binding.tvOptionGoal.setOnClickListener { selectItem("목표") }
         binding.tvOptionNoise.setOnClickListener { selectItem("소음") }
@@ -31,10 +31,11 @@ class ExploreBottomSheetFragment(val onItemSelected: (String) -> Unit) : BottomS
         binding.btnClose.setOnClickListener { dismiss() }
     }
 
-    private fun selectItem(item: String) {
-        onItemSelected(item)
+    private fun selectItem(name: String) {
+        onItemSelected(name) // "장소", "목표", "소음" 중 하나가 전달됨
         dismiss()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
