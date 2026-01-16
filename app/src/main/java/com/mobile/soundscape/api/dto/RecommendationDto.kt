@@ -79,7 +79,7 @@ data class PlaylistPollingResponse(
     val taskId: String,
 
     @SerializedName("status")
-    val status: Int,
+    val status: String,
 
     @SerializedName("playlistInfo")
     val playlistInfo: RecommendationResponse?

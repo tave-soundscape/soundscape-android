@@ -142,7 +142,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                     playlistId = detail.playlistId,
                     title = detail.playlistName,
                     songs = emptyList(),
-                    songCount = 0,
+                    songCount = 10,
                     mainCoverUrl = null,
                     location=detail.location,
                     goal=detail.goal
