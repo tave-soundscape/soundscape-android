@@ -69,3 +69,18 @@ data class UpdatePlaylistNameRequest(
     @SerializedName("newPlaylistName")
     val newPlaylistName: String
 )
+
+
+
+/* ----------------------------- */
+// 비동기 polling 방식으로 구현
+data class PlaylistPollingResponse(
+    @SerializedName("taskId")
+    val taskId: String,
+
+    @SerializedName("status")
+    val status: String,
+
+    @SerializedName("playlistInfo")
+    val playlistInfo: RecommendationResponse?
+)

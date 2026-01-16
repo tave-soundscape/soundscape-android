@@ -1,6 +1,7 @@
 package com.mobile.soundscape.api.apis
 
 import com.mobile.soundscape.api.dto.BaseResponse
+import com.mobile.soundscape.api.dto.PlaylistPollingResponse
 import com.mobile.soundscape.api.dto.RecommendationRequest
 import com.mobile.soundscape.api.dto.RecommendationResponse
 import com.mobile.soundscape.api.dto.UpdatePlaylistNameRequest
@@ -25,6 +26,7 @@ interface RecommendationApi {
         @Body request: UpdatePlaylistNameRequest
     ): Call<BaseResponse<String>>
 
+    // 상세 조회 api
     @GET("api/v1/playlists/{playlistId}")
     fun getPlaylistDetail(
         @Path("playlistId") id: String
@@ -35,4 +37,24 @@ interface RecommendationApi {
     fun sendAnalytics(
         @Path("playlistId") id: String,
     ): Call<BaseResponse<String>>
+
+
+    /* ----------------------------- */
+    // 비동기 polling 방식으로 구현
+
+    // 장소,데시벨,목표 보내기 -> 백엔드에서 플리 생성 작업을 비동기로 시작
+    @POST("api/v1/playlists/async")
+    fun sendPlaylistPolling(
+        @Body request: RecommendationRequest
+    ): Call<BaseResponse<String>>
+    // "data": "플레이리스트 생성 작업이 시작되었습니다. taskId: task_ZND0fTVRk9QOb9g" 이런식으로 응답옴
+
+
+    // 플레이리스트 생성 작업 상태 확인 API
+    @GET("api/v1/playlists/tasks/{taskId}")
+    fun getPlaylistPolling(
+        @Path("taskId") taskId: String
+    ): Call<BaseResponse<PlaylistPollingResponse>>
+
+
 }
