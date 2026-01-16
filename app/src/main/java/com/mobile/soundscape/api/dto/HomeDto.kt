@@ -34,8 +34,17 @@ data class PlaylistDetail (
     @SerializedName("playlistId")
     val playlistId: Int,
 
+    @SerializedName("spotifyPlaylistId")
+    val spotifyPlaylistId: String,
+
     @SerializedName("playlistName")
-    val playlistName: String
+    val playlistName: String,
+
+    @SerializedName("location")
+    val location: String,
+
+    @SerializedName("goal")
+    val goal: String,
 )
 
 // 상세 정보 dto
