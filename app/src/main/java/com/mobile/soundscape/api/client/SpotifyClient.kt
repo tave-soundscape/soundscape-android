@@ -10,17 +10,11 @@ object SpotifyClient {
 
     // 스포티파이 공식 API 주소 (내 로컬 서버 아님!)
     private const val BASE_URL = "https://api.spotify.com/"
-    // 로그 찍어주는 클라이언트
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // 통신 내용 전부 로그에 찍음
-        })
-        .build()
+
 
     val api: SpotifyWebApi by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SpotifyWebApi::class.java)
