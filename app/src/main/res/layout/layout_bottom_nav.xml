@@ -76,7 +76,7 @@
             android:textStyle="bold"
             android:visibility="gone" />
     </LinearLayout>
-<!--
+
     <LinearLayout
         android:id="@+id/layout_nav_explore"
         android:layout_width="0dp"
@@ -97,7 +97,7 @@
             android:layout_height="28dp"
             android:src="@drawable/explore_nav_btn"
             app:tint="#888888" />
-
+ㄴ
         <TextView
             android:id="@+id/tv_nav_explore"
             android:layout_width="wrap_content"
@@ -108,7 +108,7 @@
             android:textStyle="bold"
             android:visibility="gone" />
     </LinearLayout>
-    -->
+
 
     <LinearLayout
         android:id="@+id/layout_nav_mypage"

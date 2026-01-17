@@ -75,10 +75,18 @@
     <fragment
         android:id="@+id/exploreFragment"
         android:name="com.mobile.soundscape.explore.ExploreFragment"
-        android:label="ExploreFragment" >
+        android:label="ExploreFragment"
+        tools:layout="@layout/fragment_explore">
         <action
             android:id="@+id/action_exploreFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_exploreFragment_to_exploreDetailFragment"
+            app:destination="@id/exploreDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/libraryFragment"
@@ -162,5 +170,10 @@
         android:name="com.mobile.soundscape.playlist.GalleryFragment"
         android:label="GalleryFragment"
         tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/exploreDetailFragment"
+        android:name="com.mobile.soundscape.explore.ExploreDetailFragment"
+        android:label="ExploreDetailFragment" />
 
 </navigation>

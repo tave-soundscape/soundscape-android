@@ -63,6 +63,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:clipToPadding="false"/>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -72,9 +73,12 @@
             android:layout_marginTop="20dp"
             android:nestedScrollingEnabled="false"
             android:paddingHorizontal="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rv_category_tabs" />
+            app:layout_constraintTop_toBottomOf="@id/rv_category_tabs"
+            app:layout_constraintVertical_bias="0.043" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
