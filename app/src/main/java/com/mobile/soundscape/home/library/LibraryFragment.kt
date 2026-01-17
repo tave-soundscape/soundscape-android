@@ -1,7 +1,6 @@
 package com.mobile.soundscape.home.library
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -12,17 +11,14 @@ import com.mobile.soundscape.R
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.client.SpotifyClient
 import com.mobile.soundscape.api.dto.BaseResponse
-import com.mobile.soundscape.api.dto.LibraryPlaylistDetailResponse
 import com.mobile.soundscape.api.dto.LibraryPlaylistResponse
 import com.mobile.soundscape.api.dto.PlaylistCoverImageResponse
 import com.mobile.soundscape.api.dto.PlaylistDetail
 import com.mobile.soundscape.data.SpotifyAuthRepository
 import com.mobile.soundscape.databinding.FragmentLibraryBinding
-import com.mobile.soundscape.result.MusicModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 import kotlin.collections.isNullOrEmpty
 
 class LibraryFragment : Fragment(R.layout.fragment_library) {
@@ -34,12 +30,11 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
     private var playlistDataList = mutableListOf<LibraryPlaylistModel>()
 
     // 페이지네이션 변수
-    private var currentPage = 0       // 보통 0부터 시작 (서버가 1부터라면 1로 변경)
+    private var currentPage = 0
     private val PAGE_SIZE = 10
     private var isLoading = false
     private var isLastPage = false
 
-    private val TAG = "LibraryFragment"
     private var searchToken: String? = null
 
     // TODO: spotify API로 4분할 사진 직접 불러오기
@@ -50,11 +45,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
 
         setupRecyclerView()
 
-//        // 처음 실행 시 데이터 로드
-//        if (playlistDataList.isEmpty()) {
-//            loadLibraryData(0)
-//        }
-
+        // 스포티파이 토큰 발급 후 로드 시작
         initTokenAndLoadData()
 
     }
@@ -80,7 +71,6 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
 
                     // 바닥에 닿았는지 확인
                     if (!recyclerView.canScrollVertically(1) && dy > 0 && !isLoading && !isLastPage) {
-                        Log.d(TAG, "스크롤 바닥 감지! 다음 페이지($currentPage + 1) 요청")
                         isLoading = true
                         currentPage++
                         loadLibraryData(currentPage)
@@ -90,10 +80,24 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
         }
     }
 
+    // 초기화 및 토큰 발급
+    private fun initTokenAndLoadData() {
+        SpotifyAuthRepository.getSearchToken(
+            onSuccess = { token ->
+                searchToken = token
+                // 토큰이 준비되었고 데이터가 비어있으면 첫 페이지 로드
+                if (playlistDataList.isEmpty()) {
+                    loadLibraryData(0)
+                }
+            },
+            onFailure = {
+                Toast.makeText(context, "서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
     private fun loadLibraryData(page: Int) {
         isLoading = true
-
-        Log.d(TAG, "API 호출: page=$page, size=$PAGE_SIZE") // 로그로 확인해보세요!
 
         RetrofitClient.libraryApi.getLibraryPlaylists(page = page, size = PAGE_SIZE)
             .enqueue(object : Callback<BaseResponse<LibraryPlaylistResponse>> {
@@ -101,6 +105,8 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                     call: Call<BaseResponse<LibraryPlaylistResponse>>,
                     response: Response<BaseResponse<LibraryPlaylistResponse>>
                 ) {
+                    if(!isAdded) return  // 프래그먼트 종료 시 중단
+
                     if (response.isSuccessful) {
                         val playlists = response.body()?.data?.playlists
 
@@ -108,7 +114,6 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                         if (playlists.isNullOrEmpty()) {
                             isLastPage = true
                             isLoading = false
-                            Log.d(TAG, "더 이상 불러올 데이터가 없습니다.")
                             return
                         }
 
@@ -121,14 +126,15 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                         addPlaylistsToAdapter(playlists)
 
                     } else {
-                        Log.e(TAG, "서버 에러: ${response.code()}")
                         isLoading = false
+                        Toast.makeText(context, "목록을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<BaseResponse<LibraryPlaylistResponse>>, t: Throwable) {
-                    Log.e(TAG, "통신 에러: ${t.message}")
+                    if (!isAdded) return
                     isLoading = false
+                    Toast.makeText(context, "네트워크 상태를 확인해주세요.", Toast.LENGTH_SHORT).show()
                 }
             })
     }
@@ -146,35 +152,16 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                     mainCoverUrl = null,
                     location=detail.location,
                     goal=detail.goal
-
                 )
             )
         }
 
         // 데이터 변경 알림 (전체가 아니라 추가된 부분만)
-        // Header(0번)가 있으므로 인덱스는 startPosition + 1 부터 시작
-        libraryAdapter.notifyItemRangeInserted(startPosition + 1, newApiPlaylists.size)
+        libraryAdapter.notifyItemRangeInserted(startPosition, newApiPlaylists.size)
         isLoading = false
 
         // 새로 추가된 아이템들에 대해 상세정보(이미지) 요청
         fetchSpotifyCovers(startPosition, newApiPlaylists)
-    }
-
-    // 초기화 및 토큰 발급
-    private fun initTokenAndLoadData() {
-        SpotifyAuthRepository.getSearchToken(
-            onSuccess = { token ->
-                searchToken = token
-
-                // ★ 토큰이 준비되었으니 이제 목록을 불러옵니다!
-                if (playlistDataList.isEmpty()) {
-                    loadLibraryData(0)
-                }
-            },
-            onFailure = {
-                Toast.makeText(context, "서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-            }
-        )
     }
 
     private fun fetchSpotifyCovers(startIndex: Int, newItems: List<PlaylistDetail>) {
@@ -190,22 +177,18 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                         call: Call<List<PlaylistCoverImageResponse>>,
                         response: Response<List<PlaylistCoverImageResponse>>
                     ) {
-                        // 프래그먼트 죽었으면 중단
                         if (!isAdded) return
 
                         if (response.isSuccessful) {
                             val images = response.body()
-                            // 이미지가 있다면 첫 번째(가장 고화질) URL 사용
+                            // 이미지가 있다면 첫 번째 URL 사용 - 640x640 이용
                             if (!images.isNullOrEmpty()) {
                                 updateSinglePlaylistCover(globalIndex, images[0].url)
                             }
-                        } else {
-                            Log.e(TAG, "Spotify Image Error: ${response.code()}")
-                        }
+                        } else { }
                     }
 
                     override fun onFailure(call: Call<List<PlaylistCoverImageResponse>>, t: Throwable) {
-                        Log.e(TAG, "Spotify Image Network Error: ${t.message}")
                     }
                 })
         }
@@ -220,22 +203,19 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                 mainCoverUrl = imageUrl
             )
 
-            // 어댑터 갱신 (헤더 때문에 index + 1)
-            libraryAdapter.notifyItemChanged(index + 1)
+            // 어댑터 갱신
+            libraryAdapter.notifyItemChanged(index)
         }
     }
 
-    private fun handlePlaylistClick(selectedPlaylist: LibraryPlaylistModel?) {
-        if (selectedPlaylist == null) {
-            Toast.makeText(context, "🔨좋아요 기능은 구현 중입니다", Toast.LENGTH_SHORT).show()
-        } else {
-            val bundle = Bundle().apply {
-                putString("playlistId", selectedPlaylist.playlistId.toString())
-                putString("title", selectedPlaylist.title)
-                putSerializable("songs", ArrayList(selectedPlaylist.songs))
-            }
-            findNavController().navigate(R.id.action_libraryFragment_to_libraryDetailFragment, bundle)
+    private fun handlePlaylistClick(selectedPlaylist: LibraryPlaylistModel) {
+        val bundle = Bundle().apply {
+            putString("playlistId", selectedPlaylist.playlistId.toString())
+            putString("title", selectedPlaylist.title)
+            putSerializable("songs", ArrayList(selectedPlaylist.songs))
         }
+        findNavController().navigate(R.id.action_libraryFragment_to_libraryDetailFragment, bundle)
+
     }
 
     override fun onDestroyView() {
