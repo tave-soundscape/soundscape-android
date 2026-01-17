@@ -5,9 +5,9 @@
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
     android:background="@drawable/bg_category_tab_selector"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="8dp"
+    android:paddingHorizontal="18dp"
+    android:paddingVertical="12dp"
     android:text="집/실내"
     android:textColor="@color/white"
-    android:textSize="14sp"
+    style="@style/Body02_100"
     android:gravity="center" />
