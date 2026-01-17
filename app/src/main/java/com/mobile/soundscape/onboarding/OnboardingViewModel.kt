@@ -14,10 +14,12 @@ import com.mobile.soundscape.data.OnboardingManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.mobile.soundscape.data.LocalArtistModel
+import kotlin.collections.toMutableList
 
 class OnboardingViewModel : ViewModel() {
     var nickname: String = ""
-    var selectedArtists: MutableList<String> = mutableListOf()
+    var selectedArtists = mutableListOf<LocalArtistModel>()
     var selectedGenres: MutableList<String> = mutableListOf()
     val TAG ="OnboardingViewModel"
 
@@ -29,8 +31,8 @@ class OnboardingViewModel : ViewModel() {
     private val _Nickname = MutableLiveData<String>()
     val Nickname: LiveData<String> get() = _Nickname
 
-    private val _artistList = MutableLiveData<List<String>>()
-    val artistList: LiveData<List<String>> get() = _artistList
+    private val _artistList = MutableLiveData<List<LocalArtistModel>>()
+    val artistList: LiveData<List<LocalArtistModel>> get() = _artistList
 
     private val _genreList = MutableLiveData<List<String>>()
     val genreList: LiveData<List<String>> get() = _genreList
@@ -38,10 +40,11 @@ class OnboardingViewModel : ViewModel() {
 
     // 최종 수집된 내용을 서버로 전송
     fun submitOnboarding() {
+        val artistNameList = selectedArtists.map { it.name }
         // DTO 생성
         val request = OnboardingSelectedRequest(
             nickname = nickname,
-            artists = selectedArtists,
+            artists = artistNameList,
             genres = selectedGenres
         )
 
@@ -98,10 +101,11 @@ class OnboardingViewModel : ViewModel() {
         OnboardingManager.saveNickname(context, nickname)
     }
 
-    fun updateArtists(context: Context, list: List<String>) {
+    fun updateArtists(context: Context, list: List<LocalArtistModel>) {
         selectedArtists = list.toMutableList()
-        _artistList.value = list // 여기서 LiveData에 값을 쏴줘야 관찰자가 봅니다!
-        // 수정할 때도 저장소에 같이 저장해버리기
+        _artistList.value = list
+
+        // 저장소에도 객체 리스트 저장 (Gson 사용된 메서드 호출)
         OnboardingManager.saveArtistList(context, list)
     }
 

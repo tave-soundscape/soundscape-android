@@ -3,36 +3,66 @@ package com.mobile.soundscape.home.library
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.mobile.soundscape.databinding.ItemLibraryPlaylistBinding // 바인딩 이름 확인
-import com.mobile.soundscape.result.MusicModel
+import com.bumptech.glide.Glide
+import com.mobile.soundscape.R
+import com.mobile.soundscape.databinding.ItemLibrarySpotifyCoverBinding
 
 class LibraryAdapter(
-    private val playlist: List<LibraryPlaylistModel>,
+    private val items: List<LibraryPlaylistModel>,
     private val onItemClick: (LibraryPlaylistModel) -> Unit
-) : RecyclerView.Adapter<LibraryAdapter.LibraryViewHolder>() {
+) : RecyclerView.Adapter<LibraryAdapter.PlaylistViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LibraryViewHolder {
-        val binding = ItemLibraryPlaylistBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
-        return LibraryViewHolder(binding)
+
+    // 아이템 개수는 (실제 데이터 개수 + 좋아요 카드 1개)
+    override fun getItemCount(): Int = items.size
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+
+        val binding = ItemLibrarySpotifyCoverBinding.inflate(inflater, parent, false)
+        return PlaylistViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: LibraryViewHolder, position: Int) {
-        holder.bind(playlist[position])
+    override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
+        val item = items[position]
+        holder.bind(item)
     }
 
-    override fun getItemCount(): Int = playlist.size
-
-    inner class LibraryViewHolder(private val binding: ItemLibraryPlaylistBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
+    // [2] 일반 플레이리스트 뷰홀더 (2x2 이미지 처리)
+    inner class PlaylistViewHolder(private val binding: ItemLibrarySpotifyCoverBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: LibraryPlaylistModel) {
+            // 제목 설정
             binding.tvPlaylistTitle.text = item.title
-            // binding.tvPlaylistInfo.text = "곡 ${item.songs.size}개 • ${item.date}"
 
-            // 아이템 클릭 리스너
-            binding.root.setOnClickListener { onItemClick(item) }
+            // 장소/목표 or 곡 개수 표시
+            val rawLocation = item.location ?: ""
+            val rawGoal = item.goal ?: ""
+
+            if (rawLocation == "old_playlist" || rawGoal == "old_playlist") {
+             binding.tvSubtitle.text = "곡 ${item.songCount}개"
+            } else {
+                val kPlace = LabelMapper.getKoreanPlace(rawLocation)
+                val kGoal = LabelMapper.getKoreanGoal(rawGoal)
+
+                binding.tvSubtitle.text = "$kPlace • $kGoal"
+            }
+
+            // 커버 이미지 설정 (spotify에서 4분할 이미지 받아온 거)
+            if(!item.mainCoverUrl.isNullOrEmpty()){
+                Glide.with(itemView.context)
+                    .load(item.mainCoverUrl)
+                    .placeholder(R.color.gray800)
+                    .error(R.color.gray600)       // 에러 시 보여줄 색
+                    .into(binding.ivCoverMain)
+            } else {
+                // 이미지가 없을 때 기본 이미지 처리
+                binding.ivCoverMain.setImageResource(R.drawable.ic_launcher_background)
+            }
+
+
+            itemView.setOnClickListener {
+                onItemClick(item)
+            }
         }
     }
 }

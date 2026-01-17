@@ -37,3 +37,18 @@ data class ArtistSearchImage(
     @SerializedName("width")
     val width: Int?
 )
+
+
+
+// -------------------------------------
+// 라이브러리 4분할 커버 가져오는 Response
+data class PlaylistCoverImageResponse (
+    @SerializedName("url")
+    val url: String,
+
+    @SerializedName("height")
+    val height: Int?,
+
+    @SerializedName("width")
+    val width: Int?
+)

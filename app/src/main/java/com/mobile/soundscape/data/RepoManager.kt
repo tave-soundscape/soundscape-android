@@ -1,6 +1,8 @@
 package com.mobile.soundscape.data
 
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.mobile.soundscape.api.dto.RecommendationResponse
 import com.mobile.soundscape.data.OnboardingManager.PREFS_NAME
 import com.mobile.soundscape.data.OnboardingManager.getPreferences
@@ -10,7 +12,11 @@ import com.mobile.soundscape.data.OnboardingManager.getPreferences
 
 object RecommendationManager {
     var place: String = ""
+    var decibel: Float = 0.0f
     var goal: String = ""
+    var englishPlace: String = ""
+    var englishGoal: String = ""
+
     var cachedPlaylist: RecommendationResponse? = null
     private const val PREFS_NAME = "soundscape_prefs" // 저장소 이름 상수화
     private const val KEY_PLAYLIST_NAME = "my_playlist_name" // 플리 이름 키
@@ -55,6 +61,8 @@ object RecommendationManager {
  * 마이페이지에서 사용!
  */
 
+
+
 object OnboardingManager {
     private const val PREFS_NAME = "soundscape_prefs" // 저장소 이름 상수화
 
@@ -80,17 +88,20 @@ object OnboardingManager {
     }
 
     // 아티스트 목록 저장 (List -> String 변환, 콤마로 구분)
-    fun saveArtistList(context: Context, list: List<String>) {
-        // 예: ["아이유", "BTS"] -> "아이유,BTS"
-        val joinString = list.joinToString(",")
+    fun saveArtistList(context: Context, list: List<LocalArtistModel>) {
+        val gson= Gson()
+        val joinString = gson.toJson(list)
         getPreferences(context).edit().putString(KEY_MY_ARTISTS, joinString).apply()
     }
 
     // 아티스트 목록 불러오기 (String -> List 변환)
-    fun getArtistList(context: Context): List<String> {
+    fun getArtistList(context: Context): List<LocalArtistModel> {
         val joinString = getPreferences(context).getString(KEY_MY_ARTISTS, "") ?: ""
         if (joinString.isEmpty()) return emptyList()
-        return joinString.split(",")
+
+        val gson = Gson()
+        val type = object : TypeToken<List<LocalArtistModel>>() {}.type
+        return gson.fromJson(joinString, type)
     }
 
     // 장르 목록 저장
@@ -106,4 +117,26 @@ object OnboardingManager {
         return joinString.split(",")
     }
 
+}
+
+
+// 스플래시에서 쓰는거 - 업데이트 후 최초 1회 업데이트
+object PreferenceManager {
+    private const val PREF_NAME = "my_app_prefs"
+
+    // 이번 업데이트에서 최초 1회 온보딩을 다시 실행해야함.
+    // v2를 붙여서 키 이름을 변경
+    // 기존 사용자는 이 키를 가지고 있지 않으므로 false가 반환됩니다.
+    private const val KEY_ONBOARDING_DONE = "is_onboarding_done_v2"
+
+    fun isOnboardingFinished(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        // 기본값 false: 키가 없으면(업데이트 직후) 안 한 걸로 간주
+        return prefs.getBoolean(KEY_ONBOARDING_DONE, false)
+    }
+
+    fun setOnboardingFinished(context: Context, isFinished: Boolean) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_ONBOARDING_DONE, isFinished).apply()
+    }
 }

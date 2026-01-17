@@ -180,8 +180,8 @@
 
     <ImageView
         android:id="@+id/btnGalleryToList"
-        android:layout_width="30dp"
-        android:layout_height="20dp"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
         android:src="@drawable/gallery_to_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

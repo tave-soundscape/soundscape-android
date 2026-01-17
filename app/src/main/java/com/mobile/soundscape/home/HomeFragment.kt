@@ -1,18 +1,16 @@
 package com.mobile.soundscape.home
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.mobile.soundscape.R
 import com.mobile.soundscape.databinding.FragmentHomeBinding
-import com.mobile.soundscape.evaluation.EvaluationPopupDialog
 
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -21,25 +19,41 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // 2. View Binding으로 초기화 및 루트 뷰 반환
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root //  binding 객체의 루트 뷰 반환
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 홈화면 구슬 움직이는 animation
-        com.bumptech.glide.Glide.with(this)
+        // 중앙 구슬 애니메이션 재생
+        Glide.with(this)
             .load(R.drawable.orb_animation)
             .into(binding.centerButton)
 
-        // 시작하기 버튼 누르면 추천 받기 시작
-        binding.startButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_recPlaceFragment)
-        }
-
+        // 버튼 클릭 이벤트 설정
+        setupButtons()
     }
+
+    private fun setupButtons() {
+        binding.apply {
+            // 시작하기 버튼 -> 추천 받기 화면(recPlaceFragment)으로 이동
+            startButton.setOnClickListener {
+                findNavController().navigate(R.id.action_homeFragment_to_recPlaceFragment)
+            }
+
+            // "최근몰입" 탭 -> 히스토리 화면(HomeHistoryFragment)으로 이동
+            btnRecent.setOnClickListener {
+                findNavController().navigate(R.id.action_homeFragment_to_homeHistoryFragment)
+            }
+
+            // "추천받기" 탭 -> 현재 화면이므로 아무 동작 안 함
+            btnRecommend.setOnClickListener {
+                // 이미 이곳에 있음
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

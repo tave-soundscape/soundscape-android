@@ -23,8 +23,7 @@
         android:layout_height="wrap_content"
         android:text="플레이리스트 이름을 지정해주세요."
         android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        style="@style/Body01_100"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnClose" />

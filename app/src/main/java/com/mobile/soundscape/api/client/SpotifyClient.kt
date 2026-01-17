@@ -1,6 +1,8 @@
 package com.mobile.soundscape.api.client
 
 import com.mobile.soundscape.api.apis.SpotifyWebApi
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -8,6 +10,7 @@ object SpotifyClient {
 
     // 스포티파이 공식 API 주소 (내 로컬 서버 아님!)
     private const val BASE_URL = "https://api.spotify.com/"
+
 
     val api: SpotifyWebApi by lazy {
         Retrofit.Builder()

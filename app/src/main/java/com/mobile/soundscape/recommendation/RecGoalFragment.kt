@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
@@ -69,6 +70,25 @@ class RecGoalFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 1. 화면 크기에 맞춰 동적으로 반지름(Radius) 계산
+        binding.buttonGroupWrapper.post {
+            val minSide = Math.min(binding.buttonGroupWrapper.width, binding.buttonGroupWrapper.height)
+            // 주변 버튼들이 화면 밖으로 나가지 않도록 안전한 비율(32%)로 반지름 설정
+            val safeRadius = (minSide * 0.32).toInt()
+
+            // btn1~btn6까지만 원형 배치 적용 (btn7은 왼쪽 아래 고정이므로 제외)
+            val circularWrappers = listOf(
+                binding.btn1Wrapper, binding.btn2Wrapper, binding.btn3Wrapper,
+                binding.btn4Wrapper, binding.btn5Wrapper, binding.btn6Wrapper
+            )
+
+            circularWrappers.forEach { wrapper ->
+                val params = wrapper.layoutParams as ConstraintLayout.LayoutParams
+                params.circleRadius = safeRadius
+                wrapper.layoutParams = params
+            }
+        }
+
         // 2. 모든 버튼을 목록에 저장 (XML의 btn1 ~ btn6 ID 사용 가정)
         allButtons = listOf(
             binding.centerButton,
@@ -98,7 +118,8 @@ class RecGoalFragment : Fragment() {
         binding.nextBtn.setOnClickListener {
             val selectedData = allGoalData.find { it.wrapperId == selectedButtonWrapper?.id }
             if (selectedData != null) {
-                viewModel.goal = selectedData.englishName
+                viewModel.goal = selectedData.name
+                viewModel.englishGoal = selectedData.englishName
                 viewModel.checkData()
             }
             findNavController().navigate(R.id.action_recGoalFragment_to_recResultFragment)

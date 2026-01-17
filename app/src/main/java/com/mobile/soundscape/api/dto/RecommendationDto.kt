@@ -24,6 +24,15 @@ data class RecommendationResponse(
     @SerializedName("playlistName")
     val playlistName: String,
 
+    @SerializedName("location")
+    val location: String,
+
+    @SerializedName("goal")
+    val goal: String,
+
+    @SerializedName("spotifyPlaylistId")
+    val spotifyPlaylistId: String,
+
     @SerializedName("playlistUrl")
     val playlistUrl: String,
 
@@ -59,4 +68,19 @@ data class Song(
 data class UpdatePlaylistNameRequest(
     @SerializedName("newPlaylistName")
     val newPlaylistName: String
+)
+
+
+
+/* ----------------------------- */
+// 비동기 polling 방식으로 구현
+data class PlaylistPollingResponse(
+    @SerializedName("taskId")
+    val taskId: String,
+
+    @SerializedName("status")
+    val status: String,
+
+    @SerializedName("playlistInfo")
+    val playlistInfo: RecommendationResponse?
 )

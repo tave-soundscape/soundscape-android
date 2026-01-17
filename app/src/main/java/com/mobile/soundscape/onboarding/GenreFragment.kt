@@ -18,6 +18,7 @@ import com.mobile.soundscape.api.dto.BaseResponse
 import com.mobile.soundscape.api.dto.MypageGenreRequest
 import com.mobile.soundscape.data.GenreDataFix
 import com.mobile.soundscape.data.OnboardingManager
+import com.mobile.soundscape.data.PreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -136,7 +137,9 @@ class GenreFragment : Fragment() {
                     OnboardingManager.saveGenreList(requireContext(), finalGenre)
 
                     // 서버 전송 요청
+                    PreferenceManager.setOnboardingFinished(requireContext(), true)
                     viewModel.submitOnboarding()
+
 
                 }
             } else {

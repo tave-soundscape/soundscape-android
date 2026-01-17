@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("androidx.navigation.safeargs.kotlin") version "2.7.5"
+    id("kotlin-kapt")
 }
 
 android {
@@ -12,8 +13,8 @@ android {
         applicationId = "com.mobile.soundscape"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -85,4 +86,12 @@ dependencies {
 
     // 카카오 로그인 모듈
     implementation("com.kakao.sdk:v2-user:2.15.0")
+
+    // Room 관련 의존성 추가
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+
+    // Annotation Processor 대신 ksp를 사용
+    kapt("androidx.room:room-compiler:$room_version")
 }

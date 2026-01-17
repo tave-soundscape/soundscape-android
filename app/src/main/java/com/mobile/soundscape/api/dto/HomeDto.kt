@@ -34,8 +34,17 @@ data class PlaylistDetail (
     @SerializedName("playlistId")
     val playlistId: Int,
 
+    @SerializedName("spotifyPlaylistId")
+    val spotifyPlaylistId: String,
+
     @SerializedName("playlistName")
-    val playlistName: String
+    val playlistName: String,
+
+    @SerializedName("location")
+    val location: String,
+
+    @SerializedName("goal")
+    val goal: String,
 )
 
 // 상세 정보 dto
@@ -44,13 +53,19 @@ data class LibraryPlaylistDetailResponse (
     val playlistId: Int,
 
     @SerializedName("playlistName")
-    val playlistName: String,
+    var playlistName: String,
 
-    @SerializedName("playlistUrl")
-    val playlistUrl: String,
+    @SerializedName("location")
+    val location: String,
+
+    @SerializedName("goal")
+    val goal: String,
 
     @SerializedName("spotifyPlaylistId")
     val spotifyPlaylistId: String,
+
+    @SerializedName("playlistUrl")
+    val playlistUrl: String,
 
     @SerializedName("songs")
     val songs: List<Song>

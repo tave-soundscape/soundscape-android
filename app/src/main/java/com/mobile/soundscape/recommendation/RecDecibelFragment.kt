@@ -97,7 +97,7 @@ class RecDecibelFragment : Fragment() {
 
         when (newState) {
             DecibelState.INITIAL -> {
-                binding.tvCaption.text = "5초 동안 공간의 소리를 들어볼게요."
+                binding.tvCaption.text = "5초 동안 공간의 소리를 들어볼게요"
                 binding.tvDecibelValue.text = "0 dB"
                 binding.btnAction.setImageResource(R.drawable.decibel_play) // 시작 아이콘
                 binding.ellipse.isVisible = false
@@ -105,7 +105,7 @@ class RecDecibelFragment : Fragment() {
                 binding.nextBtn.isEnabled = false
             }
             DecibelState.RECORDING -> {
-                binding.tvCaption.text = "주변을 듣고 있어요."
+                binding.tvCaption.text = "주변을 듣고 있어요"
                 binding.btnAction.setImageResource(R.drawable.decibel_pause) // 멈춤 아이콘
                 // TODO: (데시벨 측정 중에는 tv_decibel_value가 실시간으로 업데이트되어야 함)
                 binding.ellipse.isVisible = false
@@ -114,7 +114,7 @@ class RecDecibelFragment : Fragment() {
 
             }
             DecibelState.FINISHED -> {
-                binding.tvCaption.text = "주변 소리를 들었어요."
+                binding.tvCaption.text = "주변 소리를 들었어요"
                 binding.tvDecibelValue.text = "${String.format("%.1f", currentDecibelValue)} dB"
                 binding.btnAction.setImageResource(R.drawable.decibel_restart) // 다시 시작 아이콘
                 binding.tvDecibelValue.isVisible = true

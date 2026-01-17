@@ -10,335 +10,298 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_group_wrapper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="20dp"
-        android:elevation="25dp"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.474"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:clipChildren="false"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toBottomOf="@+id/tv_description"
+        app:layout_constraintBottom_toTopOf="@+id/nextBtn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_description">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/center_button"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/button_default_background"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.18">
 
             <ImageView
                 android:id="@+id/btn0_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/goal_icon0"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn1_wrapper"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/button_default_background"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="0"
-            app:layout_constraintCircleRadius="140dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintCircleRadius="112dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_percent="0.18">
 
-            <ImageView
-                android:id="@+id/btn1_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp"
+            <ImageView android:id="@+id/btn1_icon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/goal_icon1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn2_wrapper"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/button_default_background"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="60"
-            app:layout_constraintCircleRadius="140dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintCircleRadius="112dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_percent="0.18">
 
             <ImageView
                 android:id="@+id/btn2_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp"
-                android:src="@drawable/goal_icon2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:src="@drawable/goal_icon2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn3_wrapper"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/button_default_background"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="120"
-            app:layout_constraintCircleRadius="140dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintCircleRadius="112dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_percent="0.18">
 
             <ImageView
                 android:id="@+id/btn3_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp"
-                android:src="@drawable/goal_icon3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:src="@drawable/goal_icon3" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn4_wrapper"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/button_default_background"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="180"
-            app:layout_constraintCircleRadius="140dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintCircleRadius="112dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_percent="0.18">
 
             <ImageView
                 android:id="@+id/btn4_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp"
-                android:src="@drawable/goal_icon4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:src="@drawable/goal_icon4"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn5_wrapper"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/button_default_background"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="240"
-            app:layout_constraintCircleRadius="140dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintCircleRadius="112dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_percent="0.18">
 
             <ImageView
                 android:id="@+id/btn5_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp"
-                android:src="@drawable/goal_icon5"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:src="@drawable/goal_icon5" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn6_wrapper"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/button_default_background"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintCircle="@+id/center_button"
             app:layout_constraintCircleAngle="300"
-            app:layout_constraintCircleRadius="140dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintCircleRadius="112dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_percent="0.18">
 
             <ImageView
                 android:id="@+id/btn6_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:padding="16dp"
-                android:src="@drawable/goal_icon6"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:src="@drawable/goal_icon6" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
         <TextView
             android:id="@+id/txt0"
+            style="@style/Body02_100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="수면"
             android:textColor="@color/white"
-            style="@style/Body02_100"
-            app:layout_constraintEnd_toStartOf="@+id/btn3_wrapper"
-            app:layout_constraintStart_toEndOf="@+id/btn5_wrapper"
+            app:layout_constraintEnd_toEndOf="@+id/center_button"
+            app:layout_constraintStart_toStartOf="@+id/center_button"
             app:layout_constraintTop_toBottomOf="@+id/center_button" />
 
         <TextView
             android:id="@+id/txt1"
+            style="@style/Body02_100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="집중"
             android:textColor="@color/white"
-            style="@style/Body02_100"
-            app:layout_constraintEnd_toStartOf="@+id/btn2_wrapper"
-            app:layout_constraintStart_toEndOf="@+id/btn6_wrapper"
+            app:layout_constraintEnd_toEndOf="@+id/btn1_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/btn1_wrapper"
             app:layout_constraintTop_toBottomOf="@+id/btn1_wrapper" />
 
         <TextView
             android:id="@+id/txt2"
+            style="@style/Body02_100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:text="위로"
             android:textColor="@color/white"
-            style="@style/Body02_100"
-            app:layout_constraintEnd_toStartOf="@+id/btn2_wrapper"
-            app:layout_constraintStart_toEndOf="@+id/btn2_wrapper"
+            app:layout_constraintEnd_toEndOf="@+id/btn2_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/btn2_wrapper"
             app:layout_constraintTop_toBottomOf="@+id/btn2_wrapper" />
 
         <TextView
             android:id="@+id/txt3"
+            style="@style/Body02_100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:text="활력"
             android:textColor="@color/white"
-            style="@style/Body02_100"
-            app:layout_constraintEnd_toStartOf="@+id/btn3_wrapper"
-            app:layout_constraintStart_toEndOf="@+id/btn3_wrapper"
-            app:layout_constraintTop_toBottomOf="@+id/btn3_wrapper"/>
+            app:layout_constraintEnd_toEndOf="@+id/btn3_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/btn3_wrapper"
+            app:layout_constraintTop_toBottomOf="@+id/btn3_wrapper" />
 
         <TextView
             android:id="@+id/txt4"
+            style="@style/Body02_100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:text="안정"
             android:textColor="@color/white"
-            style="@style/Body02_100"
-            app:layout_constraintEnd_toStartOf="@+id/btn4_wrapper"
-            app:layout_constraintStart_toEndOf="@+id/btn4_wrapper"
-            app:layout_constraintTop_toBottomOf="@+id/btn4_wrapper"/>
+            app:layout_constraintEnd_toEndOf="@+id/btn4_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/btn4_wrapper"
+            app:layout_constraintTop_toBottomOf="@+id/btn4_wrapper" />
 
         <TextView
             android:id="@+id/txt5"
+            style="@style/Body02_100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:text="분노"
             android:textColor="@color/white"
-            style="@style/Body02_100"
-            app:layout_constraintEnd_toStartOf="@+id/btn5_wrapper"
-            app:layout_constraintStart_toEndOf="@+id/btn5_wrapper"
-            app:layout_constraintTop_toBottomOf="@+id/btn5_wrapper"/>
+            app:layout_constraintEnd_toEndOf="@+id/btn5_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/btn5_wrapper"
+            app:layout_constraintTop_toBottomOf="@+id/btn5_wrapper" />
 
         <TextView
             android:id="@+id/txt6"
+            style="@style/Body02_100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:text="휴식"
             android:textColor="@color/white"
-            style="@style/Body02_100"
-            app:layout_constraintStart_toStartOf="@id/btn6_wrapper"
-            app:layout_constraintEnd_toEndOf="@id/btn6_wrapper"
-            app:layout_constraintTop_toBottomOf="@id/btn6_wrapper" />
-
+            app:layout_constraintEnd_toEndOf="@+id/btn6_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/btn6_wrapper"
+            app:layout_constraintTop_toBottomOf="@+id/btn6_wrapper" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btn7_wrapper"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
 
-        android:layout_marginTop="-50dp"
-        android:layout_marginStart="35dp"
 
         android:background="@drawable/button_default_background"
-        android:clickable="true"
-        android:focusable="true"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
 
-        app:layout_constraintTop_toBottomOf="@id/button_group_wrapper"
-        app:layout_constraintStart_toStartOf="parent">
+
+        app:layout_constraintHorizontal_bias="0.215"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_group_wrapper"
+        app:layout_constraintWidth_percent="0.15">
 
         <ImageView
             android:id="@+id/btn7_icon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
             android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
             android:src="@drawable/goal_icon7"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -346,25 +309,24 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <TextView
         android:id="@+id/txt7"
+        style="@style/Body02_100"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:text="미선택"
         android:textColor="@color/white"
-        style="@style/Body02_100"
-        app:layout_constraintStart_toStartOf="@+id/btn7_wrapper"
         app:layout_constraintEnd_toEndOf="@+id/btn7_wrapper"
+        app:layout_constraintStart_toStartOf="@+id/btn7_wrapper"
         app:layout_constraintTop_toBottomOf="@+id/btn7_wrapper" />
-
 
     <TextView
         android:id="@+id/tvCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:text="오늘의 몰입 목표를 선택해주세요."
+        android:text="오늘의 몰입 목표를 선택해주세요"
         android:textColor="@color/white"
         style="@style/Title02_100"
         android:lineSpacingExtra="7sp"
@@ -384,7 +346,7 @@
         android:gravity="center_horizontal|top"
         android:lineSpacingExtra="4sp"
         style="@style/Body01_200"
-        android:text="몰입을 위한 최적의 음악을 추천해드릴게요."
+        android:text="몰입을 위한 최적의 음악을 추천해드릴게요"
         android:textColor="@color/description"
         android:translationY="-1.75sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -395,16 +357,17 @@
         android:id="@+id/ellipse"
         android:layout_width="500dp"
         android:layout_height="600dp"
+        android:layout_marginTop="524dp"
+        android:alpha="0.7"
         android:scaleType="centerCrop"
         android:scaleX="1.3"
         android:scaleY="1.4"
-        android:src="@drawable/ellipse"
-        android:alpha="0.7"
 
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="524dp"
+        android:src="@drawable/ellipse"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/nextBtn"
