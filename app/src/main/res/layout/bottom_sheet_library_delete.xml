@@ -19,12 +19,13 @@
 
     <TextView
         android:id="@+id/tvTitle"
+        style="@style/Body01_100"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
         android:text="플레이리스트를 삭제할까요?"
         android:textColor="#FFFFFF"
-        style="@style/Body01_100"
-        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnClose" />
 
