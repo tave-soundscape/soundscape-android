@@ -22,7 +22,7 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:columnCount="2"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="49dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnClose"
         android:rowCount="2">
@@ -36,10 +36,10 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="플레이리스트 이름"
+        android:text="플레이리스트 이름ndkkkkkdkkkkkkkkkkk"
         android:textColor="#FFFFFF"
         style="@style/Body01_100"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="55dp"
         android:layout_marginStart="20dp"
         app:layout_constraintStart_toEndOf="@id/girdLayout"
         app:layout_constraintTop_toTopOf="@id/btnClose" />
