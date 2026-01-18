@@ -28,6 +28,8 @@ import retrofit2.Response
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.widget.ImageView
+import androidx.navigation.fragment.findNavController
 import com.mobile.soundscape.MainActivity
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.dto.BaseResponse
@@ -93,7 +95,7 @@ class GalleryFragment : Fragment() {
 
                 if (!spotifyUrl.isNullOrEmpty()) {
                     try {
-                        // 인텐트 생성 (ACTION_VIEW: 보여달라)
+                        // 인텐트 생성
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(spotifyUrl))
                         // 실행 (스포티파이 앱이 있으면 앱으로, 없으면 브라우저로 켜짐)
                         startActivity(intent)
@@ -125,13 +127,7 @@ class GalleryFragment : Fragment() {
         }
 
         binding.btnMoveToLibrary.setOnClickListener {
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            // 메인 액티비티를 다시 띄우면서 기존 스택 정리
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            // 메인에서 라이브러리 탭을 열도록 신호 전달
-            intent.putExtra("NAVIGATE_TO", "LIBRARY")
-            startActivity(intent)
-            requireActivity().finish()
+            findNavController().navigate(R.id.action_galleryFragment_to_libraryFragment)
         }
 
         binding.btnBack.setOnClickListener {
@@ -228,23 +224,14 @@ class GalleryFragment : Fragment() {
 
         btnClose.setOnClickListener { bottomSheetDialog.dismiss() }
 
-        btnConfirm.isEnabled = false
-        btnConfirm.alpha = 0.4f
-
-        etName.doAfterTextChanged { text ->
-            val input = text.toString().trim()
-            if (input.isNotEmpty()) {
-                btnConfirm.isEnabled = true
-                btnConfirm.alpha = 1.0f
-            } else {
-                btnConfirm.isEnabled = false
-                btnConfirm.alpha = 0.4f
-            }
-        }
-
         btnConfirm.setOnClickListener {
             val newName = etName.text.toString().trim()
             binding.tvPlaylistName.text = newName
+
+            val layout = layoutInflater.inflate(R.layout.toast_custom, null)
+            val iconView = layout.findViewById<ImageView>(R.id.iv_toast_icon)
+            iconView?.visibility = View.VISIBLE
+
             // 수정된 플리 이름 내부 저장소에 저장
             context?.let { ctx ->
                 RecommendationManager.savePlaylistName(ctx, newName)
@@ -256,9 +243,9 @@ class GalleryFragment : Fragment() {
             // 백엔드로 수정된 플리이름 보내는 함수
             updatePlaylistNameOnServer(savedPlaylistId, newName)
 
+            showCustomToast("내 라이브러리에 추가됐어요")
             bottomSheetDialog.dismiss()
 
-            // 라이브러리로 이동하는 버튼으로 교체
             binding.btnMoveToLibrary.visibility = View.VISIBLE
             binding.btnAddLibrary.visibility = View.GONE
         }

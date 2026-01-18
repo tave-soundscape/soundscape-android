@@ -76,7 +76,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:columnCount="2"
-                        android:clipToOutline="true"
                         android:rowCount="2">
                         <ImageView android:id="@+id/ivCover1" android:layout_width="90dp" android:layout_height="90dp" android:layout_rowWeight="1"
                             android:layout_columnWeight="1" android:scaleType="centerCrop" android:src="@color/gray700"/>

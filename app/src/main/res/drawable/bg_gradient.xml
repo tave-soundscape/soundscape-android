@@ -5,8 +5,8 @@
         android:type="linear"
 
         android:startColor="#FF000000"
-        android:centerColor="#9E000000"
-        android:endColor="#48000000"
+        android:centerColor="#91000000"
+        android:endColor="#34000000"
 
         android:centerY="0.4" />
 
