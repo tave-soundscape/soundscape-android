@@ -1,9 +1,6 @@
 package com.mobile.soundscape.explore
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,16 +10,16 @@ import com.bumptech.glide.Glide
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.dto.PlaceDetail
 import com.mobile.soundscape.databinding.ItemExplorePlaylistBinding
-import com.mobile.soundscape.home.library.LabelMapper
-import com.mobile.soundscape.result.MusicModel
 
 class ExploreAdapter(
-    private var items: MutableList<PlaceDetail> = mutableListOf() // MutableList로 변경
+    private var items: MutableList<PlaceDetail> = mutableListOf(),
+    private val onAddClick: (PlaceDetail) -> Unit,
+    private val onPlayClick: (PlaceDetail) -> Unit // 1. -> Unit 추가 (컴파일 에러 해결)
 ) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
 
     fun getItemList(): MutableList<PlaceDetail> = items
     fun updateData(newItems: List<PlaceDetail>) {
-        this.items = newItems.toMutableList() // 새 데이터로 교체
+        this.items = newItems.toMutableList()
         notifyDataSetChanged()
     }
 
@@ -38,10 +35,10 @@ class ExploreAdapter(
         holder.binding.apply {
             val safeSongs = item.songs ?: emptyList()
 
-            // [이미지 로직] 목록 API(imageUrl) -> 상세 API(songs[0]) 순서로 체크
+            // [이미지 로직]
             val imageToLoad = when {
-                !item.imageUrl.isNullOrEmpty() -> item.imageUrl // 대표 이미지
-                safeSongs.isNotEmpty() -> safeSongs[0].imageUrl // 상세 데이터 올 경우 첫 곡
+                !item.imageUrl.isNullOrEmpty() -> item.imageUrl
+                safeSongs.isNotEmpty() -> safeSongs[0].imageUrl
                 else -> ""
             }
 
@@ -53,15 +50,15 @@ class ExploreAdapter(
                 .error(R.drawable.img_placeholder)
                 .into(ivPlaylistCover)
 
-            // [미니 커버] 상세 데이터(safeSongs)가 들어왔을 때만 보여줌
+            // [수정된 미니 커버 로직] 2, 3, 4번 곡을 원형으로 보여줌
             val miniCovers = listOf(ivMiniCover1, ivMiniCover2, ivMiniCover3)
-
-            if (safeSongs.isNotEmpty()) {
+            if (safeSongs.size >= 2) {
                 miniCovers.forEachIndexed { index, imageView ->
-                    if (index < safeSongs.size) {
+                    val songIndex = index + 1 // 곡 2, 3, 4 순서
+                    if (songIndex < safeSongs.size) {
                         imageView.visibility = View.VISIBLE
                         Glide.with(imageView.context)
-                            .load(safeSongs[index].imageUrl)
+                            .load(safeSongs[songIndex].imageUrl)
                             .circleCrop()
                             .into(imageView)
                     } else {
@@ -69,29 +66,26 @@ class ExploreAdapter(
                     }
                 }
             } else {
-                // 아직 상세 데이터를 못 받았으면 동그라미들을 일단 가림
                 miniCovers.forEach { it.visibility = View.GONE }
             }
 
-            // 4. 상세 페이지로 이동
+            // [추가] 4. 라이브러리 추가 (+) 버튼 연결
+            btnAddLibrary.setOnClickListener {
+                onAddClick(item)
+            }
+
+            // 5. 상세 페이지로 이동
             tvGoPlaylist.setOnClickListener {
                 val bundle = Bundle().apply {
-                    putString("playlistId", item.id.toString()) // ID를 넘겨줍니다.
+                    putString("playlistId", item.id.toString())
                     putString("title", item.title)
                 }
                 it.findNavController().navigate(R.id.action_exploreFragment_to_exploreDetailFragment, bundle)
             }
 
-            // 5. 스포티파이 바로 재생 버튼
+            // 6. 스포티파이 재생 버튼 (바텀시트 호출)
             btnPlay.setOnClickListener {
-                if (!item.playlistUrl.isNullOrBlank()) {
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.playlistUrl))
-                        it.context.startActivity(intent)
-                    } catch (e: Exception) {
-                        Log.e("ExploreAdapter", "Spotify link failed")
-                    }
-                }
+                onPlayClick(item)
             }
         }
     }
