@@ -32,7 +32,7 @@
                     android:layout_height="400dp"
                     android:scaleType="centerCrop"
                     android:alpha="0.6"
-                    android:src="@drawable/ic_launcher_background"
+                    android:src="@color/gray700"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -65,7 +65,9 @@
                     android:layout_height="180dp"
                     android:layout_marginTop="80dp"
                     app:cardCornerRadius="12dp"
+                    app:cardUseCompatPadding="false"
                     app:cardElevation="10dp"
+                    app:cardPreventCornerOverlap="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -74,11 +76,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:columnCount="2"
+                        android:clipToOutline="true"
                         android:rowCount="2">
-                        <ImageView android:id="@+id/ivCover1" android:layout_width="90dp" android:layout_height="90dp" android:scaleType="centerCrop" android:src="@drawable/ic_launcher_background"/>
-                        <ImageView android:id="@+id/ivCover2" android:layout_width="90dp" android:layout_height="90dp" android:scaleType="centerCrop" android:src="@drawable/ic_launcher_background"/>
-                        <ImageView android:id="@+id/ivCover3" android:layout_width="90dp" android:layout_height="90dp" android:scaleType="centerCrop" android:src="@drawable/ic_launcher_background"/>
-                        <ImageView android:id="@+id/ivCover4" android:layout_width="90dp" android:layout_height="90dp" android:scaleType="centerCrop" android:src="@drawable/ic_launcher_background"/>
+                        <ImageView android:id="@+id/ivCover1" android:layout_width="90dp" android:layout_height="90dp" android:layout_rowWeight="1"
+                            android:layout_columnWeight="1" android:scaleType="centerCrop" android:src="@color/gray700"/>
+                        <ImageView android:id="@+id/ivCover2" android:layout_width="90dp" android:layout_height="90dp" android:layout_rowWeight="1"
+                            android:layout_columnWeight="1" android:scaleType="centerCrop" android:src="@color/gray700"/>
+                        <ImageView android:id="@+id/ivCover3" android:layout_width="90dp" android:layout_height="90dp" android:layout_rowWeight="1"
+                            android:layout_columnWeight="1" android:scaleType="centerCrop" android:src="@color/gray700"/>
+                        <ImageView android:id="@+id/ivCover4" android:layout_width="90dp" android:layout_height="90dp" android:layout_rowWeight="1"
+                            android:layout_columnWeight="1" android:scaleType="centerCrop" android:src="@color/gray700"/>
                     </GridLayout>
                 </androidx.cardview.widget.CardView>
 
