@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        /*
         // PreferenceManager를 통해 경험 여부 확인
         if (PreferenceManager.isPlaylistExperienced(this)) {
 
@@ -81,6 +82,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }, 800) //
         }
+
+         */
     }
 
 

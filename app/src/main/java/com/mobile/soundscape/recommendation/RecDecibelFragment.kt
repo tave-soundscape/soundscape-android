@@ -17,6 +17,7 @@ import android.Manifest
 import android.media.MediaRecorder
 import android.os.Handler
 import android.os.Looper
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 
 class RecDecibelFragment : Fragment() {
@@ -46,7 +47,7 @@ class RecDecibelFragment : Fragment() {
         private const val CHANNEL = AudioFormat.CHANNEL_IN_MONO
         private const val ENCODING = AudioFormat.ENCODING_PCM_16BIT
         private const val RECORDING_DURATION = 5000L // 5초 동안 측정
-        private const val AUTO_START_DELAY = 1500L   // 2초 뒤 시작
+        private const val AUTO_START_DELAY = 2000L   // 2초 뒤 시작
     }
 
     private lateinit var binding: FragmentRecDecibelBinding
@@ -89,11 +90,32 @@ class RecDecibelFragment : Fragment() {
         autoStopHandler.postDelayed(autoStartRunnable, AUTO_START_DELAY)
     }
 
+    // 권한 요청 결과 처리 콜백
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 사용자가 방금 권한을 허용했다면 즉시 측정 시작!
+                startRecording()
+            } else {
+                // 거절했을 경우에 대한 안내 (선택 사항)
+                Toast.makeText(requireContext(), "측정을 위해 마이크 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                updateUI(DecibelState.INITIAL)
+            }
+        }
+    }
+
     private fun updateUI(newState: DecibelState) {
         currentState = newState
         when (newState) {
             DecibelState.INITIAL -> {
-                binding.tvCaption.text = "5초 동안 공간의 소리를 들어볼게요"
+                binding.tvCaption.text = "지금 공간의 소리를 측정해볼게요"
+                binding.tvDescription.text = "공간에 대해 더 파악할게요"
                 binding.tvDecibelValue.text = "0 dB"
                 binding.btnAction.setImageResource(R.drawable.decibel_play)
                 binding.ellipse.isVisible = false
@@ -101,13 +123,23 @@ class RecDecibelFragment : Fragment() {
             }
             DecibelState.RECORDING -> {
                 binding.tvCaption.text = "주변을 듣고 있어요"
+                binding.tvDescription.text = "공간에 대해 파악하고 있어요" // 측정 중 문구
                 binding.btnAction.setImageResource(R.drawable.decibel_pause)
                 binding.ellipse.isVisible = false
                 binding.nextBtn.isVisible = false
             }
             DecibelState.FINISHED -> {
-                binding.tvCaption.text = "주변 소리를 들었어요"
+                binding.tvCaption.text = "공간의 소리를 측정했어요"
                 binding.tvDecibelValue.text = "${String.format("%.1f", currentDecibelValue)} dB"
+
+                // 데시벨 값에 따른 캡션 변경
+                val descriptionText = when {
+                    currentDecibelValue < 55.0 -> "조용한 곳이예요"
+                    currentDecibelValue < 85.0 -> "약간 시끄러운 곳이예요"
+                    else -> "매우 시끄러운 곳이예요"
+                }
+                binding.tvDescription.text = descriptionText
+
                 binding.btnAction.setImageResource(R.drawable.decibel_restart)
                 binding.ellipse.isVisible = true
                 binding.nextBtn.isVisible = true

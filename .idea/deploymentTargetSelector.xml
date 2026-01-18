@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-01-12T14:58:32.915167Z">
+        <DropdownSelection timestamp="2026-01-18T08:51:04.866215Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=R3CM803NQKV" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/junghyunseo/.android/avd/Galazy_Zfliip4.avd" />
             </handle>
           </Target>
         </DropdownSelection>
