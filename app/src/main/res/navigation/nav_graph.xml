@@ -32,6 +32,12 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_homeFragment_to_homeHistoryFragment"
+            app:destination="@id/homeHistoryFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_homeHistoryDetailFragment"
+            app:destination="@id/homeHistoryDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/recPlaceFragment"
@@ -163,6 +169,9 @@
             android:id="@+id/action_listFragment_to_libraryFragment"
             app:destination="@id/libraryFragment"
             app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_homeHistoryFragment"
+            app:destination="@id/homeHistoryFragment" />
     </fragment>
 
     <fragment
@@ -175,5 +184,27 @@
         android:id="@+id/exploreDetailFragment"
         android:name="com.mobile.soundscape.explore.ExploreDetailFragment"
         android:label="ExploreDetailFragment" />
+    <fragment
+        android:id="@+id/homeHistoryFragment"
+        android:name="com.mobile.soundscape.home.HomeHistoryFragment"
+        android:label="HomeHistoryFragment" >
+        <action
+            android:id="@+id/action_homeHistoryFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_homeHistoryFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <action
+            android:id="@+id/action_homeHistoryFragment_to_homeHistoryDetailFragment"
+            app:destination="@id/homeHistoryDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeHistoryDetailFragment"
+        android:name="com.mobile.soundscape.home.HomeHistoryDetailFragment"
+        android:label="HomeHistoryDetailFragment" >
+        <action
+            android:id="@+id/action_homeHistoryDetailFragment_to_libraryFragment"
+            app:destination="@id/libraryFragment" />
+    </fragment>
 
 </navigation>

@@ -20,7 +20,7 @@ interface HistoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(history: PlaylistHistory)
 
-    @Query("SELECT * FROM playlist_history ORDER BY timestamp DESC LIMIT 6")
+    @Query("SELECT * FROM playlist_history ORDER BY timestamp DESC LIMIT 7")
     suspend fun getRecentHistory(): List<PlaylistHistory>
 
     @Query("DELETE FROM playlist_history")

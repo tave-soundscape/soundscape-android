@@ -39,7 +39,6 @@ class RecResultFragment : Fragment() {
 
     private var _binding: FragmentRecResultBinding? = null
     private val binding get() = _binding!!
-    val TAG = "RecResultFragment"
     private val viewModel: RecommendationViewModel by activityViewModels()
 
     private var isDataLoaded = false
@@ -75,6 +74,19 @@ class RecResultFragment : Fragment() {
         }
     }
 
+    // (공통) 에러 발생 시 처리 함수 -> 토스트 띄우고 1.5초 후 이전 화면으로 돌아감
+    private fun handleErrorAndExit(message: String) {
+        if (!isAdded) return // 프래그먼트가 이미 종료되었으면 무시
+
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            pollingJob?.cancel() // 폴링 중이었다면 중단
+            delay(1500)          // 1.5초 대기
+            findNavController().popBackStack() // 이전 화면으로 이동
+        }
+    }
+
     /**
      * [Step 1]
      * 1. (polling 방식) 장소, 데시벨, 목표를 백엔드로 전송
@@ -88,7 +100,6 @@ class RecResultFragment : Fragment() {
             decibel = viewModel.decibel,
             goal = viewModel.englishGoal
         )
-        viewModel.checkData()
 
         RetrofitClient.recommendationApi.sendPlaylistPolling(request).enqueue(object : Callback<BaseResponse<String>> {
             override fun onResponse(
@@ -108,23 +119,19 @@ class RecResultFragment : Fragment() {
 
                         // 4. taskId가 잘 구해졌으면 폴링 시작
                         if (taskId != null) {
-                            Log.d(TAG, "taskId 찾음: $taskId")
                             startPollingLoop(taskId)
-                        }
+                        } else { handleErrorAndExit("네트워크 응답값을 찾을 수 없습니다.\n다시 시도해주세요.") }
 
                     } else {
-                        Log.e(TAG, "Task ID 파싱 실패: $message")
-                        Toast.makeText(context, "작업 ID를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                        handleErrorAndExit("서버 응답이 비어있습니다.\n다시 시도해주세요.")
                     }
                 } else {
-                    Log.e(TAG, "작업 요청 실패: ${response.code()}")
-                    Toast.makeText(context, "서버 요청 실패", Toast.LENGTH_SHORT).show()
+                    handleErrorAndExit("서버 요청에 실패했습니다.\n다시 시도해주세요.")
                 }
             }
 
             override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
-                Log.e(TAG, "네트워크 오류: ${t.message}")
-                Toast.makeText(context, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                handleErrorAndExit("네트워크 연결을 실패했습니다.\n다시 시도해주세요.")
             }
         })
     }
@@ -139,9 +146,17 @@ class RecResultFragment : Fragment() {
 
         // 프래그먼트 생명주기에 맞춰 코루틴 실행
         pollingJob = viewLifecycleOwner.lifecycleScope.launch {
+            val startTime = System.currentTimeMillis() // 시작 시간 기록
+            val timeoutDuration = 20000L // 20초
             var isFinished = false
 
             while (isActive && !isFinished) { // 화면이 살아있는 동안 반복
+                // [타임아웃 체크] 20초 지나면 이전화면으로 돌아가기
+                if (System.currentTimeMillis() - startTime > timeoutDuration) {
+                    handleErrorAndExit("생성 시간이 초과되었습니다. 다시 시도해주세요.")
+                    return@launch // 루프 종료
+                }
+
                 try {
                     // API 호출 - 네트워크 요청을 메인 스레드로 보내면  android.os.NetworkOnMainThreadException 오류냄
                     // IO 스레드(백그라운드)로 보내야 오류 안남 
@@ -155,21 +170,17 @@ class RecResultFragment : Fragment() {
                         if (pollingData != null) {
                             // 성공 여부 판단 로직 - playlistInfo가 null이 아니면 완료된 것으로 간주
                             if (pollingData.status == "COMPLETED" && pollingData.playlistInfo != null) {
-                                Log.d(TAG, "작업 완료! 결과 수신 성공")
                                 isFinished = true
                                 // 3. 결과 처리
                                 onPlaylistReady(pollingData.playlistInfo)
                             } else {
                                 // "IN_PROGRESS" 이거나 다른 상태일 때
-                                Log.d(TAG, "작업 진행 중... (Status: ${pollingData.status})")
                             }
                         }
                     } else {
-                        Log.e(TAG, "폴링 상태 확인 실패: ${response.code()}")
                         // 404나 500 등 치명적 에러면 루프 종료 여부 결정 필요 (일단은 계속 시도하거나 종료)
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "폴링 중 에러: ${e.message}")
                 }
 
                 if (!isFinished) {
@@ -217,21 +228,16 @@ class RecResultFragment : Fragment() {
 
 
     private fun updateUIForCompletion() {
-        // 뷰 바인딩이 유효한지 확인 (혹시 모를 크래시 방지)
         if (_binding == null) return
 
         binding.apply {
-            // 1. 텍스트 변경
+            // UI 변경 적용
             tvSubtitle.text = "오늘의 몰입 플레이리스트가\n완성됐어요"
-
-            // 2. "잠시만 기다려주세요" 텍스트 숨기기
             tvSubtitle2.visibility = View.GONE
-
-            // 3. 버튼과 타원(ellipse) 보이기
             nextButton.visibility = View.VISIBLE
             ellipse.visibility = View.VISIBLE
 
-            // 보러가기 버튼 애니메이션 주기
+            // 애니메이션 주기
             nextButton.alpha = 0f
             nextButton.animate().alpha(1f).setDuration(500).start()
 
@@ -253,10 +259,7 @@ class RecResultFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 AppDatabase.getDatabase(context).historyDao().insert(history)
-
-                Log.d("RoomDB_CHECK", "저장 성공! ID: $playlistId, Place: $place")
             } catch (e: Exception) {
-                Log.e("RoomDB_CHECK", "저장 실패: ${e.message}")
             }
         }
     }

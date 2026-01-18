@@ -1,24 +1,15 @@
 package com.mobile.soundscape
 
-import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.transition.TransitionManager
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.mobile.soundscape.databinding.ActivityMainBinding
 import com.mobile.soundscape.evaluation.EvaluationPopupDialog
-import com.mobile.soundscape.home.HomeFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,8 +36,9 @@ class MainActivity : AppCompatActivity() {
             val showNavDestinations = setOf(
                 R.id.homeFragment,
                 R.id.exploreFragment,
-                R.id.libraryFragment, // (나중에 추가될 프래그먼트)
-                R.id.mypageFragment   // (나중에 추가될 프래그먼트)
+                R.id.libraryFragment,
+                R.id.mypageFragment,
+                R.id.homeHistoryFragment
             )
 
             // 2. 현재 화면이 리스트에 있는지 확인
