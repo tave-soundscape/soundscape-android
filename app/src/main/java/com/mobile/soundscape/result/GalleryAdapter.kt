@@ -21,7 +21,7 @@ class GalleryAdapter(private val musicList: List<MusicModel>) : RecyclerView.Ada
     }
 
     override fun onBindViewHolder(holder: GalleryViewHolder, position: Int) {
-        // [수정] 무한 스크롤을 위해 나머지 연산(%) 사용
+        // 무한 스크롤을 위해 나머지 연산(%) 사용
         // 예: position이 100이고 리스트가 5개면 -> 100 % 5 = 0번째 데이터 사용
         val realPosition = position % musicList.size
         val music = musicList[realPosition]

@@ -23,7 +23,7 @@
             android:layout_height="match_parent"
             android:background="#6200EE"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background" />
+            android:src="@color/gray700" />
     </androidx.cardview.widget.CardView>
 
     <TextView

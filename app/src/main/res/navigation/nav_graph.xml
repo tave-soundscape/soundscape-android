@@ -178,7 +178,11 @@
         android:id="@+id/galleryFragment"
         android:name="com.mobile.soundscape.playlist.GalleryFragment"
         android:label="GalleryFragment"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/fragment_gallery" >
+        <action
+            android:id="@+id/action_galleryFragment_to_libraryFragment"
+            app:destination="@id/libraryFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/exploreDetailFragment"
