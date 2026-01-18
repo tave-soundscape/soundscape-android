@@ -43,7 +43,7 @@ class EvaluationStep3Fragment : Fragment(R.layout.fragment_evaluation_step3) {
     }
 
     private fun selectCard(view: View, value: String, isMood: Boolean) {
-        // 1. 시각적 피드백: 클릭한 버튼을 '선택됨' 상태로 변경 (보라색으로 변함)
+        // 1. 시각적 피드백: 클릭한 버튼을 '선택됨' 상태로 변경
         view.isSelected = true
 
         // 2. 데이터 저장
@@ -62,7 +62,7 @@ class EvaluationStep3Fragment : Fragment(R.layout.fragment_evaluation_step3) {
         binding.layoutStep31Cards.visibility = View.GONE
         binding.layoutStep32Cards.visibility = View.VISIBLE
 
-        // (선택사항) 애니메이션 추가 시 더 자연스러움
+        // 애니메이션 추가 시 더 자연스러움
         binding.layoutStep32Cards.alpha = 0f
         binding.layoutStep32Cards.animate().alpha(1f).setDuration(300).start()
     }
@@ -70,8 +70,8 @@ class EvaluationStep3Fragment : Fragment(R.layout.fragment_evaluation_step3) {
     //step4 로 이동
     private fun navigateToStep4() {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, EvaluationStep4Fragment()) // Step 4로 교체
-            .addToBackStack(null) // 사용자가 뒤로가기를 누를 경우를 대비
+            .replace(R.id.fragment_container, EvaluationStep4Fragment())
+            .addToBackStack(null)
             .commit()
     }
 }

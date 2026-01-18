@@ -25,10 +25,10 @@ class HomeHistoryFragment : Fragment(R.layout.fragment_home_history) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentHomeHistoryBinding.bind(view)
 
-        // 2. DB에서 데이터 로드 및 UI 업데이트
+        // DB에서 데이터 로드 및 UI 업데이트
         loadHistory()
 
-        // 3. 상단 탭 버튼 리스너 설정
+        // 상단 탭 버튼 리스너 설정
         setupNavigationButtons()
     }
 

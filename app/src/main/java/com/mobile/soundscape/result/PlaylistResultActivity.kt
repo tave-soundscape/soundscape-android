@@ -44,17 +44,17 @@ class PlaylistResultActivity : AppCompatActivity() {
     }
 
     private fun setupOnBackPressed() {
-        // 시스템의 뒤로가기 동작을 가로챕니다.
+        // 시스템의 뒤로가기 동작을 가로챔
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // 만약 프래그먼트 백스택이 있다면 (예: 갤러리 화면 -> 리스트 화면)
-                // 경고 없이 그냥 이전 화면으로 돌아갑니다.
+                // 만약 프래그먼트 백스택이 있다면 (갤러리 화면 -> 리스트 화면)
+                // 경고 없이 그냥 이전 화면으로 돌아감
                 if (supportFragmentManager.backStackEntryCount > 0) {
                     supportFragmentManager.popBackStack()
                     return
                 }
 
-                // 백스택이 비어있다면 (리스트 화면, 즉 루트 화면)
+                // 백스택이 비어있다면 (리스트 화면일 때)
                 // 2초(2000ms) 안에 두 번 눌렀는지 확인
                 if (System.currentTimeMillis() - backPressedTime < 2000) {
                     // [종료 처리] 액티비티를 끄고 홈(이전 액티비티)으로 돌아감

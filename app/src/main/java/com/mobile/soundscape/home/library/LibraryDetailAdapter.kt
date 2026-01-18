@@ -12,7 +12,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.mobile.soundscape.R
 import com.mobile.soundscape.result.MusicModel
 
-// 푸터 없이 곡 목록만 깔끔하게 보여주는 전용 어댑터입니다.
 class LibraryDetailAdapter(
     private val songList: List<MusicModel>
 ) : RecyclerView.Adapter<LibraryDetailAdapter.SongViewHolder>() {
@@ -20,7 +19,6 @@ class LibraryDetailAdapter(
     override fun getItemCount(): Int = songList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        // [중요] 배경이 투명한 사용자님의 레이아웃을 사용합니다.
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_library_detail_song, parent, false)
         return SongViewHolder(view)
@@ -39,7 +37,6 @@ class LibraryDetailAdapter(
             tvTitle.text = item.title
             tvArtist.text = item.artist
 
-            // 동료분의 Glide 로직을 그대로 사용합니다.
             if (item.albumCover.isNotEmpty()) {
                 Glide.with(itemView.context)
                     .load(item.albumCover)

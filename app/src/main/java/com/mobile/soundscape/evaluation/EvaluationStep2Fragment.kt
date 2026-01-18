@@ -46,7 +46,7 @@ class EvaluationStep2Fragment : Fragment(R.layout.fragment_evaluation_step2) {
                     selectedReasons.remove(reasonText)
                 }
 
-                // 3. 최소 하나 이상 선택되어야 '다음' 버튼 활성화 (선택 사항)
+                // 3. 최소 하나 이상 선택되어야 '다음' 버튼 활성화
                 updateNextButtonState()
             }
         }

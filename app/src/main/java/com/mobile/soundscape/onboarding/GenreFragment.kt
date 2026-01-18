@@ -80,7 +80,6 @@ class GenreFragment : Fragment() {
 
         binding.rvGenreList.apply {
             this.adapter = this@GenreFragment.adapter
-            // 3열 그리드 (동그라미 카드가 3개씩 나열됨)
             layoutManager = GridLayoutManager(requireContext(), 2)
         }
     }
@@ -200,9 +199,8 @@ class GenreFragment : Fragment() {
         }
     }
     private fun setupEditMode() {
-        // 3. 버튼 텍스트 변경 ("다음" -> "저장")
         binding.nextButton.text = "취향 변경하기"
-        // 수정 모드에서는 처음부터 버튼이 보여야 함 (이미 3개가 선택되어 있을 테니)
+
         if (selectedGenresMap.size == 3) {
             if (binding.nextButton.visibility != View.VISIBLE) {
                 binding.run {
@@ -236,8 +234,6 @@ class GenreFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
-                // [실패 2] 통신 에러 (인터넷 끊김 등)
-                Log.e("API_FAIL", "통신 에러: ${t.message}")
                 Toast.makeText(context, "서버와 연결할 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
         })

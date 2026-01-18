@@ -1,36 +1,21 @@
 package com.mobile.soundscape.home
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mobile.soundscape.R
-import com.mobile.soundscape.api.client.RetrofitClient
-import com.mobile.soundscape.api.dto.BaseResponse
-import com.mobile.soundscape.api.dto.MypageGenreRequest
-import com.mobile.soundscape.data.RecommendationManager
 import com.mobile.soundscape.databinding.FragmentMypageBinding
-import com.mobile.soundscape.onboarding.ArtistFragment
-import com.mobile.soundscape.onboarding.GenreFragment
 import com.mobile.soundscape.onboarding.OnboardingViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class MypageFragment : Fragment() {
-    private var _binding: FragmentMypageBinding? = null // 바인딩 이름 확인
+    private var _binding: FragmentMypageBinding? = null
     private val binding get() = _binding!!
 
-    // Activity 범위의 ViewModel 공유
     private val viewModel: OnboardingViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -40,7 +25,7 @@ class MypageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        /* --- 온보딩에서 정한 데이터 불러오기 --- */
+        // 온보딩에서 정한 데이터 불러오기
         viewModel.loadSavedData(requireContext())
 
         // 사용자 닉네임 불러오기

@@ -31,7 +31,6 @@ data class SpotifyTokenResponse(
 
 // 실제 토큰을 가져오는 저장소 (싱글톤)
 object SpotifyAuthRepository {
-    private const val TAG = "SpotifyAuth"
 
     // 대시보드에서 가져온 본인 키 입력 필수!
     private const val CLIENT_ID = "2caa74d47f2b40449441b09fbaec95ed"
@@ -58,20 +57,16 @@ object SpotifyAuthRepository {
                 if (response.isSuccessful) {
                     val token = response.body()?.access_token
                     if (token != null) {
-                        Log.d(TAG, "🔍 검색용 토큰 발급 성공: ${token.take(10)}...")
                         onSuccess(token) // 성공 시 토큰 전달
                     } else {
-                        Log.e(TAG, "토큰이 비어있음")
                         onFailure()
                     }
                 } else {
-                    Log.e(TAG, "토큰 요청 거절됨: ${response.code()} ${response.message()}")
                     onFailure()
                 }
             }
 
             override fun onFailure(call: Call<SpotifyTokenResponse>, t: Throwable) {
-                Log.e(TAG, "통신 실패: ${t.message}")
                 onFailure()
             }
         })

@@ -15,7 +15,7 @@ import com.google.android.material.card.MaterialCardView
 import com.mobile.soundscape.R
 
 class ArtistAdapter(
-    var artistList: List<ArtistData>, // 외부에서 접근 가능하도록 var로 변경
+    var artistList: List<ArtistData>,
     private val onArtistClick: (ArtistData, Int) -> Unit // 클릭 시 데이터와 위치를 보냄
 ) : RecyclerView.Adapter<ArtistAdapter.ArtistViewHolder>() {
 

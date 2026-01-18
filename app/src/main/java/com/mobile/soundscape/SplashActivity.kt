@@ -38,7 +38,6 @@ class SplashActivity : AppCompatActivity() {
 
     }
 
-    // 배포할 때 주석해제
     // Splash 화면에서 액세스 토큰이 유효한지 검사
     private fun checkAutoLogin() {
         // JWT 토큰 꺼내기
@@ -56,11 +55,4 @@ class SplashActivity : AppCompatActivity() {
         finish()
     }
 
-/*
-    private fun moveToLoginActivity() {
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-*/
 }

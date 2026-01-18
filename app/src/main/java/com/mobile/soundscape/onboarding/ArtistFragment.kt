@@ -49,7 +49,6 @@ class ArtistFragment : Fragment() {
     private var searchRunnable: Runnable? = null
     private var searchToken: String? = null // 검색에 사용할 토큰 저장
 
-    private val TAG = "SpotifyAuth"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -83,7 +82,7 @@ class ArtistFragment : Fragment() {
             onSuccess = { token ->
                 searchToken = token
                 // 토큰을 받은 직후 초기 데이터(2024년 인기 아티스트) 로드
-                searchSpotifyArtists("year:2024", limit = 50)
+                searchSpotifyArtists("year:2025", limit = 50)
             },
             onFailure = {
                 Toast.makeText(context, "서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
@@ -213,20 +212,15 @@ class ArtistFragment : Fragment() {
                 val strokeWidthPx = (2 * resources.displayMetrics.density).toInt() // 2dp
 
                 if (query.isNotEmpty()) {
-                    // [입력 있음]
-                    // 1. 테두리 생성 (#303032)
+                    // [입력 있음] - 테두리 생성
                     background?.setStroke(strokeWidthPx, Color.parseColor("#303032"))
 
-                    // 3. X 버튼 보이기 (ID는 xml에 맞춰서 수정하세요: onboarding_x)
                     binding.searchClear.visibility = View.VISIBLE
 
                 } else {
-                    // [입력 없음]
-                    // 1. 테두리 제거
+                    // [입력 없음] - 테두리 제거
                     background?.setStroke(0, 0)
 
-                    // 2. 아이콘 숨기기
-                    // binding.ivSearchCheck.visibility = View.GONE
                     binding.searchClear.visibility = View.GONE
                 }
 
@@ -261,7 +255,7 @@ class ArtistFragment : Fragment() {
 
                 viewModel.updateArtists(requireContext(), finalList)
 
-                // 2. 분기 처리
+                // 분기 처리
                 if (isEditMode) {
                     updateArtistToServer(finalList)
                 } else {
@@ -292,7 +286,7 @@ class ArtistFragment : Fragment() {
             // 핸들러 콜백 제거 (이전 검색 요청 취소) -> 유령 텍스트 방지
             searchRunnable?.let { searchHandler.removeCallbacks(it) }
             // 검색어 지우면 다시 초기 목록 보여주기
-            searchSpotifyArtists("year:2024", limit = 50)
+            searchSpotifyArtists("year:2025", limit = 50)
         }
     }
 
@@ -319,12 +313,12 @@ class ArtistFragment : Fragment() {
                     // 데이터 가공 및 병합
                     processSearchResults(items)
                 } else {
-                    Log.e(TAG, "API Error: ${response.code()}")
+                    Toast.makeText(context, "API Error: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<ArtistSearchResponse>, t: Throwable) {
-                Log.e(TAG, "API Fail: ${t.message}")
+                Toast.makeText(context, "API Fail: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -370,11 +364,10 @@ class ArtistFragment : Fragment() {
     }
 
 
-    // ★ 수정 모드일 때 실행되는 설정 함수
+    // 수정 모드일 때 실행되는 설정 함수
     private fun setupEditMode() {
-        // 3. 버튼 텍스트 변경 ("다음" -> "저장")
         binding.nextButton.text = "취향 변경하기"
-        // 수정 모드에서는 처음부터 버튼이 보여야 함 (이미 3개가 선택되어 있을 테니)
+
         if (selectedArtistsMap.size == 3) {
             if (binding.nextButton.visibility != View.VISIBLE) {
                 binding.run {

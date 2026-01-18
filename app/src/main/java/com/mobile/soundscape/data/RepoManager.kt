@@ -124,9 +124,9 @@ object OnboardingManager {
 object PreferenceManager {
     private const val PREF_NAME = "my_app_prefs"
 
-    // 이번 업데이트에서 최초 1회 온보딩을 다시 실행해야함.
+    // 이번 업데이트에서 최초 1회 온보딩을 다시 실행해야함
     // v2를 붙여서 키 이름을 변경
-    // 기존 사용자는 이 키를 가지고 있지 않으므로 false가 반환됩니다.
+    // 기존 사용자는 이 키를 가지고 있지 않으므로 false가 반환
     private const val KEY_ONBOARDING_DONE = "is_onboarding_done_v2"
 
     fun isOnboardingFinished(context: Context): Boolean {

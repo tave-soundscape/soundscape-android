@@ -28,16 +28,13 @@ class SetnameFragment : Fragment() {
     // 실제 데이터 저장소 (비울 수 있어야 하니까 Nullable)
     private var _binding: FragmentSetnameBinding? = null
 
-    // 접근용 껍데기 (Null 체크 없이 편하게 쓰려고 만듦)
-    // get()을 쓸 때마다 _binding을 가져옴. !!로 null이 아님을 보장.
     private val binding get() = _binding!!
-    // 뷰모델 장바구니 가져오기
     private val viewModel: OnboardingViewModel by activityViewModels()
 
 
     // 색상 정의 (파랑: 성공 / 빨강: 실패 / 회색: 기본)
-    private val colorSuccess = Color.parseColor("#34C759") // Green
-    private val colorError = Color.parseColor("#ED433A")   // Red
+    private val colorSuccess = Color.parseColor("#34C759")
+    private val colorError = Color.parseColor("#ED433A")
     private val colorDefault = Color.parseColor("#4A494C")
     private var currentMode: String? = null
 
@@ -146,7 +143,7 @@ class SetnameFragment : Fragment() {
         })
 
         // '다음으로' 버튼 누르면 -> 뷰모델에 닉네임 담고
-        // ->아티스트 고르는 프래그먼트로 이동
+        // -> 아티스트 고르는 프래그먼트로 이동
         binding.nextButton.setOnClickListener {
             val finalNickname = binding.getNameInput.text.toString().trim()
             viewModel.nickname = finalNickname // 뷰모델에 닉네임 저장

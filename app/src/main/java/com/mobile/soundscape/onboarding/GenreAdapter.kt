@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mobile.soundscape.R
 
 class GenreAdapter(
-    var genreList: List<GenreData>, // 외부에서 접근 가능하도록 var로 변경
-    private val onGenreClick: (GenreData, Int) -> Unit // 클릭 시 데이터와 위치를 보냄
+    var genreList: List<GenreData>,
+    private val onGenreClick: (GenreData, Int) -> Unit
 ) : RecyclerView.Adapter<GenreAdapter.GenreViewHolder>() {
     inner class GenreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // XML에 정의된 뷰들과 연결
@@ -38,7 +38,7 @@ class GenreAdapter(
         }
     }
 
-    // 레이아웃 생성 (item_genre_selection.xml 이라고 가정)
+    // 레이아웃 생성
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenreViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_genre_selection, parent, false)
         return GenreViewHolder(view)

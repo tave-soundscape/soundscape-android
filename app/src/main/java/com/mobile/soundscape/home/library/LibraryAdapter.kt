@@ -12,8 +12,6 @@ class LibraryAdapter(
     private val onItemClick: (LibraryPlaylistModel) -> Unit
 ) : RecyclerView.Adapter<LibraryAdapter.PlaylistViewHolder>() {
 
-
-    // 아이템 개수는 (실제 데이터 개수 + 좋아요 카드 1개)
     override fun getItemCount(): Int = items.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -28,7 +26,7 @@ class LibraryAdapter(
         holder.bind(item)
     }
 
-    // [2] 일반 플레이리스트 뷰홀더 (2x2 이미지 처리)
+    // 일반 플레이리스트 뷰홀더 (2x2 이미지 처리)
     inner class PlaylistViewHolder(private val binding: ItemLibrarySpotifyCoverBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: LibraryPlaylistModel) {
             // 제목 설정
@@ -56,7 +54,7 @@ class LibraryAdapter(
                     .into(binding.ivCoverMain)
             } else {
                 // 이미지가 없을 때 기본 이미지 처리
-                binding.ivCoverMain.setImageResource(R.drawable.ic_launcher_background)
+                binding.ivCoverMain.setImageResource(R.drawable.bg_input_rounded)
             }
 
 

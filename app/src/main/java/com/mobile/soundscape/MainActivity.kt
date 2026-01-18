@@ -22,17 +22,17 @@ class MainActivity : AppCompatActivity() {
 
         handleNavigationIntent(intent)
 
-        // 2. NavController 가져오기
+        // NavController 가져오기
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // 3. 하단 바 버튼 클릭 리스너 설정
+        // 하단 바 버튼 클릭 리스너 설정
         setupBottomNav(navController)
 
-        // 4. 화면이 바뀔 때마다 하단 바 UI 업데이트
+        // 화면이 바뀔 때마다 하단 바 UI 업데이트
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            // 1. 하단 바를 보여줄 화면들 정의 (이 리스트에 없으면 숨김)
+            // 하단 바를 보여줄 화면들 정의 (이 리스트에 없으면 숨김)
             val showNavDestinations = setOf(
                 R.id.homeFragment,
                 R.id.exploreFragment,
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.homeHistoryFragment
             )
 
-            // 2. 현재 화면이 리스트에 있는지 확인
+            // 현재 화면이 리스트에 있는지 확인
             if (destination.id in showNavDestinations) {
                 // 홈 네비게시연에 있는 프래그먼트면 보이기
                 binding.bottomNavBar.navContainer.visibility = View.VISIBLE
@@ -63,17 +63,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // MainActivity.kt 에 추가
     override fun onResume() {
         super.onResume()
 
-        // 1. PreferenceManager를 통해 경험 여부 확인
+        // PreferenceManager를 통해 경험 여부 확인
         if (PreferenceManager.isPlaylistExperienced(this)) {
 
-            // 2. 즉시 false로 변경하여 중복 방지
+            // 즉시 false로 변경하여 중복 방지
             PreferenceManager.setPlaylistExperienced(this, false)
 
-            // 3. 화면이 완전히 뜬 후 팝업 노출 (2.5초 지연 대신 post 사용이 더 부드러움)
+            // 화면이 완전히 뜬 후 팝업 노출 (2.5초 지연 대신 post 사용이 더 부드러움)
             binding.root.postDelayed({
                 val existingDialog = supportFragmentManager.findFragmentByTag("EvaluationPopup")
                 if (existingDialog == null && !isFinishing && !isDestroyed) {
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    // [추가] 이미 켜진 앱으로 다시 들어올 때 신호 처리
+    // 이미 켜진 앱으로 다시 들어올 때 신호 처리
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent) // 새로운 인텐트로 교체

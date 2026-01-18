@@ -18,7 +18,6 @@ data class PlaceDetail(
     @SerializedName("playlistId") val id: Int,
     @SerializedName("playlistName") val title: String,
 
-    // 이 필드를 추가하세요! (서버 필드명이 "imageUrl"이라고 가정)
     @SerializedName("imageUrl") val imageUrl: String?,
 
     @SerializedName("playlistUrl") val playlistUrl: String?,

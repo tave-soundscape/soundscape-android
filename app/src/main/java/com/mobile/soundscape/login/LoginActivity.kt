@@ -30,35 +30,13 @@ import com.mobile.soundscape.data.PreferenceManager
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private val TAG = "KakaoLogin"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-/*
-        binding.moveHome.setOnClickListener {
-            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.btnEvaluation.setOnClickListener {
-            val intent = Intent(this@LoginActivity, EvaluationActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.moveOnboardingButton.setOnClickListener {
-            val fragment = SetnameFragment()
-            val transaction = supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.onboarding_fragment_container, fragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
-        }
-*/
-
 
         var keyHash = Utility.getKeyHash(this)
-        Log.e(TAG, keyHash)
 
         // TODO: 카카오 oauth 구현하기
         binding.btnKakaoOauth.setOnClickListener {
@@ -77,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
             if (error != null) {
                 Toast.makeText(this, "카카오 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
             } else if (token != null) {
-                // ★ 카카오에서 받은 토큰을 백엔드로 전송!
+                // 카카오에서 받은 토큰을 백엔드로 전송!
                 sendKakaoTokenToBackend(token.accessToken)
             }
         }
@@ -94,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
                     // 카카오톡 로그인 실패 시(설치 안 됨 등), 웹(계정)으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
                 } else if (token != null) {
-                    // ★ 카카오에서 받은 토큰을 백엔드로 전송!
+                    // 카카오에서 받은 토큰을 백엔드로 전송!
                     sendKakaoTokenToBackend(token.accessToken)
                 }
             }
@@ -106,7 +84,6 @@ class LoginActivity : AppCompatActivity() {
 
     // 백엔드 서버에 토큰 전송
     private fun sendKakaoTokenToBackend(kakaoAccessToken: String) {
-        // 이전 질문에서 정의한 LoginRequest(accessToken = ...) 사용
         val request = LoginRequest(kakaoAccessToken = kakaoAccessToken)
 
         RetrofitClient.loginApi.loginKakao(request).enqueue(object : Callback<BaseResponse<LoginResponse>> {
@@ -134,12 +111,12 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         // 통신은 됐지만 비즈니스 로직 실패
                         val errorMsg = body?.message ?: "알 수 없는 서버 오류"
-                        Toast.makeText(this@LoginActivity, "로그인 실패: $errorMsg", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, "로그인 실패: $errorMsg\n 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     // HTTP 400~500 에러
-                    val errorBody = response.errorBody()?.string() // ★ 서버가 보낸 에러 메시지 읽기
-                    Log.e(TAG, "서버 에러 내용: $errorBody")
+                    val errorBody = response.errorBody()?.string()
+                    Toast.makeText(this@LoginActivity, "서버 연결 실패: $errorBody\n 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 }
             }
 

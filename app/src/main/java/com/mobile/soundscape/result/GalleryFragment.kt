@@ -38,11 +38,8 @@ import com.mobile.soundscape.result.MusicModel
 
 class GalleryFragment : Fragment() {
 
-    // 1. 바인딩 변수 설정
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
-
-    private val TAG = "PlayTest"
 
 
     override fun onCreateView(
@@ -259,7 +256,6 @@ class GalleryFragment : Fragment() {
             // 백엔드로 수정된 플리이름 보내는 함수
             updatePlaylistNameOnServer(savedPlaylistId, newName)
 
-            showCustomToast("내 라이브러리에 추가됐어요")
             bottomSheetDialog.dismiss()
 
             // 라이브러리로 이동하는 버튼으로 교체
@@ -281,11 +277,8 @@ class GalleryFragment : Fragment() {
                 response: Response<BaseResponse<String>>
             ) {
                 if (response.isSuccessful) {
-                    // 성공 로그
-                    Log.d(TAG, "이름 수정 성공: $newName")
+                    showCustomToast("내 라이브러리에 추가됐어요")
                 } else {
-                    // 실패 로그 (하지만 이미 화면은 바꿨으니 조용히 로그만 남김)
-                    Log.e(TAG, "수정 실패 Code: ${response.code()}")
                     Toast.makeText(context, "서버 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }

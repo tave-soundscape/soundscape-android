@@ -2,8 +2,7 @@ package com.mobile.soundscape.api.dto
 
 import com.google.gson.annotations.SerializedName
 
-// 공통 응답 껍데기!!
-// <T>는 "Type"의 약자 -> 나중에 이 자리에 login data나 artist data가 들어감
+// 공통 응답 양식
 data class BaseResponse<T>(
     // 요청 성공 여부
     @SerializedName("result")

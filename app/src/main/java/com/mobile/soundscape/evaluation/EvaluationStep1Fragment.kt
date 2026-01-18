@@ -36,20 +36,18 @@ class EvaluationStep1Fragment : Fragment(R.layout.fragment_evaluation_step1) {
         setupSlider()
 
         // 1. 초기 인덱스 결정 (처음 진입 시 viewModel.rating이 0이므로 index 0으로 설정)
-        // 만약 초기값을 -1 등으로 설정했다면 그에 맞춰 변경 가능합니다.
         val initialIndex = if (viewModel.rating == 0 || viewModel.rating == 4) 0 else (4 - viewModel.rating).coerceIn(0, 4)
 
         // 2. UI 상태(텍스트 투명도) 즉시 반영
         updateUI(initialIndex)
 
-        // 3. [핵심] 레이아웃이 완전히 그려진 후 핸들 위치를 잡습니다.
+        // 3. 레이아웃이 완전히 그려진 후 핸들 위치를 잡기
         binding.viewSliderTrack.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 val track = binding.viewSliderTrack
                 val handle = binding.ivSliderHandle
 
                 if (track.height > 0) {
-                    // 매우 좋음(0)일 때 targetY는 0이 되어 가장 상단에 위치합니다.
                     val targetY = track.height.toFloat() * (initialIndex.toFloat() / 4f)
 
                     // 정중앙 정렬을 위해 track.top 기준 좌표 설정

@@ -36,7 +36,7 @@ class RecDecibelFragment : Fragment() {
         }
     }
 
-    // [신규] 2초 뒤 자동 시작을 위한 Runnable
+    // 2초 뒤 자동 시작을 위한 Runnable
     private val autoStartRunnable = Runnable {
         startRecording()
     }
@@ -69,7 +69,7 @@ class RecDecibelFragment : Fragment() {
 
         updateUI(DecibelState.INITIAL)
 
-        // [변경] 버튼 클릭 리스너는 유지하되, 2초 뒤 자동 시작 예약
+        // 버튼 클릭 리스너는 유지하되, 2초 뒤 자동 시작 예약
         binding.btnAction.setOnClickListener {
             when (currentState) {
                 DecibelState.INITIAL -> {
@@ -85,7 +85,7 @@ class RecDecibelFragment : Fragment() {
             findNavController().navigate(R.id.action_recDecibelFragment_to_recGoalFragment)
         }
 
-        // [핵심] 화면 진입 2초 뒤 자동으로 측정 시작
+        // 화면 진입 2초 뒤 자동으로 측정 시작
         autoStopHandler.postDelayed(autoStartRunnable, AUTO_START_DELAY)
     }
 
@@ -140,8 +140,7 @@ class RecDecibelFragment : Fragment() {
     private fun measureDecibel() {
         val audioBuffer = ShortArray(bufferSize)
 
-        // [수정] 보정값 조정: 도서관에서 40~50이 나오도록 하려면 OFFSET을 0이나 마이너스로 조정
-        // 기기마다 마이크 감도가 다르므로 테스트 후 -5.0 ~ 5.0 사이에서 조절해보세요.
+        // 보정값 조정: 도서관에서 40~50이 나오도록 하려면 OFFSET을 0이나 마이너스로 조정
         val OFFSET = 0.0
         val ALPHA = 0.1
         var smoothedDB = 0.0
@@ -158,7 +157,6 @@ class RecDecibelFragment : Fragment() {
                 // RMS 기반 데시벨 계산 (일반적으로 RMS 1일 때 0dB 기준)
                 val dB = if (rms > 0) 20 * kotlin.math.log10(rms) else 0.0
 
-                // [보정] 너무 높게 측정되면 OFFSET을 더 낮추세요.
                 val calibratedDB = maxOf(0.0, dB + OFFSET)
 
                 if (smoothedDB == 0.0) smoothedDB = calibratedDB
@@ -196,7 +194,6 @@ class RecDecibelFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // [중요] 모든 예약된 실행 취소 (메모리 누수 방지)
         autoStopHandler.removeCallbacks(autoStopRunnable)
         autoStopHandler.removeCallbacks(autoStartRunnable)
     }
