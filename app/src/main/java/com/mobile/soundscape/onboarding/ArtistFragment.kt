@@ -366,7 +366,11 @@ class ArtistFragment : Fragment() {
 
     // 수정 모드일 때 실행되는 설정 함수
     private fun setupEditMode() {
+        binding.tvTitle.text = "취향 변경"
         binding.nextButton.text = "취향 변경하기"
+        binding.layoutProgress.visibility = View.GONE
+        binding.editmodeProgress.visibility = View.VISIBLE
+
 
         if (selectedArtistsMap.size == 3) {
             if (binding.nextButton.visibility != View.VISIBLE) {

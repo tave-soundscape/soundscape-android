@@ -50,6 +50,16 @@
             android:background="#555555"/>
     </LinearLayout>
 
+    <View
+        android:id="@+id/editmode_progress"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="45dp"
+        android:visibility="gone"
+        android:layout_marginHorizontal="20dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"/>
+
     <TextView
         android:id="@+id/artist_question"
         android:layout_width="wrap_content"
@@ -62,8 +72,8 @@
         android:lineSpacingExtra="7sp"
         android:translationY="-3.6sp"
         style="@style/Title02_100"
-        app:layout_constraintTop_toBottomOf="@id/layout_progress"
-        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        android:layout_marginTop="95dp"
         android:layout_marginHorizontal="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

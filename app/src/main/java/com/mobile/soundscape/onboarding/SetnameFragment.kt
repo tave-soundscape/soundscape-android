@@ -1,5 +1,6 @@
 package com.mobile.soundscape.onboarding
 
+import android.R.attr.visible
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -58,6 +59,8 @@ class SetnameFragment : Fragment() {
             binding.nextButton.text = "이름 수정하기"      // 버튼 텍스트 변경
             binding.tvTitle.text = "이름 수정"
             binding.tvQuestion.text = "어떤 이름으로 수정할까요?"
+            binding.layoutProgress.visibility = View.GONE
+            binding.editmodeProgress.visibility = View.VISIBLE
         }
 
         // 텍스트 입력 감지 리스너 설정

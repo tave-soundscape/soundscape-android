@@ -199,6 +199,9 @@ class GenreFragment : Fragment() {
         }
     }
     private fun setupEditMode() {
+        binding.tvTitle.text = "취향 변경"
+        binding.layoutProgress.visibility = View.GONE
+        binding.editmodeProgress.visibility = View.VISIBLE
         binding.nextButton.text = "취향 변경하기"
 
         if (selectedGenresMap.size == 3) {
