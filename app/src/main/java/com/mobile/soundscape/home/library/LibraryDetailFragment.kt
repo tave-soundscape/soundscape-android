@@ -324,13 +324,8 @@ class LibraryDetailFragment : Fragment(R.layout.fragment_library_detail) {
                 response: Response<BaseResponse<String>>
             ) {
                 if (response.isSuccessful) {
-                    // 1. 성공 토스트 (삭제 아이콘 포함)
                     showCustomToast("플레이리스트가 삭제됐어요", isDelete = true)
-
-                    // 2. 더보기 바텀시트 닫기
                     dialogToClose.dismiss()
-
-                    // 3. ★중요★ 삭제된 플리 상세 화면에서 나가기 (목록으로 이동)
                     findNavController().popBackStack()
 
                 } else {

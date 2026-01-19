@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.mobile.soundscape.R
 import com.mobile.soundscape.api.client.RetrofitClient
 import com.mobile.soundscape.api.client.SpotifyClient
@@ -47,6 +48,11 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
 
         // 스포티파이 토큰 발급 후 로드 시작
         initTokenAndLoadData()
+
+        // 새로운 플레이리스트 추가 버튼
+        binding.btnAddPlaylist.setOnClickListener {
+            showAddPlaylistBottomSheet()
+        }
 
     }
 
@@ -122,7 +128,7 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
                             isLastPage = true
                         }
 
-                        // 리스트에 '추가'합니다. (clear 아님)
+                        // 어뎁터 리스트에 추가
                         addPlaylistsToAdapter(playlists)
 
                     } else {
@@ -215,6 +221,24 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
             putSerializable("songs", ArrayList(selectedPlaylist.songs))
         }
         findNavController().navigate(R.id.action_libraryFragment_to_libraryDetailFragment, bundle)
+
+    }
+
+    // 새로운 플리 만들기 바텀시트 -> 노래 추천받기 화면으로 넘어가기
+    private fun showAddPlaylistBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_library_addplaylist, null)
+        bottomSheetDialog.setContentView(view)
+        bottomSheetDialog.show()
+
+        val btnConfirm = view.findViewById<View>(R.id.btnMoveToRecommendation)
+        val btnClose = view.findViewById<View>(R.id.btnClose)
+
+        btnConfirm.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            findNavController().navigate(R.id.action_libraryFragment_to_recPlaceFragment)
+        }
+        btnClose.setOnClickListener { bottomSheetDialog.dismiss() }
 
     }
 
