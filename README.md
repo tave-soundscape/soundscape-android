@@ -92,3 +92,10 @@ com.mobile.soundscape
 ```
 
 
+<br/>
+
+## 🏗️ Flowchart
+
+<img width="3942" height="8192" alt="DIP_FE_flowchart" src="https://github.com/user-attachments/assets/ad4bf4b3-a3f2-49ca-99f0-657893b358f2" />
+
+
