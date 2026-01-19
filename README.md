@@ -55,20 +55,20 @@
 ```
 com.mobile.soundscape
 ├── api
-│   ├── apis/            # Retrofit API 인터페이스 정의
-│   ├── client/          # Retrofit, OkHttp 클라이언트 설정
-│   └── dto/             # 서버 통신용 DTO
+│   ├── apis/          # Retrofit API 인터페이스 정의
+│   ├── client/        # Retrofit, OkHttp 클라이언트 설정
+│   └── dto/           # 서버 통신용 DTO
 │
-├── data/                      # Repository/Token 관리 Manager,  공용 데이터 정의, 로컬 DB 
-├── home/                    # 홈, 라이브러리, 마이페이지  
-├── explore/                  # 둘러보기 화면
-├── recommendation/     # 장소, 데시벨, 목표 설정 화면 
-├── result/                    # 추천 결과 화면
-├── evaluation/              # 사용자 평가 화면
-├── onboarding/            # 온보딩(이름 설정, 아티스트 및 장르 취향 설정)
-├── login/                     # 로그인
+├── data/                # Repository/Token 관리 Manager,  공용 데이터 정의, 로컬 DB 
+├── home/                # 홈, 라이브러리, 마이페이지  
+├── explore/             # 둘러보기 화면
+├── recommendation/      # 장소, 데시벨, 목표 설정 화면 
+├── result/              # 추천 결과 화면
+├── evaluation/          # 사용자 평가 화면
+├── onboarding/          # 온보딩(이름 설정, 아티스트 및 장르 취향 설정)
+├── login/               # 로그인
 │
-├── MainActivity.kt             # 메인 Activity
+├── MainActivity.kt        # 메인 Activity
 └── SoundscapeApp.kt       # Application 클래스
 ```
 
